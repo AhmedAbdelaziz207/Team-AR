@@ -1,6 +1,6 @@
 {
-    "name": "base_app",
-    "short_name": "base_app",
+    "name": "team_ar",
+    "short_name": "team_ar",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

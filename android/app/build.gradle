@@ -11,7 +11,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.thecore.base_app"
+    namespace = "com.thecore.team_ar"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -25,7 +25,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.thecore.base_app"
+        applicationId = "com.thecore.team_ar"
         minSdk = 21
         targetSdk = 34
         compileSdk = 34

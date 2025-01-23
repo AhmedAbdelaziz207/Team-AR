@@ -1,4 +1,4 @@
-package com.thecore.base_app
+package com.thecore.team_ar
 
 import io.flutter.embedding.android.FlutterActivity
 
