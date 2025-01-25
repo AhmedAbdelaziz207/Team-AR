@@ -8,4 +8,5 @@ class AppLocalKeys {
   static const english = 'english';
   static const useLanguageEasily = 'useLanguageEasily';
   static const continueText = 'continue';
+  static const loginTo = 'loginTo';
 }

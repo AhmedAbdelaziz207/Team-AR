@@ -1,4 +1,5 @@
 {
+  "appName": "Team AR",
   "pushYourLimits": "Push Your Limits",
   "recordYourPersonalBest" : "Record Your Personal Best",
   "letsDoIt" : "Let's Do It",
@@ -6,5 +7,8 @@
   "arabic" : "Arabic",
   "english" : "English",
   "useLanguageEasily" : "Select your preferred Language to use Team AR easily",
-  "continue" : "Continue"
+  "continue" : "Continue",
+  "login To": "Login To ",
+  "signupTo": "Signup To "
+
 }

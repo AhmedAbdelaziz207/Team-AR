@@ -109,7 +109,7 @@ class _SelectLanguageState extends State<SelectLanguage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.r),
                     ),
-                    backgroundColor: AppColors.primaryColor,
+                    backgroundColor: AppColors.mediumLavender,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

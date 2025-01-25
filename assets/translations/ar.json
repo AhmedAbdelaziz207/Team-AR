@@ -1,4 +1,5 @@
 {
+  "appName": "Team AR",
   "pushYourLimits": "تخط حدودك",
   "recordYourPersonalBest": "سَجِّل أَفضَل اداء لك",
   "letsDoIt": "هيا لنفعل ذلك",
@@ -6,5 +7,7 @@
   "english": "الانجليزية",
   "arabic": "العربية",
   "useLanguageEasily": "اختر لغتك المفضلة لاستخدام تطبيق Team AR بسهولة.",
-  "continue": "استمر"
+  "continue": "استمر",
+  "loginTo": "تسجيل الدخول الي ",
+  "signupTo" : "انشاء حساب جديد في "
 }
