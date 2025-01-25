@@ -8,6 +8,15 @@
   "arabic": "العربية",
   "useLanguageEasily": "اختر لغتك المفضلة لاستخدام تطبيق Team AR بسهولة.",
   "continue": "استمر",
-  "loginTo": "تسجيل الدخول الي ",
-  "signupTo" : "انشاء حساب جديد في "
+  "login": "تسجيل الدخول",
+  "signupTo" : "انشاء حساب جديد",
+  "welcomeBack": "مرحبا بعودتك!",
+  "in" : "في",
+  "userName" : "اسم المستخدم",
+  "password" : "كلمة المرور",
+  "enterYourCredentials" : "ادخل بياناتك لتسجيل الدخول",
+  "thisFieldIsRequired" : "هذا الحقل مطلوب",
+  "forgotPassword" : "هل نسيت كلمة المرور؟",
+  "dontHaveAnAccount" : "ليس لديك حساب؟",
+  "signup" : "انشاء حساب"
 }

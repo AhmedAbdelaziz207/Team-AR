@@ -8,5 +8,17 @@ class AppLocalKeys {
   static const english = 'english';
   static const useLanguageEasily = 'useLanguageEasily';
   static const continueText = 'continue';
-  static const loginTo = 'loginTo';
+  static const login = 'login';
+  static const welcomeBack = 'welcomeBack';
+  static const inLetter = 'in';
+  static const userName = "userName";
+  static const password = "password";
+  static const enterYourCredentials = "enterYourCredentials";
+  static const fieldRequired = "thisFieldIsRequired";
+  static const dontHaveAnAccount = "dontHaveAnAccount";
+  static const forgotPassword = "forgotPassword";
+  static const signUp = "signup";
+
+
+
 }

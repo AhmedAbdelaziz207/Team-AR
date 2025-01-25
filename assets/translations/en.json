@@ -8,7 +8,15 @@
   "english" : "English",
   "useLanguageEasily" : "Select your preferred Language to use Team AR easily",
   "continue" : "Continue",
-  "login To": "Login To ",
-  "signupTo": "Signup To "
-
+  "login": "Login",
+  "signupTo": "Signup To ",
+  "welcomeBack": "Welcome Back!",
+  "in" : "in",
+  "userName" : "User Name",
+  "password" : "Password",
+  "enterYourCredentials" : "Please enter your credentials to login",
+  "thisFieldIsRequired" : "Field can't be empty",
+  "forgotPassword" : "Forgot Password?",
+  "dontHaveAnAccount" : "Don't have an account?",
+  "signup" : "Signup"
 }
