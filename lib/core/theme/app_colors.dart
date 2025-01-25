@@ -7,7 +7,7 @@ class AppColors {
   static const lightLavender = Color(0xffE4E6FA);
   static const darkLavender = Color(0xffD0D3F6);
   static const mediumLavender = Color(0xff7264e4);
-
+  static const formFillColor = Color(0xfff7f7fd);
   // Text Colors
 
   static const black = Colors.black;
