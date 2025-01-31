@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/features/auth/login/login_screen.dart';
 import 'package:team_ar/features/onboarding/onboarding_screen.dart';
 import 'package:team_ar/features/select_launguage/select_launguage.dart';
 import 'package:team_ar/features/splash/splash_screen.dart';
+
+import '../../features/auth/login/logic/login_cubit.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings? settings) {
@@ -22,7 +26,10 @@ class AppRouter {
         );
       case Routes.login:
         return MaterialPageRoute(
-          builder: (context) => const LoginScreen(),
+          builder: (context) => BlocProvider(
+            create: (context) => getIt<LoginCubit>(),
+            child: const LoginScreen(),
+          ),
         );
 
       default:

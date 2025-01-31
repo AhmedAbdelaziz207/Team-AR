@@ -1,12 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:team_ar/app.dart';
 import 'package:flutter/material.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/utils/app_assets.dart';
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
   // Easy Localization init
   await EasyLocalization.ensureInitialized();
+  // Dependency Injection
+  setupServiceLocator();
+
 
   runApp( EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
@@ -16,3 +20,11 @@ void main()async {
   ),
   );
 }
+
+/*
+Generation Commands :::
+  - dart run build_runner build
+
+
+
+ */

@@ -1,6 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
+import 'package:team_ar/features/auth/login/logic/login_cubit.dart';
+import 'package:team_ar/features/auth/login/model/login_request_body.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_local_keys.dart';
@@ -43,9 +46,13 @@ class LoginForm extends StatelessWidget {
             alignment: Alignment.center,
             child: ElevatedButton(
               onPressed: () {
-
-                if(!formKey.currentState!.validate()){
+                if (!formKey.currentState!.validate()) {
                   debugPrint('form is not valid');
+                } else {
+                  getIt<LoginCubit>().emitLoginStates(
+                    const LoginRequestBody(
+                        email: "", password: "P@ssw0rd"),
+                  );
                 }
               },
               child: Text(
@@ -74,6 +81,7 @@ class LoginForm extends StatelessWidget {
                 onTap: () {
 
                 },
+
                 child: Text(
                   AppLocalKeys.signUp.tr(),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
