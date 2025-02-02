@@ -19,6 +19,28 @@ class AppLocalKeys {
   static const forgotPassword = "forgotPassword";
   static const signUp = "signup";
 
+  static const requestCancelled = "error.requestCancelled";
+  static const connectionTimeout = "error.connectionTimeout";
+  static const sendTimeout = "error.sendTimeout";
+  static const receiveTimeout = "error.receiveTimeout";
+  static const badCertificate = "error.badCertificate";
+  static const badResponse = "error.badResponse";
+  static const connectionError = "error.connectionError";
+  static const unknownError = "error.unknownError";
+  static const unexpectedError = "error.unexpectedError";
 
+  static const passwordMinLength = "error.passwordMinLength";
+  static const passwordNonAlphanumeric = "error.passwordNonAlphanumeric";
+  static const passwordLowercaseRequired = "error.passwordLowercaseRequired";
+  static const badRequest = "error.badRequest";
+  static const ok = "ok";
+  static const cancel = "cancel";
+  static const loginError = "loginError";
+
+  static const email = "email";
+  static const plans = "plans";
+  static const normal = "normal";
+  static const subscribe = "subscribe";
+  static const le = "le";
 
 }

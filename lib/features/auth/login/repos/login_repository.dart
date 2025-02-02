@@ -12,7 +12,7 @@ class LoginRepository {
 
   Future<ApiResult<LoginResponse>> login(LoginRequestBody loginRequestBody) async {
     try {
-      final response = await _apiService.login(loginRequestBody);
+      final response = await _apiService.login(loginRequestBody.toJson());
       return ApiResult.success(response);
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));
