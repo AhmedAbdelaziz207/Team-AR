@@ -18,5 +18,25 @@
   "thisFieldIsRequired" : "هذا الحقل مطلوب",
   "forgotPassword" : "هل نسيت كلمة المرور؟",
   "dontHaveAnAccount" : "ليس لديك حساب؟",
-  "signup" : "انشاء حساب"
+  "signup" : "انشاء حساب",
+  "error.request_cancelled": "تم إلغاء الطلب إلى خادم API",
+  "error.connection_timeout": "انتهت مهلة الاتصال مع خادم API",
+  "error.send_timeout": "انتهت مهلة الإرسال في الاتصال بخادم API",
+  "error.receive_timeout": "انتهت مهلة الاستلام في الاتصال بخادم API",
+  "error.bad_certificate": "شهادة غير صالحة",
+  "error.bad_response": "استجابة غير صالحة من الخادم",
+  "error.connection_error": "خطأ في الاتصال",
+  "error.unknown_error": "خطأ غير معروف",
+  "error.unexpected": "خطأ غير متوقع",
+  "ok": "موافق",
+  "cancel": "الغاء",
+  "loginError": "خطأ في تسجيل الدخول",
+  "email": "البريد الالكتروني",
+  "plans": "الباقات",
+  "normal": "العادية",
+  "subscribe": "اشتراك",
+  "le": "ج.م"
+
+
+
 }

@@ -4,6 +4,7 @@ import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/features/auth/login/login_screen.dart';
 import 'package:team_ar/features/onboarding/onboarding_screen.dart';
+import 'package:team_ar/features/plans_screen/plans_screen.dart';
 import 'package:team_ar/features/select_launguage/select_launguage.dart';
 import 'package:team_ar/features/splash/splash_screen.dart';
 
@@ -29,6 +30,14 @@ class AppRouter {
           builder: (context) => BlocProvider(
             create: (context) => getIt<LoginCubit>(),
             child: const LoginScreen(),
+          ),
+        );
+
+        case Routes.plans:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => getIt<LoginCubit>(),
+            child: const PlansScreen(),
           ),
         );
 

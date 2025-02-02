@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:team_ar/features/auth/login/model/login_request_body.dart';
 import 'package:team_ar/features/auth/login/model/login_response.dart';
 
 import 'api_endpoints.dart';
@@ -13,8 +12,6 @@ abstract class ApiService {
 
   @POST("api/Account/Login")
   Future<LoginResponse> login(
-   @Body() LoginRequestBody body
+    @Body() Map<String, dynamic> body,
   );
-
-
 }

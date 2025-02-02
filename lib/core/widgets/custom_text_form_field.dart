@@ -15,6 +15,7 @@ class CustomTextFormField extends StatefulWidget {
     this.prefixIcon,
     this.obscureText,
     this.textDirection,
+    this.controller,
   });
 
   final GlobalKey<FormState>? formKey;
@@ -24,6 +25,7 @@ class CustomTextFormField extends StatefulWidget {
   final IconData? prefixIcon;
   final bool? obscureText;
   final TextDirection? textDirection;
+  final TextEditingController? controller;
 
   @override
   State<CustomTextFormField> createState() => _CustomTextFormFieldState();
@@ -35,6 +37,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     return Directionality(
       textDirection: ui.TextDirection.rtl,
       child: TextFormField(
+        controller: widget.controller,
         obscureText: widget.obscureText ?? false,
         validator: widget.validator ??
             (value) {

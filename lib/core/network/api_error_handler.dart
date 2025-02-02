@@ -1,43 +1,46 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:team_ar/core/network/api_error_model.dart';
 
-class ApiErrorHandler {
+import '../utils/app_local_keys.dart';
 
+class ApiErrorHandler {
   static ApiErrorModel handle(dynamic error) {
-    if(error is DioException ){
-      switch(error.type){
+    if (error is DioException) {
+      switch (error.type) {
         case DioExceptionType.cancel:
-          return ApiErrorModel(message: 'Request to API server was cancelled',);
+          return ApiErrorModel(message: tr(AppLocalKeys.requestCancelled));
         case DioExceptionType.connectionTimeout:
-          return ApiErrorModel(message: 'Connection timeout with API server',);
+          return ApiErrorModel(message: tr(AppLocalKeys.connectionTimeout));
         case DioExceptionType.sendTimeout:
-          return ApiErrorModel(message: 'Send timeout in connection with API server',);
+          return ApiErrorModel(message: tr(AppLocalKeys.sendTimeout));
         case DioExceptionType.receiveTimeout:
-          return ApiErrorModel(message: 'Receive timeout in connection with API server',);
+          return ApiErrorModel(message: tr(AppLocalKeys.receiveTimeout));
         case DioExceptionType.badCertificate:
-          return ApiErrorModel(message: 'Bad certificate',);
+          return ApiErrorModel(message: tr(AppLocalKeys.badCertificate));
         case DioExceptionType.badResponse:
           return handleError(error.response!);
         case DioExceptionType.connectionError:
-          return ApiErrorModel(message: 'Connection error',);
+          return ApiErrorModel(message: tr(AppLocalKeys.connectionError));
         case DioExceptionType.unknown:
-          return ApiErrorModel(message: 'Unknown error',);
-
+          return ApiErrorModel(message: tr(AppLocalKeys.unknownError));
       }
-
-
-    }else{
-      return ApiErrorModel(message: 'Unexpected error',);
+    } else {
+      return ApiErrorModel(message: tr(AppLocalKeys.unexpectedError));
     }
-
   }
 
   static ApiErrorModel handleError(Response response) {
-   return ApiErrorModel(
-     message: response.data['message'],
-     errors: response.data['errors'],
-     statusCode: response.data['code'],
-   );
+    try {
+      final Map<String, dynamic> data = response.data;
+      return ApiErrorModel(
+        message: data['message'],
+        statusCode: data['statusCode'],
+        errors: data['errors'],
+      );
+    } catch (e) {
+      return ApiErrorModel(message: AppLocalKeys.unexpectedError.tr());
+    }
   }
 
 
