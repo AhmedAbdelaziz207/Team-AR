@@ -2,10 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
+import 'package:team_ar/features/plans_screen/model/user_plan.dart';
 import '../../../core/theme/app_colors.dart';
 
 class SubscriptionCard extends StatelessWidget {
-  const SubscriptionCard({super.key});
+  const SubscriptionCard({super.key, required this.plan});
+
+  final UserPlan plan;
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +29,9 @@ class SubscriptionCard extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  "3 Month",
+                  plan.name ?? "",
                   maxLines: 2,
-                  overflow:  TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontSize: 24.sp,
                       fontWeight: FontWeight.w400,
@@ -54,13 +57,13 @@ class SubscriptionCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        "3200 ${AppLocalKeys.le.tr()}",
+                        "${plan.price} ${AppLocalKeys.le.tr()}",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontSize: 16.sp, color: AppColors.primaryColor),
                       ),
                       SizedBox(width: 18.h),
                       Text(
-                        "8000 ${AppLocalKeys.le.tr()}",
+                        "${plan.price} ${AppLocalKeys.le.tr()}",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               fontSize: 16.sp,
                               decoration: TextDecoration.lineThrough,
