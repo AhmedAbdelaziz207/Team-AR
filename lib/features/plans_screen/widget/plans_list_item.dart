@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
+import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 
-class SubscriptionCard extends StatelessWidget {
-  const SubscriptionCard({super.key, required this.plan});
+class PlansListItem extends StatelessWidget {
+  const PlansListItem(
+      {super.key, required this.plan, this.isSelected = false});
 
   final UserPlan plan;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -57,13 +60,13 @@ class SubscriptionCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        "${plan.price} ${AppLocalKeys.le.tr()}",
+                        "${plan.newPrice} ${AppLocalKeys.le.tr()}",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontSize: 16.sp, color: AppColors.primaryColor),
                       ),
                       SizedBox(width: 18.h),
                       Text(
-                        "${plan.price} ${AppLocalKeys.le.tr()}",
+                        "${plan.oldPrice} ${AppLocalKeys.le.tr()}",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               fontSize: 16.sp,
                               decoration: TextDecoration.lineThrough,
@@ -74,7 +77,9 @@ class SubscriptionCard extends StatelessWidget {
                   ),
                   SizedBox(height: 12.h),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: isSelected ? null : () {
+                      Navigator.pushNamed(context, Routes.confirmSubscription,arguments: plan);
+                    },
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(180.w, 40.h),
                       shape: RoundedRectangleBorder(
@@ -84,12 +89,28 @@ class SubscriptionCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    child: Text(
-                      AppLocalKeys.subscribe.tr(),
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontSize: 16.sp,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (isSelected)
+                          const Icon(
+                            Icons.check_circle,
                             color: AppColors.primaryColor,
+                            size: 30,
                           ),
+                        if (isSelected)
+                          SizedBox(
+                            width: 16.w,
+                          ),
+                        Text(
+                          AppLocalKeys.subscribe.tr(),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontSize: 16.sp,
+                                    color: AppColors.primaryColor,
+                                  ),
+                        ),
+                      ],
                     ),
                   )
                 ],

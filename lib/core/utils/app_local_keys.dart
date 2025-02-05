@@ -18,7 +18,6 @@ class AppLocalKeys {
   static const dontHaveAnAccount = "dontHaveAnAccount";
   static const forgotPassword = "forgotPassword";
   static const signUp = "signup";
-
   static const requestCancelled = "error.requestCancelled";
   static const connectionTimeout = "error.connectionTimeout";
   static const sendTimeout = "error.sendTimeout";
@@ -28,7 +27,6 @@ class AppLocalKeys {
   static const connectionError = "error.connectionError";
   static const unknownError = "error.unknownError";
   static const unexpectedError = "error.unexpectedError";
-
   static const passwordMinLength = "error.passwordMinLength";
   static const passwordNonAlphanumeric = "error.passwordNonAlphanumeric";
   static const passwordLowercaseRequired = "error.passwordLowercaseRequired";
@@ -36,11 +34,39 @@ class AppLocalKeys {
   static const ok = "ok";
   static const cancel = "cancel";
   static const loginError = "loginError";
-
   static const email = "email";
   static const plans = "plans";
   static const normal = "normal";
   static const subscribe = "subscribe";
   static const le = "le";
+  static const enterYourInfo = "enterYourInfo";
+  static const forSubscription = "forSubscription";
+  static const name = "name";
+  static const phone = "phone";
+  static const age = "age";
+  static const height = "height";
+  static const weight = "weight";
+  static const gender = "gender";
+  static const male = "male";
+  static const female = "female";
+  static const subscriptionGoal = "subscriptionGoal";
+  static const preferredFood = "preferredFood";
+  static const unPreferredFood = "unPreferredFood";
+  static const lastTimeTrained = "lastTimeTrained";
+  static const numberOfDaysForTraining = "numberOfDaysForTraining";
+  static const confirmSubscription = "confirmSubscription";
+  static const haveAnyPain = "haveAnyPain";
+  static const aboutYourWor = "aboutYourWork";
+  static const allergyOfFood = "allergyOfFood";
+  static const areYouSmoking = "Are You Smoking?";
+  static const sendBodyImages =
+      "Please Confirm You Send Your Body Images On WhatsApp";
+  static const next = "Next";
+  static const address = "Address";
+  static var haveInfection = "Have You Ever Had An Infection?";
 
+  // new
+  static const register = "Register";
+
+  static var confirmPassword = "Confirm Password";
 }

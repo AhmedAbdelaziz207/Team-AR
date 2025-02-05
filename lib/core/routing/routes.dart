@@ -6,4 +6,6 @@ class Routes {
   static const home = '/home';
   static const selectLanguage = '/selectLanguage';
   static const plans = '/plans';
+
+  static const confirmSubscription = '/confirm-subscription';
 }

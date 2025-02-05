@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/features/auth/login/logic/login_cubit.dart';
+import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_cubit.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_cubit.dart';
 import 'package:team_ar/features/plans_screen/repos/user_plans_repository.dart';
 import '../../features/auth/login/repos/login_repository.dart';
@@ -22,7 +23,8 @@ void setupServiceLocator() {
   getIt.registerLazySingleton(() => UserPlansRepository(getIt()));
   getIt.registerLazySingleton(() => UserPlansCubit(getIt()));
 
-
+  // Confirm Subscription
+  getIt.registerFactory(() => ConfirmSubscriptionCubit(),);
 
 
 }

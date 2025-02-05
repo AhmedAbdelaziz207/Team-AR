@@ -4,7 +4,8 @@ part 'user_plan.g.dart';
 class UserPlan {
   int? id;
   String? name;
-  int? price;
+  int? newPrice;
+  int? oldPrice;
   int? duration;
   bool? isActive;
   String? packageType;
@@ -12,7 +13,7 @@ class UserPlan {
   UserPlan({
     this.id,
     this.name,
-    this.price,
+    this.newPrice,
     this.duration,
     this.isActive,
     this.packageType,
