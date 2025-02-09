@@ -3,12 +3,11 @@ part 'login_response.g.dart';
 @JsonSerializable()
 class LoginResponse{
   final String? token;
-  @JsonKey(name: 'expiration')
-  final String? expirationDate;
-  @JsonKey(name: 'userId')
-  final String ? userId;
+  final String? userName;
+  final String? role ;
+  final String ? id;
 
-  LoginResponse({this.token, this.expirationDate, this.userId});
+  LoginResponse({this.token, this.userName, this.role, this.id});
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) => _$LoginResponseFromJson(json);
 

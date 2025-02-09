@@ -13,9 +13,9 @@ class OnboardingBottomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 80.h,
-      padding: EdgeInsets.symmetric(horizontal: 16.w,vertical: 16.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       decoration: BoxDecoration(
-        color: AppColors.mediumLavender,
+        color: Colors.transparent,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20.w),
           topRight: Radius.circular(20.w),
@@ -26,29 +26,31 @@ class OnboardingBottomButton extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
-             Navigator.pushNamed(context, Routes.selectLanguage);
+              Navigator.pushNamed(context, Routes.selectLanguage);
             },
             style: ElevatedButton.styleFrom(
               minimumSize: Size(150.w, 46.h),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.mediumLavender,
             ),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   AppLocalKeys.letsDoIt.tr(),
                   style: const TextStyle(
-                    color: Colors.black,
+                    color: AppColors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                 SizedBox(width: 8.w),
+                SizedBox(width: 8.w),
                 const Icon(
+                  size: 24,
                   Icons.chevron_right,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ],
             ),

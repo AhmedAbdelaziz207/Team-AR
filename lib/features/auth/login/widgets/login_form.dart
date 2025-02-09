@@ -35,6 +35,7 @@ class LoginForm extends StatelessWidget {
                   ),
             ),
           ),
+
           SizedBox(height: 32.h),
 
           BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
@@ -60,9 +61,7 @@ class LoginForm extends StatelessWidget {
               ),
             );
           }),
-          SizedBox(
-            height: 24.h,
-          ),
+          SizedBox(height: 24.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -73,12 +72,15 @@ class LoginForm extends StatelessWidget {
                       color: AppColors.grey,
                     ),
               ),
+              SizedBox(
+                width: 8.w,
+              ),
               InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, Routes.plans);
                 },
                 child: Text(
-                  AppLocalKeys.signUp.tr(),
+                  AppLocalKeys.subscribe.tr(),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.mediumLavender,
@@ -88,7 +90,6 @@ class LoginForm extends StatelessWidget {
               ),
             ],
           ),
-
           const LoginBlocListener(),
         ],
       ),
@@ -106,3 +107,6 @@ class LoginForm extends StatelessWidget {
     }
   }
 }
+
+
+

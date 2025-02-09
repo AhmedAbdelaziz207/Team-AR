@@ -3,12 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/features/auth/login/login_screen.dart';
+import 'package:team_ar/features/auth/register/logic/register_cubit.dart';
+import 'package:team_ar/features/auth/register/register_screen.dart';
+import 'package:team_ar/features/confirm_subscription/confirm_subscription_screen.dart';
+import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_cubit.dart';
+import 'package:team_ar/features/home/admin/logic/trainees_cubit.dart';
 import 'package:team_ar/features/onboarding/onboarding_screen.dart';
+import 'package:team_ar/features/plans_screen/logic/user_plans_cubit.dart';
+import 'package:team_ar/features/plans_screen/model/user_plan.dart';
 import 'package:team_ar/features/plans_screen/plans_screen.dart';
 import 'package:team_ar/features/select_launguage/select_launguage.dart';
 import 'package:team_ar/features/splash/splash_screen.dart';
-
 import '../../features/auth/login/logic/login_cubit.dart';
+import '../../features/home/admin/admin_home_screen.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings? settings) {
@@ -33,11 +40,39 @@ class AppRouter {
           ),
         );
 
-        case Routes.plans:
+      case Routes.register:
         return MaterialPageRoute(
           builder: (context) => BlocProvider(
-            create: (context) => getIt<LoginCubit>(),
+            create: (context) => getIt<RegisterCubit>(),
+            child: const RegisterScreen(),
+          ),
+        );
+
+      case Routes.plans:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => getIt<UserPlansCubit>(),
             child: const PlansScreen(),
+          ),
+        );
+
+      case Routes.confirmSubscription:
+        final plan = settings?.arguments as UserPlan;
+
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => getIt<ConfirmSubscriptionCubit>(),
+            child: ConfirmSubscriptionScreen(
+              userPlan: plan,
+            ),
+          ),
+        );
+
+      case Routes.adminHome:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => getIt<TraineeCubit>(),
+            child: const AdminHomeScreen(),
           ),
         );
 

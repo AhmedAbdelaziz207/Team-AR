@@ -8,6 +8,7 @@ class AppColors {
   static const green = Colors.green;
   static const yellow = Colors.yellow;
   static const blue = Colors.blue;
+  static const lightBlue =  Color(0xff0584B1);
 
 
   // fill Colors

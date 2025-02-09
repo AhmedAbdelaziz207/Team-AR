@@ -16,6 +16,8 @@ class CustomTextFormField extends StatefulWidget {
     this.obscureText,
     this.textDirection,
     this.controller,
+    this.isMultiline = false,
+    this.keyboardType,
   });
 
   final GlobalKey<FormState>? formKey;
@@ -26,6 +28,9 @@ class CustomTextFormField extends StatefulWidget {
   final bool? obscureText;
   final TextDirection? textDirection;
   final TextEditingController? controller;
+  final bool isMultiline;
+
+  final TextInputType? keyboardType;
 
   @override
   State<CustomTextFormField> createState() => _CustomTextFormFieldState();
@@ -37,6 +42,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     return Directionality(
       textDirection: ui.TextDirection.rtl,
       child: TextFormField(
+        keyboardType: widget.keyboardType,
+        maxLines: widget.isMultiline ? 3 : 1,
         controller: widget.controller,
         obscureText: widget.obscureText ?? false,
         validator: widget.validator ??

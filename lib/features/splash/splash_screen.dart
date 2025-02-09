@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/utils/app_assets.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
+
+import '../auth/login/model/user_role.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,17 +15,12 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
-  void initState() {
+  void initState()  {
+
     Future.delayed(
       const Duration(seconds: 3),
-      () {
-        if (context.mounted) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            Routes.onboarding,
-            (route) => false,
-          );
-        }
+      ()  async {
+        await handleNavigation();
       },
     );
     super.initState();
@@ -37,5 +36,27 @@ class _SplashScreenState extends State<SplashScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> handleNavigation() async {
+    final token =await  SharedPreferencesHelper.getString(AppConstants.token);
+    final userRole =await  SharedPreferencesHelper.getString(AppConstants.userRole);
+
+    if(token != null && userRole != null && context.mounted){
+      if(userRole == UserRole.Admin.name){
+        Navigator.pushNamedAndRemoveUntil(context, Routes.adminHome,(route) => false,);
+      }
+        if(userRole == UserRole.User.name){
+        Navigator.pushNamedAndRemoveUntil(context, Routes.Userhome,(route) => false,);
+      }
+
+
+
+    }
+
+
+    else{
+      Navigator.pushNamed(context, Routes.onboarding);
+    }
   }
 }
