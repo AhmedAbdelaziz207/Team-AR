@@ -1,4 +1,4 @@
-class AppAssets{
+class AppAssets {
   // To Prevent Crate Instance
   AppAssets._();
 
@@ -9,5 +9,5 @@ class AppAssets{
   static const englishIcon = "assets/icons/english_icon.png";
   static const coachImage1 = "assets/images/coach_1.png";
   static const coachImage2 = "assets/images/coach_2.JPG";
-
+  static const emptyPageEmpty = "assets/images/empty_page.png";
 }

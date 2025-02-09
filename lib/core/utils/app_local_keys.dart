@@ -67,6 +67,19 @@ class AppLocalKeys {
 
   // new
   static const register = "Register";
+  static const confirmPassword = "Confirm Password";
+  static const createYourAccount = "Create Your Account";
+  static const registerError = "Register Error";
+  static const home = "Home";
+  static const trainee = "Trainee";
 
-  static var confirmPassword = "Confirm Password";
+  static const trainer = "Trainer";
+  static const user = "User";
+  static const time = "Time";
+
+  static var addTrainee = "Add.Trainee";
+
+  static var add = "Add";
+
+  static var noTrainees = "No New Trainees";
 }

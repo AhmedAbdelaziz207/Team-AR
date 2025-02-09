@@ -27,7 +27,7 @@
   "error.bad_response": "استجابة غير صالحة من الخادم",
   "error.connection_error": "خطأ في الاتصال",
   "error.unknown_error": "خطأ غير معروف",
-  "error.unexpected": "خطأ غير متوقع",
+  "error.unexpectedError": "خطأ غير متوقع من الخادم",
   "ok": "موافق",
   "cancel": "الغاء",
   "loginError": "خطأ في تسجيل الدخول",

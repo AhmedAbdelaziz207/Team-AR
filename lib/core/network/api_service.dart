@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:team_ar/features/auth/login/model/login_response.dart';
+import '../../features/auth/register/model/register_response.dart';
+import '../../features/home/admin/data/trainee_model.dart';
 import '../../features/plans_screen/model/user_plan.dart';
 import 'api_endpoints.dart';
 part 'api_service.g.dart';
@@ -22,5 +24,12 @@ abstract class ApiService {
 
   @PUT(ApiEndPoints.plans)
   Future<UserPlan> updatePlan(@Body() Map<String, dynamic> body);
+
+
+  @POST(ApiEndPoints.trainerData)
+  Future<RegisterResponse> addTrainer(@Body() Map<String, dynamic> body);
+
+  @GET(ApiEndPoints.getAllUsers)
+  Future<List<TraineeModel>> getAllTrainees();
 
 }
