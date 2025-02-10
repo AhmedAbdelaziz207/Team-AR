@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:team_ar/features/home/user/widget/user_home_screen.dart';
+import 'package:team_ar/features/home/user/ui/user_home_screen.dart';
 
 import '../logic/navigation/nav_bar_items.dart';
 import '../logic/navigation/navigation_cubit.dart';

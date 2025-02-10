@@ -6,7 +6,7 @@ import 'package:team_ar/features/home/user/widget/banner_carousel_slider.dart';
 import 'package:team_ar/features/home/user/widget/file_list.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import 'member_ship_card.dart';
+import '../widget/member_ship_card.dart';
 
 class UserHomeScreen extends StatelessWidget {
   const UserHomeScreen({super.key});

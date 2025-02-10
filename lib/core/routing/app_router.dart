@@ -20,7 +20,7 @@ import 'package:team_ar/features/trainees_screen/trainees_screen.dart';
 import '../../features/auth/login/logic/login_cubit.dart';
 import '../../features/home/admin/admin_home_screen.dart';
 import '../../features/home/user/logic/navigation/navigation_cubit.dart';
-import '../../features/home/user/root_screen.dart';
+import '../../features/home/user/ui/root_screen.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings? settings) {
