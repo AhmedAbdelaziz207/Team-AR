@@ -7,4 +7,6 @@ class AppConstants{
   static const token = 'token';
   static const userRole = 'userRole';
   static const userId = 'userId';
+
+  static String avatarUrl = "https://cdn-icons-png.flaticon.com/128/7127/7127308.png";
 }

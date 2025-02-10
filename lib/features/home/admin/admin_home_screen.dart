@@ -46,73 +46,79 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const UserInfoSection(),
-            BlocBuilder<TraineeCubit, TraineeState>(
-              builder: (context, state) {
-                return state.whenOrNull(
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.lightBlue,
+        child: RefreshIndicator(
+          onRefresh: () {
+            context.read<TraineeCubit>().getNewTrainees();
+            return Future.value();
+          },
+          child: Column(
+            children: [
+              const UserInfoSection(),
+              BlocBuilder<TraineeCubit, TraineeState>(
+                builder: (context, state) {
+                  return state.whenOrNull(
+                        loading: () => const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.lightBlue,
+                          ),
                         ),
-                      ),
-                      failure: (errorMessage) => Center(
-                        child: Text(
-                          errorMessage,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: AppColors.red),
+                        failure: (errorMessage) => Center(
+                          child: Text(
+                            errorMessage,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppColors.red),
+                          ),
                         ),
-                      ),
-                      success: (trainees) {
-                        if (trainees.isEmpty) {
+                        success: (trainees) {
+                          if (trainees.isEmpty) {
+                            return Expanded(
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    AppAssets.emptyPageEmpty,
+                                    height: 200.h,
+                                    width: 200.w,
+                                  ),
+                                  SizedBox(
+                                    height: 12.h,
+                                  ),
+                                  Text(
+                                    AppLocalKeys.noTrainees.tr(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                            color: AppColors.black
+                                                .withOpacity(.7)),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
                           return Expanded(
-                            child: Column(
-                              children: [
-                                Image.asset(
-                                  AppAssets.emptyPageEmpty,
-                                  height: 200.h,
-                                  width: 200.w,
-                                ),
-                                SizedBox(
-                                  height: 12.h,
-                                ),
-                                Text(
-                                  AppLocalKeys.noTrainees.tr(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                          color:
-                                              AppColors.black.withOpacity(.7)),
-                                ),
-                              ],
+                            child: ListView.separated(
+                              itemCount: trainees.length,
+                              itemBuilder: (context, index) =>
+                                  NewTraineeCard(trainee: trainees[index]),
+                              separatorBuilder: (context, index) => Column(
+                                children: [
+                                  SizedBox(height: 21.h),
+                                  const Divider(
+                                      color: AppColors.grey, thickness: .1),
+                                ],
+                              ),
                             ),
                           );
-                        }
-
-                        return Expanded(
-                          child: ListView.separated(
-                            itemCount: trainees.length,
-                            itemBuilder: (context, index) =>
-                                NewTraineeCard(trainee: trainees[index]),
-                            separatorBuilder: (context, index) => Column(
-                              children: [
-                                SizedBox(height: 21.h),
-                                const Divider(
-                                    color: AppColors.grey, thickness: .1),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ) ??
-                    const SizedBox(); // Default case
-              },
-            ),
-          ],
+                        },
+                      ) ??
+                      const SizedBox(); // Default case
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

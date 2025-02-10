@@ -15,7 +15,7 @@ class DioFactory {
 
     if (dio == null) {
       // Get User Token For Header
-      String token = await getUserToken();
+      String? token = await getUserToken();
 
       dio = Dio();
       dio!
