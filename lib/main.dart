@@ -9,7 +9,7 @@ void main()async {
   // Easy Localization init
   await EasyLocalization.ensureInitialized();
   // Dependency Injection
-  setupServiceLocator();
+ await setupServiceLocator();
 
 
   runApp( EasyLocalization(

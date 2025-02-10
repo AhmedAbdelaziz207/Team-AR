@@ -7,13 +7,16 @@ import 'package:team_ar/features/auth/register/logic/register_cubit.dart';
 import 'package:team_ar/features/auth/register/register_screen.dart';
 import 'package:team_ar/features/confirm_subscription/confirm_subscription_screen.dart';
 import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_cubit.dart';
+import 'package:team_ar/features/home/admin/data/trainee_model.dart';
 import 'package:team_ar/features/home/admin/logic/trainees_cubit.dart';
+import 'package:team_ar/features/landing/admin/admin_landing_screen.dart';
 import 'package:team_ar/features/onboarding/onboarding_screen.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_cubit.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
 import 'package:team_ar/features/plans_screen/plans_screen.dart';
 import 'package:team_ar/features/select_launguage/select_launguage.dart';
 import 'package:team_ar/features/splash/splash_screen.dart';
+import 'package:team_ar/features/trainees_screen/trainees_screen.dart';
 import '../../features/auth/login/logic/login_cubit.dart';
 import '../../features/home/admin/admin_home_screen.dart';
 
@@ -68,12 +71,26 @@ class AppRouter {
           ),
         );
 
+      case Routes.adminLanding:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => getIt<TraineeCubit>(),
+            child: const AdminLandingScreen(),
+          ),
+        );
+
       case Routes.adminHome:
         return MaterialPageRoute(
           builder: (context) => BlocProvider(
             create: (context) => getIt<TraineeCubit>(),
             child: const AdminHomeScreen(),
           ),
+        );
+      case Routes.adminTraineesScreen:
+        final List<TraineeModel> trainees = settings?.arguments as List<TraineeModel>;
+
+        return MaterialPageRoute(
+          builder: (context) => TraineesScreen(trainees: trainees),
         );
 
       default:

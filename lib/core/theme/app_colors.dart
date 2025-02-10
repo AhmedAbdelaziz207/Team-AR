@@ -25,4 +25,7 @@ class AppColors {
   static const grey = Color(0xff606060);
   static const lightGrey = Color(0xffA5A5A5);
   static const softGrey = Color(0xffE0E0E0);
+
+  static var orangeWithShade = Colors.orange.shade400;
+  static var orange = Colors.orange;
 }

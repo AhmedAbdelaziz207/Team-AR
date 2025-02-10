@@ -82,4 +82,20 @@ class AppLocalKeys {
   static var add = "Add";
 
   static var noTrainees = "No New Trainees";
+
+  static var managePlans = "Manage Plans";
+
+  static var managePlansDescription = "Manage your plans and add new ones";
+
+  static var subscribedUsers = "Subscribed Users";
+  static const seeAll = "See all";
+
+  static var manageFoods = "Manage Foods";
+
+  static var manageFoodsDescription =
+      "Track and organize meal plans with ease.";
+
+  static var seeDetails = "See Details";
+
+  static var adminPanel = "Admin Panel";
 }

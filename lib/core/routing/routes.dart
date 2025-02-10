@@ -8,4 +8,7 @@ class Routes {
   static const plans = '/plans';
   static const confirmSubscription = '/confirm-subscription';
   static const adminHome = '/adminHome';
+  static const adminLanding = '/adminLanding';
+
+  static const adminTraineesScreen = '/subscribedUsersScreen';
 }
