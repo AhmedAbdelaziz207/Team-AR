@@ -19,6 +19,8 @@ import 'package:team_ar/features/splash/splash_screen.dart';
 import 'package:team_ar/features/trainees_screen/trainees_screen.dart';
 import '../../features/auth/login/logic/login_cubit.dart';
 import '../../features/home/admin/admin_home_screen.dart';
+import '../../features/home/user/logic/navigation/navigation_cubit.dart';
+import '../../features/home/user/root_screen.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings? settings) {
@@ -87,10 +89,18 @@ class AppRouter {
           ),
         );
       case Routes.adminTraineesScreen:
-        final List<TraineeModel> trainees = settings?.arguments as List<TraineeModel>;
+        final List<TraineeModel> trainees =
+            settings?.arguments as List<TraineeModel>;
 
         return MaterialPageRoute(
           builder: (context) => TraineesScreen(trainees: trainees),
+        );
+
+      case Routes.rootScreen:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+              create: (context) => getIt<NavigationCubit>(),
+              child: const RootScreen()),
         );
 
       default:

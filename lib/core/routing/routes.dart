@@ -4,6 +4,7 @@ class Routes {
   static const login = '/login';
   static const register = '/register';
   static const Userhome = '/home';
+  static const rootScreen = '/root';
   static const selectLanguage = '/selectLanguage';
   static const plans = '/plans';
   static const confirmSubscription = '/confirm-subscription';
