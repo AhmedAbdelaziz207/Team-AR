@@ -1,23 +1,38 @@
 import 'package:json_annotation/json_annotation.dart';
+
 part 'trainee_model.g.dart';
 
 @JsonSerializable()
 class TraineeModel {
-  final String id;
-  final String userName;
-  final String email;
-  final double long;
-  final double weight;
-  final int age;
-  final DateTime startPackage;
-  final DateTime endPackage;
-  final String name;
-  final int duration;
-  final double oldPrice;
-  final double newPrice;
-  final String gender;
+  final String? id;
+  final String? userName;
+  final String? email;
+  final int ?long;
+  final int? weight;
+  final int? age;
+  final DateTime? startPackage;
+  final DateTime? endPackage;
+  final String? name;
+  final int? duration;
+  final int? oldPrice;
+  final int ?newPrice;
+  final String? gender;
+  @JsonKey(name: 'imageUrl')
+  final String? image;
+  @JsonKey(name: 'phoneNumber')
+  final String? phone;
+  @JsonKey(name: 'reminderOfPackage')
+  final int? remindDays;
+  final String? password;
+  final String? address;
+  final String? status ;
 
-  TraineeModel({
+  TraineeModel(this.status, {
+    this.password,
+    this.address,
+    this.remindDays,
+    this.image,
+    this.phone,
     required this.id,
     required this.userName,
     required this.email,
@@ -33,7 +48,8 @@ class TraineeModel {
     required this.gender,
   });
 
-  factory TraineeModel.fromJson(Map<String, dynamic> json) => _$TraineeModelFromJson(json);
+  factory TraineeModel.fromJson(Map<String, dynamic> json) =>
+      _$TraineeModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$TraineeModelToJson(this);
 }

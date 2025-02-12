@@ -149,11 +149,11 @@ class _SelectLanguageState extends State<SelectLanguage> {
 void setLanguageAndNavigate(bool isEnglish, context) async {
   if (isEnglish) {
     SharedPreferencesHelper.setData(
-        AppConstants.english, AppConstants.languageEnglishCode);
+        AppConstants.language, AppConstants.languageEnglishCode);
   }
   else {
     SharedPreferencesHelper.setData(
-      AppConstants.arabic,
+      AppConstants.language,
       AppConstants.languageArabicCode,
     );
   }

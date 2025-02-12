@@ -15,13 +15,13 @@ class AdminUserCard extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 21.r,
-          backgroundImage: NetworkImage(AppConstants.avatarUrl),
+          backgroundImage: NetworkImage(trainee?.image ?? AppConstants.avatarUrl2),
         ),
         const SizedBox(
           height: 8,
         ),
         Text(
-          trainee!.userName,
+          trainee!.userName ?? "",
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w600,

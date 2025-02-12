@@ -39,7 +39,7 @@ class LoginBlocListener extends StatelessWidget {
   void navigateToHomeScreen(BuildContext context, LoginResponse loginResponse) {
 
     if(loginResponse.role == UserRole.Admin.name){
-      Navigator.pushNamed(context, Routes.adminHome);
+      Navigator.pushNamed(context, Routes.adminLanding);
     }
 
     if(loginResponse.role == UserRole.User.name){

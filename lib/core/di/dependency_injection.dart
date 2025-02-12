@@ -21,7 +21,7 @@ Future<void> setupServiceLocator() async {
 
   // Login
   getIt.registerLazySingleton(() => LoginRepository(getIt()));
-  getIt.registerLazySingleton(() => LoginCubit(getIt()));
+  getIt.registerFactory(() => LoginCubit(getIt()));
 
   // User Plans
   getIt.registerLazySingleton(() => UserPlansRepository(getIt()));

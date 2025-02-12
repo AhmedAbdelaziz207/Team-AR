@@ -5,6 +5,7 @@ class ApiEndPoints {
   static const trainerData = "api/TrainerData";
   static const getTrainees = "api/Account/GetAllTrainees";
   static const getAllUsers  = "api/Account/GetAllUsers";
+  static const dietMeals = "api/Food";
 
 
 }

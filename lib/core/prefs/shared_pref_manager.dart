@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
 
 class SharedPreferencesHelper {
   static Future<void> setData(String key, dynamic value) async {
@@ -40,6 +41,12 @@ class SharedPreferencesHelper {
   static Future<void> remove(String key) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(key);
+  }
+  static Future<void> removeAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(AppConstants.token);
+    await prefs.remove(AppConstants.userId);
+    await prefs.remove(AppConstants.userRole);
   }
 
 }

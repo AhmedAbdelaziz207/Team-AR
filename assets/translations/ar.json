@@ -59,6 +59,30 @@
   "Please Confirm You Send Your Body Images On WhatsApp": "يرجى تأكيد أنك أرسلت صور جسمك على واتساب",
   "Next": "التالي",
   "Address": "العنوان",
-  "Have You Ever Had An Infection?": "هل أصبت بعدوى من قبل؟"
+  "Have You Ever Had An Infection?": "هل أصبت بعدوى من قبل؟",
+  "Register": "تسجيل",
+  "Confirm Password": "تأكيد كلمة المرور",
+  "Create Your Account": "أنشئ حسابك",
+  "Register Error": "خطأ في التسجيل",
+  "Home": "الرئيسية",
+  "Trainee": "متدرب",
+  "Trainer": "مدرب",
+  "User": "مستخدم",
+  "Time": "الوقت",
+  "Add.Trainee": "إضافة متدرب",
+  "Add": "إضافة",
+  "No New Trainees": "لا يوجد متدربين جدد",
+  "Manage Plans": "إدارة الباقات",
+  "Manage your plans and add new ones": "قم بإدارة خططك وأضف خططًا جديدة",
+  "Subscribed Users": " المشتركين",
+  "See all": "عرض الكل",
+  "Manage Foods": "إدارة الأغذية",
+  "Track and organize meal plans with ease.": "تتبع ونظم الوجبات بسهولة",
+  "See Details": "عرض التفاصيل",
+  "Admin Panel": "ادارة الادمن",
+  "Status": "الحالة",
+  "Search By Name": "البحث بالاسم",
+  "Language": "اللغة"
+
 
 }

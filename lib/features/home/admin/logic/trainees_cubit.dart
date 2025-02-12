@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
@@ -12,8 +14,12 @@ class TraineeCubit extends Cubit<TraineeState> {
     emit(const TraineeState.loading());
 
     final response = await traineesRepository.getAllTrainees();
+    log("trainees Response: $response");
+
     response.whenOrNull(
-      success: (trainees) => emit(TraineeState.success(trainees)),
+      success: (trainees) => emit(
+        TraineeState.success(trainees),
+      ),
       failure: (error) => emit(
         TraineeState.failure(
           error.getErrorsMessage() ?? AppLocalKeys.unexpectedError.tr(),
