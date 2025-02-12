@@ -12,6 +12,4 @@ class UserPlansState with _$UserPlansState {
 
   const factory UserPlansState.plansFailure(ApiErrorModel errorModel) = UserPlansFailure;
 
-
-
 }

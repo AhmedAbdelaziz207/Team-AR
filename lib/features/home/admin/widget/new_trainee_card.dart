@@ -23,7 +23,7 @@ class NewTraineeCard extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                trainee.userName,
+                trainee.userName??"",
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
@@ -34,7 +34,7 @@ class NewTraineeCard extends StatelessWidget {
               width: 4.w,
             ),
             Expanded(
-              child: Text(trainee.oldPrice.toString(),
+              child: Text(trainee.phone?? "0108987911",
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.black.withOpacity(.6),
                       fontWeight: FontWeight.w600)),

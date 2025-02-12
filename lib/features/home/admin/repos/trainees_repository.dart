@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:team_ar/core/network/api_result.dart';
 import 'package:team_ar/features/home/admin/data/trainee_model.dart';
 
@@ -11,6 +13,8 @@ class TraineesRepository {
 
   Future<ApiResult<List<TraineeModel>>> getAllTrainees() async {
     try {
+      log("getAllTrainees ${apiService.getAllTrainees()}");
+
       List<TraineeModel> trainees = await  apiService.getAllTrainees();
 
       return ApiResult.success(trainees);

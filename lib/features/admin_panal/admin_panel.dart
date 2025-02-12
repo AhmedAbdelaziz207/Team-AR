@@ -4,13 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
-import 'package:team_ar/features/admin_panal/widget/admin_user_card.dart';
-import 'package:team_ar/features/admin_panal/widget/manage_food_card.dart';
+import 'package:team_ar/features/admin_panal/widget/admin_manage_card.dart';
+import 'package:team_ar/features/admin_panal/widget/logout_button.dart';
 import 'package:team_ar/features/admin_panal/widget/subscribed_users_section.dart';
 import '../../core/di/dependency_injection.dart';
+import '../../core/prefs/shared_pref_manager.dart';
+import '../../core/utils/app_constants.dart';
 import '../home/admin/logic/trainees_cubit.dart';
 import '../home/admin/repos/trainees_repository.dart';
-import 'widget/manage_plans_card.dart';
 
 class AdminPanel extends StatelessWidget {
   const AdminPanel({super.key});
@@ -42,16 +43,147 @@ class AdminPanel extends StatelessWidget {
                 create: (context) => TraineeCubit(getIt<TraineesRepository>()),
                 child: const SubscribedUsersSection(),
               ),
-              ManagePlansCard(
-                seeDetails: () {},
+              SizedBox(height: 20.h),
+
+              AdminManageCard(
+                title: AppLocalKeys.manageFoods.tr(),
+                cardColor: AppColors.lightBlue,
               ),
+              SizedBox(height: 20.h),
+              AdminManageCard(title: AppLocalKeys.plans.tr()),
+              SizedBox(height: 20.h),
+              const LanguageSelection(),
+              SizedBox(height: 20.h),
+
+              // logout button
+
               SizedBox(
-                height: 20.h,
+                height: 50.h,
               ),
-              ManageFoodsCard(
-                onViewFoods: () {},
-              )
+
+              const Align(
+                alignment: Alignment.center,
+                child: LogoutButton(),
+              ),
+              SizedBox(height: 20.h),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LanguageSelection extends StatefulWidget {
+  const LanguageSelection({super.key});
+
+  @override
+  State<LanguageSelection> createState() => _LanguageSelectionState();
+}
+
+class _LanguageSelectionState extends State<LanguageSelection> {
+  String selectedLanguage = AppLocalKeys.english.tr();
+  late String selectedLanguageCode;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    selectedLanguageCode = await SharedPreferencesHelper.getString(
+          AppConstants.language,
+        ) ??
+        AppConstants.languageEnglishCode; // Default to English
+
+    setState(() {
+      selectedLanguage = selectedLanguageCode == AppConstants.languageArabicCode
+          ? AppLocalKeys.arabic.tr()
+          : AppLocalKeys.english.tr();
+    });
+  }
+
+  void _changeLanguage(String language) async {
+    setState(() {
+      selectedLanguage = language;
+    });
+
+    if (language == AppLocalKeys.arabic.tr()) {
+      await SharedPreferencesHelper.setData(
+        AppConstants.language,
+        AppConstants.languageArabicCode,
+      );
+      context.setLocale(const Locale(AppConstants.languageArabicCode));
+    } else {
+      await SharedPreferencesHelper.setData(
+        AppConstants.language,
+        AppConstants.languageEnglishCode,
+      );
+      context.setLocale(const Locale(AppConstants.languageEnglishCode));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _loadLanguage();
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade300, width: 1),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Language Icon with Text
+          Row(
+            children: [
+              Icon(Icons.language, size: 22.sp),
+              SizedBox(width: 8.w,),
+              Text(
+                AppLocalKeys.language.tr(),
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(width: 6.w),
+            ],
+          ),
+
+          // Language Selection Buttons
+          Row(
+            children: [
+              _buildLanguageButton(
+                AppLocalKeys.arabic.tr(),
+                selectedLanguage == AppLocalKeys.arabic.tr(),
+              ),
+              SizedBox(width: 8.w),
+              _buildLanguageButton(
+                AppLocalKeys.english.tr(),
+                selectedLanguage == AppLocalKeys.english.tr(),
+              ),
+            ],
+          ),
+
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLanguageButton(String text, bool isSelected) {
+    return GestureDetector(
+      onTap: () => _changeLanguage(text),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primaryColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

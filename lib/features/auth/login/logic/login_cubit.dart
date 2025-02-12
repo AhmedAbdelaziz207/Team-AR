@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:team_ar/core/network/api_result.dart';
+import 'package:team_ar/core/network/dio_factory.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/features/auth/login/model/login_request_body.dart';
 import 'package:team_ar/features/auth/login/repos/login_repository.dart';
@@ -27,6 +28,8 @@ class LoginCubit extends Cubit<LoginState> {
 
         saveUserData(loginResponse);
 
+        //Todo : Refactor [DIO RESET]...
+        DioFactory.resetDio();
         emit(LoginState.loginSuccess(data));
       },
       failure: (apiErrorModel) => emit(LoginState.loginFailure(apiErrorModel)),

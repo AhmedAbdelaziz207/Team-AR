@@ -42,6 +42,10 @@ class DioFactory {
     return dio;
   }
 
+  /// **Reset Dio when logging in to use the new token**
+  static Future<void> resetDio() async {
+    dio = null; // This forces getDio() to recreate Dio with new token
+  }
   static getUserToken() {
     return SharedPreferencesHelper.getString(AppConstants.token);
   }

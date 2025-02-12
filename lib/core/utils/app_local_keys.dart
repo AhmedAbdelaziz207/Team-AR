@@ -63,39 +63,34 @@ class AppLocalKeys {
       "Please Confirm You Send Your Body Images On WhatsApp";
   static const next = "Next";
   static const address = "Address";
-  static var haveInfection = "Have You Ever Had An Infection?";
+  static const haveInfection = "Have You Ever Had An Infection?";
 
-  // new
   static const register = "Register";
   static const confirmPassword = "Confirm Password";
   static const createYourAccount = "Create Your Account";
   static const registerError = "Register Error";
   static const home = "Home";
   static const trainee = "Trainee";
-
   static const trainer = "Trainer";
   static const user = "User";
   static const time = "Time";
-
-  static var addTrainee = "Add.Trainee";
-
-  static var add = "Add";
-
-  static var noTrainees = "No New Trainees";
-
-  static var managePlans = "Manage Plans";
-
-  static var managePlansDescription = "Manage your plans and add new ones";
-
-  static var subscribedUsers = "Subscribed Users";
+  static const addTrainee = "Add.Trainee";
+  static const add = "Add";
+  static const noTrainees = "No New Trainees";
+  static const managePlans = "Manage Plans";
+  static const managePlansDescription = "Manage your plans and add new ones";
+  static const subscribedUsers = "Subscribed Users";
   static const seeAll = "See all";
-
-  static var manageFoods = "Manage Foods";
-
-  static var manageFoodsDescription =
+  static const manageFoods = "Manage Foods";
+  static const manageFoodsDescription =
       "Track and organize meal plans with ease.";
+  static const seeDetails = "See Details";
+  static const adminPanel = "Admin Panel";
+  static const status = "Status";
+  static const searchByName = "Search By Name";
 
-  static var seeDetails = "See Details";
+// new
+  static var logout = "Logout";
 
-  static var adminPanel = "Admin Panel";
+  static String  language = "Language";
 }

@@ -18,6 +18,10 @@ class CustomTextFormField extends StatefulWidget {
     this.controller,
     this.isMultiline = false,
     this.keyboardType,
+    this.onFieldSubmitted,
+    this.iconColor,
+    this.onChanged,
+    this.onSaved,
   });
 
   final GlobalKey<FormState>? formKey;
@@ -29,8 +33,11 @@ class CustomTextFormField extends StatefulWidget {
   final TextDirection? textDirection;
   final TextEditingController? controller;
   final bool isMultiline;
-
   final TextInputType? keyboardType;
+  final Function(String)? onFieldSubmitted;
+  final Function(String)? onChanged;
+  final void Function(String?)? onSaved;
+  final Color? iconColor;
 
   @override
   State<CustomTextFormField> createState() => _CustomTextFormFieldState();
@@ -42,6 +49,9 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     return Directionality(
       textDirection: ui.TextDirection.rtl,
       child: TextFormField(
+        onFieldSubmitted: widget.onFieldSubmitted,
+        onChanged: widget.onChanged,
+        onSaved: widget.onSaved,
         keyboardType: widget.keyboardType,
         maxLines: widget.isMultiline ? 3 : 1,
         controller: widget.controller,
@@ -61,7 +71,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.black.withOpacity(.3)),
-          suffixIcon: Icon(widget.suffixIcon, color: Colors.grey),
+          suffixIcon:
+              Icon(widget.suffixIcon, color: widget.iconColor ?? Colors.grey),
           // prefixIcon: Icon(widget.prefixIcon, color: Colors.grey),
           filled: true,
           fillColor: AppColors.darkLavender.withOpacity(.3),
