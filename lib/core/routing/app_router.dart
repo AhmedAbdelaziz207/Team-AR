@@ -99,8 +99,9 @@ class AppRouter {
       case Routes.rootScreen:
         return MaterialPageRoute(
           builder: (context) => BlocProvider(
-              create: (context) => getIt<NavigationCubit>(),
-              child: const RootScreen()),
+            create: (context) => getIt<NavigationCubit>(),
+            child: const RootScreen(),
+          ),
         );
 
       default:

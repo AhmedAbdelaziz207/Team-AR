@@ -11,5 +11,7 @@ class AppAssets {
   static const coachImage2 = "assets/images/coach_2.JPG";
   static const emptyPageEmpty = "assets/images/empty_page.png";
   static const tempProfileImage = "assets/images/temp_profile.jpg";
+  static const dumbbell = "assets/images/dumbbell.png";
+  static const iconDish = "assets/images/dish.png";
 
 }

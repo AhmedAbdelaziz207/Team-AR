@@ -22,9 +22,11 @@ void main()async {
 }
 
 /*
-Generation Commands :::
-  - dart run build_runner build
+   Generation Commands :::
+     -- dart run build_runner build
 
+   Pull Updates To Your Branch :::
+     -- git pull origin master
 
 
  */

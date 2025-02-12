@@ -7,19 +7,29 @@ part of 'trainee_model.dart';
 // **************************************************************************
 
 TraineeModel _$TraineeModelFromJson(Map<String, dynamic> json) => TraineeModel(
-      id: json['id'] as String,
-      userName: json['userName'] as String,
-      email: json['email'] as String,
-      long: (json['long'] as num).toDouble(),
-      weight: (json['weight'] as num).toDouble(),
-      age: (json['age'] as num).toInt(),
-      startPackage: DateTime.parse(json['startPackage'] as String),
-      endPackage: DateTime.parse(json['endPackage'] as String),
-      name: json['name'] as String,
-      duration: (json['duration'] as num).toInt(),
-      oldPrice: (json['oldPrice'] as num).toDouble(),
-      newPrice: (json['newPrice'] as num).toDouble(),
-      gender: json['gender'] as String,
+      json['status'] as String?,
+      password: json['password'] as String?,
+      address: json['address'] as String?,
+      remindDays: (json['reminderOfPackage'] as num?)?.toInt(),
+      image: json['imageUrl'] as String?,
+      phone: json['phoneNumber'] as String?,
+      id: json['id'] as String?,
+      userName: json['userName'] as String?,
+      email: json['email'] as String?,
+      long: (json['long'] as num?)?.toInt(),
+      weight: (json['weight'] as num?)?.toInt(),
+      age: (json['age'] as num?)?.toInt(),
+      startPackage: json['startPackage'] == null
+          ? null
+          : DateTime.parse(json['startPackage'] as String),
+      endPackage: json['endPackage'] == null
+          ? null
+          : DateTime.parse(json['endPackage'] as String),
+      name: json['name'] as String?,
+      duration: (json['duration'] as num?)?.toInt(),
+      oldPrice: (json['oldPrice'] as num?)?.toInt(),
+      newPrice: (json['newPrice'] as num?)?.toInt(),
+      gender: json['gender'] as String?,
     );
 
 Map<String, dynamic> _$TraineeModelToJson(TraineeModel instance) =>
@@ -30,11 +40,17 @@ Map<String, dynamic> _$TraineeModelToJson(TraineeModel instance) =>
       'long': instance.long,
       'weight': instance.weight,
       'age': instance.age,
-      'startPackage': instance.startPackage.toIso8601String(),
-      'endPackage': instance.endPackage.toIso8601String(),
+      'startPackage': instance.startPackage?.toIso8601String(),
+      'endPackage': instance.endPackage?.toIso8601String(),
       'name': instance.name,
       'duration': instance.duration,
       'oldPrice': instance.oldPrice,
       'newPrice': instance.newPrice,
       'gender': instance.gender,
+      'imageUrl': instance.image,
+      'phoneNumber': instance.phone,
+      'reminderOfPackage': instance.remindDays,
+      'password': instance.password,
+      'address': instance.address,
+      'status': instance.status,
     };

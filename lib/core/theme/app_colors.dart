@@ -28,4 +28,6 @@ class AppColors {
 
   static var orangeWithShade = Colors.orange.shade400;
   static var orange = Colors.orange;
+
+  static const black12 = Colors.black12;
 }

@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,15 +7,16 @@ class BannerCarouselSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // قائمة الصور مع النصوص
+
+
     final List<Map<String, String>> items = [
       {"image": "assets/images/coach_1.png", "text": "الإستمرارية"},
-      {"image": "assets/images/coach_2.JPG", "text": " الإستمرارية"},
+      {"image": "assets/images/coach_2.JPG", "text": "تقربك من هدفك"},
     ];
 
     return CarouselSlider.builder(
       options: CarouselOptions(
-        height: 180.h,
+        height: 200.h,
         viewportFraction: 0.80,
         enlargeFactor: 0.20,
         enableInfiniteScroll: true,

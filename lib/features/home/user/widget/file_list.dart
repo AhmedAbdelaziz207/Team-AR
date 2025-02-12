@@ -40,10 +40,18 @@ class FilesList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Files", style: TextStyle(fontSize: 24.sp,fontWeight: FontWeight.bold, color: Colors.black)),
+          Text(
+            "Files",
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
           Text(
             "Become the best version of you.",
-            style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.grey, fontSize: 14.sp),
           ),
           SizedBox(height: 16.h),
           ListView.builder(
@@ -56,7 +64,7 @@ class FilesList extends StatelessWidget {
                 margin: EdgeInsets.only(bottom: 12.h),
                 padding: EdgeInsets.all(6.sp),
                 decoration: BoxDecoration(
-                  color:Colors.black12,
+                  color: AppColors.grey.withOpacity(.1),
                   borderRadius: BorderRadius.circular(16.sp),
                 ),
                 child: Row(
@@ -84,14 +92,17 @@ class FilesList extends StatelessWidget {
                           SizedBox(height: 4.h),
                           Text(
                             item["description"]!,
-                            style: TextStyle(
-                                fontSize: 14.sp, color: Colors.grey),
+                            style:
+                                TextStyle(fontSize: 14.sp, color: Colors.grey),
                           ),
                         ],
                       ),
                     ),
-                    Icon(Icons.arrow_circle_right_outlined,
-                        color: Colors.black, size: 35.sp),
+                    Icon(
+                      Icons.arrow_circle_right_outlined,
+                      color: AppColors.black.withOpacity(.9),
+                      size: 25.sp,
+                    ),
                   ],
                 ),
               );

@@ -4,19 +4,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/app_assets.dart';
 import '../logic/navigation/nav_bar_items.dart';
 import '../logic/navigation/navigation_cubit.dart';
 import '../logic/navigation/navigation_state.dart';
 
-class NavigationBulider extends StatelessWidget {
-  const NavigationBulider({super.key});
+class NavigationBuilder extends StatelessWidget {
+  const NavigationBuilder({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NavigationCubit, NavigationState>(
       builder: (context, state) {
         return BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
           currentIndex: state.index,
+          showSelectedLabels: false,
           showUnselectedLabels: false,
           items: [
             BottomNavigationBarItem(
@@ -34,38 +37,25 @@ class NavigationBulider extends StatelessWidget {
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(
-                AssetImage("assets/images/dumbbell.png"),
+                const AssetImage(AppAssets.dumbbell),
                 color: AppColors.grey,
                 size: 28.sp,
               ),
               activeIcon: ImageIcon(
-                AssetImage("assets/images/dumbbell.png"),
+                const AssetImage(AppAssets.dumbbell),
                 color: AppColors.primaryColor,
                 size: 30.sp,
               ),
               label: 'Workouts',
             ),
             BottomNavigationBarItem(
-              icon: Icon(
-                Icons.comment,
-                color: AppColors.grey,
-                size: 28.sp,
-              ),
-              activeIcon: Icon(
-                Icons.comment,
-                color: AppColors.primaryColor,
-                size: 30.sp,
-              ),
-              label: 'Thoughts',
-            ),
-            BottomNavigationBarItem(
               icon: ImageIcon(
-                AssetImage("assets/images/dish.png"),
+                const AssetImage(AppAssets.iconDish),
                 color: AppColors.grey,
                 size: 28.sp,
               ),
               activeIcon: ImageIcon(
-                AssetImage("assets/images/dish.png"),
+                const AssetImage(AppAssets.iconDish),
                 color: AppColors.primaryColor,
                 size: 30.sp,
               ),

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/utils/app_assets.dart';
 import 'package:team_ar/features/home/user/widget/banner_carousel_slider.dart';
 import 'package:team_ar/features/home/user/widget/file_list.dart';
 
@@ -31,7 +32,7 @@ class UserHomeScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Image.asset(
-                        "assets/images/app_logo.PNG",
+                        AppAssets.appLogo,
                         height: 100.h,
                         width: 100.w,
                       ),
@@ -47,12 +48,16 @@ class UserHomeScreen extends StatelessWidget {
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w500,
                                 )),
-                            Text("You are on your journey",
-                                style: TextStyle(
-                                  color: AppColors.black,
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.w700,
-                                )),
+                            Text(
+                              "You are on your journey",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
                           ]),
                     ],
                   ),
@@ -72,19 +77,15 @@ class UserHomeScreen extends StatelessWidget {
             ),
           ),
         ),
-        body:  SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment:  CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              MemberShipCard(),
+              const MemberShipCard(),
               SizedBox(height: 10.h),
-              BannerCarouselSlider(),
-
-              FilesList(),
-
-
-
+              const BannerCarouselSlider(),
+              const FilesList(),
             ],
           ),
         ));
