@@ -9,6 +9,7 @@ class DietMealRepository {
 
   DietMealRepository(this._apiService);
 
+
   Future<ApiResult<List<DietMealModel>?>> getDietMeals() async {
     try {
       final List<DietMealModel>? dietMeals = await _apiService.getDietMeals();
