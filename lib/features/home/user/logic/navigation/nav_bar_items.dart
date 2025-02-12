@@ -1,0 +1,1 @@
+enum NavBarItems { home, workouts, thoughts,food, profile }
