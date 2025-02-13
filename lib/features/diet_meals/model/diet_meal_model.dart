@@ -11,6 +11,7 @@ class DietMealModel {
   final double? numOfProtein;
   final String? imageURL;
   // ignore: non_constant_identifier_names
+
   @JsonKey(includeFromJson: false, includeToJson: false)
   final File? image;
 
