@@ -5,8 +5,7 @@ import '../../../core/utils/app_local_keys.dart';
 class GenderSelection extends StatefulWidget {
   final Function(String) onGenderSelected;
 
-  const GenderSelection({Key? key, required this.onGenderSelected})
-      : super(key: key);
+  const GenderSelection({super.key, required this.onGenderSelected});
 
   @override
   _GenderSelectionState createState() => _GenderSelectionState();

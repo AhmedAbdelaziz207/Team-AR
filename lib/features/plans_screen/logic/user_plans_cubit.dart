@@ -1,8 +1,6 @@
-import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_state.dart';
-import '../model/user_plan.dart';
 import '../repos/user_plans_repository.dart';
 
 class UserPlansCubit extends Cubit<UserPlansState> {

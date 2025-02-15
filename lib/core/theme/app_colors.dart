@@ -19,6 +19,7 @@ class AppColors {
   static const darkLavender = Color(0xffD0D3F6);
   static const mediumLavender = Color(0xff7264e4);
   static const formFillColor = Color(0xfff7f7fd);
+  static const teal = Color(0xFF60C5BA);
 
 
   // Text Colors
