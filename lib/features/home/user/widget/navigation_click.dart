@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:team_ar/features/diet/diet_screen.dart';
 import 'package:team_ar/features/home/user/ui/user_home_screen.dart';
 import 'package:team_ar/features/work_out/ui/work_out_screen.dart';
 
@@ -21,7 +22,7 @@ class NavigationClick extends StatelessWidget {
             return const WorkOutScreen();
           }
           if (state.navbarItem == NavBarItems.thoughts) {
-            return const Center(child: Text('Thoughts Screen'));
+            return const DietScreen() ;
           }
           if (state.navbarItem == NavBarItems.food) {
             return const Center(child: Text('Food Screen'));

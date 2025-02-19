@@ -14,12 +14,26 @@ class ExerciseList extends StatelessWidget {
     return Expanded(
       child: BlocBuilder<WorkoutCubit, WorkoutState>(
         builder: (context, state) {
-          return ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            itemCount: state.exercises.length,
-            itemBuilder: (context, index) {
-              final exercise = state.exercises[index];
-              return _buildExerciseCard(context, exercise);
+          return DraggableScrollableSheet(
+            builder: (context, controller) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.r),
+                    topRight: Radius.circular(20.r),
+                  ),
+                ),
+                child: ListView.builder(
+                  controller: controller,
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  itemCount: state.exercises.length,
+                  itemBuilder: (context, index) {
+                    final exercise = state.exercises[index];
+                    return _buildExerciseCard(context, exercise);
+                  },
+                ),
+              );
             },
           );
         },
