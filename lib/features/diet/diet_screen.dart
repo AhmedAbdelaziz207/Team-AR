@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/features/diet/widgets/meal_list.dart';
 
 class DietScreen extends StatelessWidget {
