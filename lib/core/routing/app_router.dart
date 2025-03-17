@@ -17,10 +17,12 @@ import 'package:team_ar/features/plans_screen/plans_screen.dart';
 import 'package:team_ar/features/select_launguage/select_launguage.dart';
 import 'package:team_ar/features/splash/splash_screen.dart';
 import 'package:team_ar/features/trainees_screen/trainees_screen.dart';
+import 'package:team_ar/features/work_out/logic/workout_cubit.dart';
 import '../../features/auth/login/logic/login_cubit.dart';
 import '../../features/home/admin/admin_home_screen.dart';
 import '../../features/home/user/logic/navigation/navigation_cubit.dart';
 import '../../features/home/user/ui/root_screen.dart';
+import '../../features/work_out/ui/exercise_screen.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings? settings) {
@@ -104,6 +106,9 @@ class AppRouter {
           ),
         );
 
+      case Routes.exercise:
+        return MaterialPageRoute(builder: (context) =>
+            BlocProvider(create: (context) =>getIt<WorkoutCubit>(), child: const ExerciseScreen(),));
       default:
         return MaterialPageRoute(
           builder: (context) => Scaffold(

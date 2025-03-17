@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/features/home/user/logic/navigation/nav_bar_items.dart';
 import 'navigation_state.dart';

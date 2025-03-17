@@ -158,7 +158,7 @@ void setLanguageAndNavigate(bool isEnglish, context) async {
     );
   }
 
-  // Navigator.pushNamed(context,  Routes.rootScreen);
+  Navigator.pushNamed(context,  Routes.rootScreen);
 
- Navigator.pushNamed(context, Routes.login);
+ // Navigator.pushNamed(context, Routes.login);
 }

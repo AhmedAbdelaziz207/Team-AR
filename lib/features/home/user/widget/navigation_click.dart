@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:team_ar/features/diet/diet_screen.dart';
 import 'package:team_ar/features/home/user/ui/user_home_screen.dart';
+import 'package:team_ar/features/work_out/ui/work_out_screen.dart';
 
 import '../logic/navigation/nav_bar_items.dart';
 import '../logic/navigation/navigation_cubit.dart';
@@ -17,13 +19,13 @@ class NavigationClick extends StatelessWidget {
             return const UserHomeScreen();
           }
           if (state.navbarItem == NavBarItems.workouts) {
-            return Center(child: Text('Workouts Screen'));
+            return const WorkOutScreen();
           }
           if (state.navbarItem == NavBarItems.thoughts) {
-            return Center(child: Text('Thoughts Screen'));
+            return const DietScreen() ;
           }
           if (state.navbarItem == NavBarItems.food) {
-            return Center(child: Text('Food Screen'));
+            return const Center(child: Text('Food Screen'));
           }
           if (state.navbarItem == NavBarItems.profile) {}
           return Container();
