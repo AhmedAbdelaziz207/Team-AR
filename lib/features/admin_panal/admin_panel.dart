@@ -174,7 +174,7 @@ class _LanguageSelectionState extends State<LanguageSelection> {
     return GestureDetector(
       onTap: () => _changeLanguage(text),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(20),

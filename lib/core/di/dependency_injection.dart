@@ -11,6 +11,7 @@ import '../../features/auth/register/logic/register_cubit.dart';
 import '../../features/auth/register/repos/register_repository.dart';
 import '../../features/home/admin/repos/trainees_repository.dart';
 import '../../features/home/user/logic/navigation/navigation_cubit.dart';
+import '../../features/work_out/logic/workout_cubit.dart';
 import '../network/dio_factory.dart';
 
 final getIt = GetIt.instance;
@@ -41,4 +42,6 @@ Future<void> setupServiceLocator() async {
 
   // Navigation Bar
   getIt.registerFactory(() => NavigationCubit());
+  //Workout
+  getIt.registerFactory(() => WorkoutCubit());
 }

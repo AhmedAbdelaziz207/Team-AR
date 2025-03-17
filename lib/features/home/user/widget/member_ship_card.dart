@@ -12,10 +12,10 @@ class MemberShipCard extends StatelessWidget {
     return Center(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
-        padding: EdgeInsets.all(16.sp),
-        decoration: BoxDecoration(
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h,),
+            decoration: BoxDecoration(
           color: AppColors.primaryColor.withOpacity(.9), // Background color
-          borderRadius: BorderRadius.circular(20), // Rounded corners
+          borderRadius: BorderRadius.circular(15.sp), // Rounded corners
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

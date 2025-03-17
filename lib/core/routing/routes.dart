@@ -7,6 +7,7 @@ class Routes {
   static const rootScreen = '/root';
   static const selectLanguage = '/selectLanguage';
   static const plans = '/plans';
+  static const exercise = '/exercise';
   static const confirmSubscription = '/confirm-subscription';
   static const adminHome = '/adminHome';
   static const adminLanding = '/adminLanding';
