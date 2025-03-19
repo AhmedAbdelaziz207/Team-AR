@@ -40,9 +40,9 @@ class UserPlansRepository {
     }
   }
 
-  Future<ApiResult<void>> deletePlan(UserPlan body) async {
+  Future<ApiResult<void>> deletePlan(int id) async {
     try {
-       await _apiService.updatePlan(body.toJson());
+       await _apiService.deletePlan(id);
       return const ApiResult.success(true);
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));

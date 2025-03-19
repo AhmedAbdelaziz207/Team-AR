@@ -69,7 +69,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           hintText: widget.hintText,
           // Use EasyLocalization for dynamic hints.
           hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               color: AppColors.black.withOpacity(.3)),
           suffixIcon:
               Icon(widget.suffixIcon, color: widget.iconColor ?? Colors.grey),

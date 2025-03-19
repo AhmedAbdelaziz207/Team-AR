@@ -93,4 +93,28 @@ class AppLocalKeys {
   static var logout = "Logout";
 
   static String  language = "Language";
+
+  static var edit = "Edit";
+
+  static var editPlan = "Edit Plan";
+
+  static const addPlan = "Add Plan";
+
+  static var planName = "Plan Name";
+
+  static var priceBeforeDiscount = "Price Before Discount";
+
+  static var priceAfterDiscount  = "Price After Discount";
+
+  static var vip = "VIP";
+
+  static var save = "Save";
+
+  static var planType = "Plan Type";
+
+  static var duration = "Duration";
+
+  static const months = "Months";
+
+
 }

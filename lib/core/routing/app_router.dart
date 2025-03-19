@@ -10,6 +10,7 @@ import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription
 import 'package:team_ar/features/home/admin/data/trainee_model.dart';
 import 'package:team_ar/features/home/admin/logic/trainees_cubit.dart';
 import 'package:team_ar/features/landing/admin/admin_landing_screen.dart';
+import 'package:team_ar/features/manage_plans/ui/manage_plans_screen.dart';
 import 'package:team_ar/features/onboarding/onboarding_screen.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_cubit.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
@@ -90,6 +91,13 @@ class AppRouter {
             child: const AdminHomeScreen(),
           ),
         );
+      case Routes.managePlansScreen:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => getIt<UserPlansCubit>(),
+            child: const ManagePlansScreen(),
+          ),
+        );
       case Routes.adminTraineesScreen:
         final List<TraineeModel> trainees =
             settings?.arguments as List<TraineeModel>;
@@ -107,8 +115,11 @@ class AppRouter {
         );
 
       case Routes.exercise:
-        return MaterialPageRoute(builder: (context) =>
-            BlocProvider(create: (context) =>getIt<WorkoutCubit>(), child: const ExerciseScreen(),));
+        return MaterialPageRoute(
+            builder: (context) => BlocProvider(
+                  create: (context) => getIt<WorkoutCubit>(),
+                  child: const ExerciseScreen(),
+                ));
       default:
         return MaterialPageRoute(
           builder: (context) => Scaffold(

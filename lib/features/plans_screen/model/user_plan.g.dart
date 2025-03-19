@@ -12,8 +12,9 @@ UserPlan _$UserPlanFromJson(Map<String, dynamic> json) => UserPlan(
       newPrice: (json['newPrice'] as num?)?.toInt(),
       duration: (json['duration'] as num?)?.toInt(),
       isActive: json['isActive'] as bool?,
+      oldPrice: (json['oldPrice'] as num?)?.toInt(),
       packageType: json['packageType'] as String?,
-    )..oldPrice = (json['oldPrice'] as num?)?.toInt();
+    );
 
 Map<String, dynamic> _$UserPlanToJson(UserPlan instance) => <String, dynamic>{
       'id': instance.id,

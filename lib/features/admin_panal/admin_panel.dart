@@ -9,6 +9,7 @@ import 'package:team_ar/features/admin_panal/widget/logout_button.dart';
 import 'package:team_ar/features/admin_panal/widget/subscribed_users_section.dart';
 import '../../core/di/dependency_injection.dart';
 import '../../core/prefs/shared_pref_manager.dart';
+import '../../core/routing/routes.dart';
 import '../../core/utils/app_constants.dart';
 import '../home/admin/logic/trainees_cubit.dart';
 import '../home/admin/repos/trainees_repository.dart';
@@ -40,7 +41,9 @@ class AdminPanel extends StatelessWidget {
                 height: 24.h,
               ),
               BlocProvider(
-                create: (context) => TraineeCubit(getIt<TraineesRepository>()),
+                create: (context) => TraineeCubit(
+                  getIt<TraineesRepository>(),
+                ),
                 child: const SubscribedUsersSection(),
               ),
               SizedBox(height: 20.h),
@@ -50,7 +53,12 @@ class AdminPanel extends StatelessWidget {
                 cardColor: AppColors.lightBlue,
               ),
               SizedBox(height: 20.h),
-              AdminManageCard(title: AppLocalKeys.plans.tr()),
+              AdminManageCard(
+                title: AppLocalKeys.plans.tr(),
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.managePlansScreen);
+                },
+              ),
               SizedBox(height: 20.h),
               const LanguageSelection(),
               SizedBox(height: 20.h),
@@ -141,7 +149,9 @@ class _LanguageSelectionState extends State<LanguageSelection> {
           Row(
             children: [
               Icon(Icons.language, size: 22.sp),
-              SizedBox(width: 8.w,),
+              SizedBox(
+                width: 8.w,
+              ),
               Text(
                 AppLocalKeys.language.tr(),
                 style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
@@ -164,7 +174,6 @@ class _LanguageSelectionState extends State<LanguageSelection> {
               ),
             ],
           ),
-
         ],
       ),
     );

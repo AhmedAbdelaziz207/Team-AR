@@ -21,6 +21,10 @@ mixin _$UserPlansState {
     required TResult Function() initial,
     required TResult Function() plansLoading,
     required TResult Function(List<UserPlan> plans) plansLoaded,
+    required TResult Function() planAdded,
+    required TResult Function() planDeleted,
+    required TResult Function() planEdited,
+    required TResult Function() addingPlan,
     required TResult Function(ApiErrorModel errorModel) plansFailure,
   }) =>
       throw _privateConstructorUsedError;
@@ -29,6 +33,10 @@ mixin _$UserPlansState {
     TResult? Function()? initial,
     TResult? Function()? plansLoading,
     TResult? Function(List<UserPlan> plans)? plansLoaded,
+    TResult? Function()? planAdded,
+    TResult? Function()? planDeleted,
+    TResult? Function()? planEdited,
+    TResult? Function()? addingPlan,
     TResult? Function(ApiErrorModel errorModel)? plansFailure,
   }) =>
       throw _privateConstructorUsedError;
@@ -37,6 +45,10 @@ mixin _$UserPlansState {
     TResult Function()? initial,
     TResult Function()? plansLoading,
     TResult Function(List<UserPlan> plans)? plansLoaded,
+    TResult Function()? planAdded,
+    TResult Function()? planDeleted,
+    TResult Function()? planEdited,
+    TResult Function()? addingPlan,
     TResult Function(ApiErrorModel errorModel)? plansFailure,
     required TResult orElse(),
   }) =>
@@ -46,6 +58,10 @@ mixin _$UserPlansState {
     required TResult Function(_Initial value) initial,
     required TResult Function(UserPlansLoading value) plansLoading,
     required TResult Function(UserPlansLoaded value) plansLoaded,
+    required TResult Function(PlanAddedSuccess value) planAdded,
+    required TResult Function(PlanDeletedSuccess value) planDeleted,
+    required TResult Function(PlanEditedSuccess value) planEdited,
+    required TResult Function(AddingPlan value) addingPlan,
     required TResult Function(UserPlansFailure value) plansFailure,
   }) =>
       throw _privateConstructorUsedError;
@@ -54,6 +70,10 @@ mixin _$UserPlansState {
     TResult? Function(_Initial value)? initial,
     TResult? Function(UserPlansLoading value)? plansLoading,
     TResult? Function(UserPlansLoaded value)? plansLoaded,
+    TResult? Function(PlanAddedSuccess value)? planAdded,
+    TResult? Function(PlanDeletedSuccess value)? planDeleted,
+    TResult? Function(PlanEditedSuccess value)? planEdited,
+    TResult? Function(AddingPlan value)? addingPlan,
     TResult? Function(UserPlansFailure value)? plansFailure,
   }) =>
       throw _privateConstructorUsedError;
@@ -62,6 +82,10 @@ mixin _$UserPlansState {
     TResult Function(_Initial value)? initial,
     TResult Function(UserPlansLoading value)? plansLoading,
     TResult Function(UserPlansLoaded value)? plansLoaded,
+    TResult Function(PlanAddedSuccess value)? planAdded,
+    TResult Function(PlanDeletedSuccess value)? planDeleted,
+    TResult Function(PlanEditedSuccess value)? planEdited,
+    TResult Function(AddingPlan value)? addingPlan,
     TResult Function(UserPlansFailure value)? plansFailure,
     required TResult orElse(),
   }) =>
@@ -133,6 +157,10 @@ class _$InitialImpl implements _Initial {
     required TResult Function() initial,
     required TResult Function() plansLoading,
     required TResult Function(List<UserPlan> plans) plansLoaded,
+    required TResult Function() planAdded,
+    required TResult Function() planDeleted,
+    required TResult Function() planEdited,
+    required TResult Function() addingPlan,
     required TResult Function(ApiErrorModel errorModel) plansFailure,
   }) {
     return initial();
@@ -144,6 +172,10 @@ class _$InitialImpl implements _Initial {
     TResult? Function()? initial,
     TResult? Function()? plansLoading,
     TResult? Function(List<UserPlan> plans)? plansLoaded,
+    TResult? Function()? planAdded,
+    TResult? Function()? planDeleted,
+    TResult? Function()? planEdited,
+    TResult? Function()? addingPlan,
     TResult? Function(ApiErrorModel errorModel)? plansFailure,
   }) {
     return initial?.call();
@@ -155,6 +187,10 @@ class _$InitialImpl implements _Initial {
     TResult Function()? initial,
     TResult Function()? plansLoading,
     TResult Function(List<UserPlan> plans)? plansLoaded,
+    TResult Function()? planAdded,
+    TResult Function()? planDeleted,
+    TResult Function()? planEdited,
+    TResult Function()? addingPlan,
     TResult Function(ApiErrorModel errorModel)? plansFailure,
     required TResult orElse(),
   }) {
@@ -170,6 +206,10 @@ class _$InitialImpl implements _Initial {
     required TResult Function(_Initial value) initial,
     required TResult Function(UserPlansLoading value) plansLoading,
     required TResult Function(UserPlansLoaded value) plansLoaded,
+    required TResult Function(PlanAddedSuccess value) planAdded,
+    required TResult Function(PlanDeletedSuccess value) planDeleted,
+    required TResult Function(PlanEditedSuccess value) planEdited,
+    required TResult Function(AddingPlan value) addingPlan,
     required TResult Function(UserPlansFailure value) plansFailure,
   }) {
     return initial(this);
@@ -181,6 +221,10 @@ class _$InitialImpl implements _Initial {
     TResult? Function(_Initial value)? initial,
     TResult? Function(UserPlansLoading value)? plansLoading,
     TResult? Function(UserPlansLoaded value)? plansLoaded,
+    TResult? Function(PlanAddedSuccess value)? planAdded,
+    TResult? Function(PlanDeletedSuccess value)? planDeleted,
+    TResult? Function(PlanEditedSuccess value)? planEdited,
+    TResult? Function(AddingPlan value)? addingPlan,
     TResult? Function(UserPlansFailure value)? plansFailure,
   }) {
     return initial?.call(this);
@@ -192,6 +236,10 @@ class _$InitialImpl implements _Initial {
     TResult Function(_Initial value)? initial,
     TResult Function(UserPlansLoading value)? plansLoading,
     TResult Function(UserPlansLoaded value)? plansLoaded,
+    TResult Function(PlanAddedSuccess value)? planAdded,
+    TResult Function(PlanDeletedSuccess value)? planDeleted,
+    TResult Function(PlanEditedSuccess value)? planEdited,
+    TResult Function(AddingPlan value)? addingPlan,
     TResult Function(UserPlansFailure value)? plansFailure,
     required TResult orElse(),
   }) {
@@ -250,6 +298,10 @@ class _$UserPlansLoadingImpl implements UserPlansLoading {
     required TResult Function() initial,
     required TResult Function() plansLoading,
     required TResult Function(List<UserPlan> plans) plansLoaded,
+    required TResult Function() planAdded,
+    required TResult Function() planDeleted,
+    required TResult Function() planEdited,
+    required TResult Function() addingPlan,
     required TResult Function(ApiErrorModel errorModel) plansFailure,
   }) {
     return plansLoading();
@@ -261,6 +313,10 @@ class _$UserPlansLoadingImpl implements UserPlansLoading {
     TResult? Function()? initial,
     TResult? Function()? plansLoading,
     TResult? Function(List<UserPlan> plans)? plansLoaded,
+    TResult? Function()? planAdded,
+    TResult? Function()? planDeleted,
+    TResult? Function()? planEdited,
+    TResult? Function()? addingPlan,
     TResult? Function(ApiErrorModel errorModel)? plansFailure,
   }) {
     return plansLoading?.call();
@@ -272,6 +328,10 @@ class _$UserPlansLoadingImpl implements UserPlansLoading {
     TResult Function()? initial,
     TResult Function()? plansLoading,
     TResult Function(List<UserPlan> plans)? plansLoaded,
+    TResult Function()? planAdded,
+    TResult Function()? planDeleted,
+    TResult Function()? planEdited,
+    TResult Function()? addingPlan,
     TResult Function(ApiErrorModel errorModel)? plansFailure,
     required TResult orElse(),
   }) {
@@ -287,6 +347,10 @@ class _$UserPlansLoadingImpl implements UserPlansLoading {
     required TResult Function(_Initial value) initial,
     required TResult Function(UserPlansLoading value) plansLoading,
     required TResult Function(UserPlansLoaded value) plansLoaded,
+    required TResult Function(PlanAddedSuccess value) planAdded,
+    required TResult Function(PlanDeletedSuccess value) planDeleted,
+    required TResult Function(PlanEditedSuccess value) planEdited,
+    required TResult Function(AddingPlan value) addingPlan,
     required TResult Function(UserPlansFailure value) plansFailure,
   }) {
     return plansLoading(this);
@@ -298,6 +362,10 @@ class _$UserPlansLoadingImpl implements UserPlansLoading {
     TResult? Function(_Initial value)? initial,
     TResult? Function(UserPlansLoading value)? plansLoading,
     TResult? Function(UserPlansLoaded value)? plansLoaded,
+    TResult? Function(PlanAddedSuccess value)? planAdded,
+    TResult? Function(PlanDeletedSuccess value)? planDeleted,
+    TResult? Function(PlanEditedSuccess value)? planEdited,
+    TResult? Function(AddingPlan value)? addingPlan,
     TResult? Function(UserPlansFailure value)? plansFailure,
   }) {
     return plansLoading?.call(this);
@@ -309,6 +377,10 @@ class _$UserPlansLoadingImpl implements UserPlansLoading {
     TResult Function(_Initial value)? initial,
     TResult Function(UserPlansLoading value)? plansLoading,
     TResult Function(UserPlansLoaded value)? plansLoaded,
+    TResult Function(PlanAddedSuccess value)? planAdded,
+    TResult Function(PlanDeletedSuccess value)? planDeleted,
+    TResult Function(PlanEditedSuccess value)? planEdited,
+    TResult Function(AddingPlan value)? addingPlan,
     TResult Function(UserPlansFailure value)? plansFailure,
     required TResult orElse(),
   }) {
@@ -401,6 +473,10 @@ class _$UserPlansLoadedImpl implements UserPlansLoaded {
     required TResult Function() initial,
     required TResult Function() plansLoading,
     required TResult Function(List<UserPlan> plans) plansLoaded,
+    required TResult Function() planAdded,
+    required TResult Function() planDeleted,
+    required TResult Function() planEdited,
+    required TResult Function() addingPlan,
     required TResult Function(ApiErrorModel errorModel) plansFailure,
   }) {
     return plansLoaded(plans);
@@ -412,6 +488,10 @@ class _$UserPlansLoadedImpl implements UserPlansLoaded {
     TResult? Function()? initial,
     TResult? Function()? plansLoading,
     TResult? Function(List<UserPlan> plans)? plansLoaded,
+    TResult? Function()? planAdded,
+    TResult? Function()? planDeleted,
+    TResult? Function()? planEdited,
+    TResult? Function()? addingPlan,
     TResult? Function(ApiErrorModel errorModel)? plansFailure,
   }) {
     return plansLoaded?.call(plans);
@@ -423,6 +503,10 @@ class _$UserPlansLoadedImpl implements UserPlansLoaded {
     TResult Function()? initial,
     TResult Function()? plansLoading,
     TResult Function(List<UserPlan> plans)? plansLoaded,
+    TResult Function()? planAdded,
+    TResult Function()? planDeleted,
+    TResult Function()? planEdited,
+    TResult Function()? addingPlan,
     TResult Function(ApiErrorModel errorModel)? plansFailure,
     required TResult orElse(),
   }) {
@@ -438,6 +522,10 @@ class _$UserPlansLoadedImpl implements UserPlansLoaded {
     required TResult Function(_Initial value) initial,
     required TResult Function(UserPlansLoading value) plansLoading,
     required TResult Function(UserPlansLoaded value) plansLoaded,
+    required TResult Function(PlanAddedSuccess value) planAdded,
+    required TResult Function(PlanDeletedSuccess value) planDeleted,
+    required TResult Function(PlanEditedSuccess value) planEdited,
+    required TResult Function(AddingPlan value) addingPlan,
     required TResult Function(UserPlansFailure value) plansFailure,
   }) {
     return plansLoaded(this);
@@ -449,6 +537,10 @@ class _$UserPlansLoadedImpl implements UserPlansLoaded {
     TResult? Function(_Initial value)? initial,
     TResult? Function(UserPlansLoading value)? plansLoading,
     TResult? Function(UserPlansLoaded value)? plansLoaded,
+    TResult? Function(PlanAddedSuccess value)? planAdded,
+    TResult? Function(PlanDeletedSuccess value)? planDeleted,
+    TResult? Function(PlanEditedSuccess value)? planEdited,
+    TResult? Function(AddingPlan value)? addingPlan,
     TResult? Function(UserPlansFailure value)? plansFailure,
   }) {
     return plansLoaded?.call(this);
@@ -460,6 +552,10 @@ class _$UserPlansLoadedImpl implements UserPlansLoaded {
     TResult Function(_Initial value)? initial,
     TResult Function(UserPlansLoading value)? plansLoading,
     TResult Function(UserPlansLoaded value)? plansLoaded,
+    TResult Function(PlanAddedSuccess value)? planAdded,
+    TResult Function(PlanDeletedSuccess value)? planDeleted,
+    TResult Function(PlanEditedSuccess value)? planEdited,
+    TResult Function(AddingPlan value)? addingPlan,
     TResult Function(UserPlansFailure value)? plansFailure,
     required TResult orElse(),
   }) {
@@ -481,6 +577,570 @@ abstract class UserPlansLoaded implements UserPlansState {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UserPlansLoadedImplCopyWith<_$UserPlansLoadedImpl> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$PlanAddedSuccessImplCopyWith<$Res> {
+  factory _$$PlanAddedSuccessImplCopyWith(_$PlanAddedSuccessImpl value,
+          $Res Function(_$PlanAddedSuccessImpl) then) =
+      __$$PlanAddedSuccessImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$PlanAddedSuccessImplCopyWithImpl<$Res>
+    extends _$UserPlansStateCopyWithImpl<$Res, _$PlanAddedSuccessImpl>
+    implements _$$PlanAddedSuccessImplCopyWith<$Res> {
+  __$$PlanAddedSuccessImplCopyWithImpl(_$PlanAddedSuccessImpl _value,
+      $Res Function(_$PlanAddedSuccessImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UserPlansState
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$PlanAddedSuccessImpl implements PlanAddedSuccess {
+  const _$PlanAddedSuccessImpl();
+
+  @override
+  String toString() {
+    return 'UserPlansState.planAdded()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$PlanAddedSuccessImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() plansLoading,
+    required TResult Function(List<UserPlan> plans) plansLoaded,
+    required TResult Function() planAdded,
+    required TResult Function() planDeleted,
+    required TResult Function() planEdited,
+    required TResult Function() addingPlan,
+    required TResult Function(ApiErrorModel errorModel) plansFailure,
+  }) {
+    return planAdded();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? plansLoading,
+    TResult? Function(List<UserPlan> plans)? plansLoaded,
+    TResult? Function()? planAdded,
+    TResult? Function()? planDeleted,
+    TResult? Function()? planEdited,
+    TResult? Function()? addingPlan,
+    TResult? Function(ApiErrorModel errorModel)? plansFailure,
+  }) {
+    return planAdded?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? plansLoading,
+    TResult Function(List<UserPlan> plans)? plansLoaded,
+    TResult Function()? planAdded,
+    TResult Function()? planDeleted,
+    TResult Function()? planEdited,
+    TResult Function()? addingPlan,
+    TResult Function(ApiErrorModel errorModel)? plansFailure,
+    required TResult orElse(),
+  }) {
+    if (planAdded != null) {
+      return planAdded();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(UserPlansLoading value) plansLoading,
+    required TResult Function(UserPlansLoaded value) plansLoaded,
+    required TResult Function(PlanAddedSuccess value) planAdded,
+    required TResult Function(PlanDeletedSuccess value) planDeleted,
+    required TResult Function(PlanEditedSuccess value) planEdited,
+    required TResult Function(AddingPlan value) addingPlan,
+    required TResult Function(UserPlansFailure value) plansFailure,
+  }) {
+    return planAdded(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(UserPlansLoading value)? plansLoading,
+    TResult? Function(UserPlansLoaded value)? plansLoaded,
+    TResult? Function(PlanAddedSuccess value)? planAdded,
+    TResult? Function(PlanDeletedSuccess value)? planDeleted,
+    TResult? Function(PlanEditedSuccess value)? planEdited,
+    TResult? Function(AddingPlan value)? addingPlan,
+    TResult? Function(UserPlansFailure value)? plansFailure,
+  }) {
+    return planAdded?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(UserPlansLoading value)? plansLoading,
+    TResult Function(UserPlansLoaded value)? plansLoaded,
+    TResult Function(PlanAddedSuccess value)? planAdded,
+    TResult Function(PlanDeletedSuccess value)? planDeleted,
+    TResult Function(PlanEditedSuccess value)? planEdited,
+    TResult Function(AddingPlan value)? addingPlan,
+    TResult Function(UserPlansFailure value)? plansFailure,
+    required TResult orElse(),
+  }) {
+    if (planAdded != null) {
+      return planAdded(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class PlanAddedSuccess implements UserPlansState {
+  const factory PlanAddedSuccess() = _$PlanAddedSuccessImpl;
+}
+
+/// @nodoc
+abstract class _$$PlanDeletedSuccessImplCopyWith<$Res> {
+  factory _$$PlanDeletedSuccessImplCopyWith(_$PlanDeletedSuccessImpl value,
+          $Res Function(_$PlanDeletedSuccessImpl) then) =
+      __$$PlanDeletedSuccessImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$PlanDeletedSuccessImplCopyWithImpl<$Res>
+    extends _$UserPlansStateCopyWithImpl<$Res, _$PlanDeletedSuccessImpl>
+    implements _$$PlanDeletedSuccessImplCopyWith<$Res> {
+  __$$PlanDeletedSuccessImplCopyWithImpl(_$PlanDeletedSuccessImpl _value,
+      $Res Function(_$PlanDeletedSuccessImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UserPlansState
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$PlanDeletedSuccessImpl implements PlanDeletedSuccess {
+  const _$PlanDeletedSuccessImpl();
+
+  @override
+  String toString() {
+    return 'UserPlansState.planDeleted()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$PlanDeletedSuccessImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() plansLoading,
+    required TResult Function(List<UserPlan> plans) plansLoaded,
+    required TResult Function() planAdded,
+    required TResult Function() planDeleted,
+    required TResult Function() planEdited,
+    required TResult Function() addingPlan,
+    required TResult Function(ApiErrorModel errorModel) plansFailure,
+  }) {
+    return planDeleted();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? plansLoading,
+    TResult? Function(List<UserPlan> plans)? plansLoaded,
+    TResult? Function()? planAdded,
+    TResult? Function()? planDeleted,
+    TResult? Function()? planEdited,
+    TResult? Function()? addingPlan,
+    TResult? Function(ApiErrorModel errorModel)? plansFailure,
+  }) {
+    return planDeleted?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? plansLoading,
+    TResult Function(List<UserPlan> plans)? plansLoaded,
+    TResult Function()? planAdded,
+    TResult Function()? planDeleted,
+    TResult Function()? planEdited,
+    TResult Function()? addingPlan,
+    TResult Function(ApiErrorModel errorModel)? plansFailure,
+    required TResult orElse(),
+  }) {
+    if (planDeleted != null) {
+      return planDeleted();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(UserPlansLoading value) plansLoading,
+    required TResult Function(UserPlansLoaded value) plansLoaded,
+    required TResult Function(PlanAddedSuccess value) planAdded,
+    required TResult Function(PlanDeletedSuccess value) planDeleted,
+    required TResult Function(PlanEditedSuccess value) planEdited,
+    required TResult Function(AddingPlan value) addingPlan,
+    required TResult Function(UserPlansFailure value) plansFailure,
+  }) {
+    return planDeleted(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(UserPlansLoading value)? plansLoading,
+    TResult? Function(UserPlansLoaded value)? plansLoaded,
+    TResult? Function(PlanAddedSuccess value)? planAdded,
+    TResult? Function(PlanDeletedSuccess value)? planDeleted,
+    TResult? Function(PlanEditedSuccess value)? planEdited,
+    TResult? Function(AddingPlan value)? addingPlan,
+    TResult? Function(UserPlansFailure value)? plansFailure,
+  }) {
+    return planDeleted?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(UserPlansLoading value)? plansLoading,
+    TResult Function(UserPlansLoaded value)? plansLoaded,
+    TResult Function(PlanAddedSuccess value)? planAdded,
+    TResult Function(PlanDeletedSuccess value)? planDeleted,
+    TResult Function(PlanEditedSuccess value)? planEdited,
+    TResult Function(AddingPlan value)? addingPlan,
+    TResult Function(UserPlansFailure value)? plansFailure,
+    required TResult orElse(),
+  }) {
+    if (planDeleted != null) {
+      return planDeleted(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class PlanDeletedSuccess implements UserPlansState {
+  const factory PlanDeletedSuccess() = _$PlanDeletedSuccessImpl;
+}
+
+/// @nodoc
+abstract class _$$PlanEditedSuccessImplCopyWith<$Res> {
+  factory _$$PlanEditedSuccessImplCopyWith(_$PlanEditedSuccessImpl value,
+          $Res Function(_$PlanEditedSuccessImpl) then) =
+      __$$PlanEditedSuccessImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$PlanEditedSuccessImplCopyWithImpl<$Res>
+    extends _$UserPlansStateCopyWithImpl<$Res, _$PlanEditedSuccessImpl>
+    implements _$$PlanEditedSuccessImplCopyWith<$Res> {
+  __$$PlanEditedSuccessImplCopyWithImpl(_$PlanEditedSuccessImpl _value,
+      $Res Function(_$PlanEditedSuccessImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UserPlansState
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$PlanEditedSuccessImpl implements PlanEditedSuccess {
+  const _$PlanEditedSuccessImpl();
+
+  @override
+  String toString() {
+    return 'UserPlansState.planEdited()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$PlanEditedSuccessImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() plansLoading,
+    required TResult Function(List<UserPlan> plans) plansLoaded,
+    required TResult Function() planAdded,
+    required TResult Function() planDeleted,
+    required TResult Function() planEdited,
+    required TResult Function() addingPlan,
+    required TResult Function(ApiErrorModel errorModel) plansFailure,
+  }) {
+    return planEdited();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? plansLoading,
+    TResult? Function(List<UserPlan> plans)? plansLoaded,
+    TResult? Function()? planAdded,
+    TResult? Function()? planDeleted,
+    TResult? Function()? planEdited,
+    TResult? Function()? addingPlan,
+    TResult? Function(ApiErrorModel errorModel)? plansFailure,
+  }) {
+    return planEdited?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? plansLoading,
+    TResult Function(List<UserPlan> plans)? plansLoaded,
+    TResult Function()? planAdded,
+    TResult Function()? planDeleted,
+    TResult Function()? planEdited,
+    TResult Function()? addingPlan,
+    TResult Function(ApiErrorModel errorModel)? plansFailure,
+    required TResult orElse(),
+  }) {
+    if (planEdited != null) {
+      return planEdited();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(UserPlansLoading value) plansLoading,
+    required TResult Function(UserPlansLoaded value) plansLoaded,
+    required TResult Function(PlanAddedSuccess value) planAdded,
+    required TResult Function(PlanDeletedSuccess value) planDeleted,
+    required TResult Function(PlanEditedSuccess value) planEdited,
+    required TResult Function(AddingPlan value) addingPlan,
+    required TResult Function(UserPlansFailure value) plansFailure,
+  }) {
+    return planEdited(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(UserPlansLoading value)? plansLoading,
+    TResult? Function(UserPlansLoaded value)? plansLoaded,
+    TResult? Function(PlanAddedSuccess value)? planAdded,
+    TResult? Function(PlanDeletedSuccess value)? planDeleted,
+    TResult? Function(PlanEditedSuccess value)? planEdited,
+    TResult? Function(AddingPlan value)? addingPlan,
+    TResult? Function(UserPlansFailure value)? plansFailure,
+  }) {
+    return planEdited?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(UserPlansLoading value)? plansLoading,
+    TResult Function(UserPlansLoaded value)? plansLoaded,
+    TResult Function(PlanAddedSuccess value)? planAdded,
+    TResult Function(PlanDeletedSuccess value)? planDeleted,
+    TResult Function(PlanEditedSuccess value)? planEdited,
+    TResult Function(AddingPlan value)? addingPlan,
+    TResult Function(UserPlansFailure value)? plansFailure,
+    required TResult orElse(),
+  }) {
+    if (planEdited != null) {
+      return planEdited(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class PlanEditedSuccess implements UserPlansState {
+  const factory PlanEditedSuccess() = _$PlanEditedSuccessImpl;
+}
+
+/// @nodoc
+abstract class _$$AddingPlanImplCopyWith<$Res> {
+  factory _$$AddingPlanImplCopyWith(
+          _$AddingPlanImpl value, $Res Function(_$AddingPlanImpl) then) =
+      __$$AddingPlanImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$AddingPlanImplCopyWithImpl<$Res>
+    extends _$UserPlansStateCopyWithImpl<$Res, _$AddingPlanImpl>
+    implements _$$AddingPlanImplCopyWith<$Res> {
+  __$$AddingPlanImplCopyWithImpl(
+      _$AddingPlanImpl _value, $Res Function(_$AddingPlanImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UserPlansState
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$AddingPlanImpl implements AddingPlan {
+  const _$AddingPlanImpl();
+
+  @override
+  String toString() {
+    return 'UserPlansState.addingPlan()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$AddingPlanImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() plansLoading,
+    required TResult Function(List<UserPlan> plans) plansLoaded,
+    required TResult Function() planAdded,
+    required TResult Function() planDeleted,
+    required TResult Function() planEdited,
+    required TResult Function() addingPlan,
+    required TResult Function(ApiErrorModel errorModel) plansFailure,
+  }) {
+    return addingPlan();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? plansLoading,
+    TResult? Function(List<UserPlan> plans)? plansLoaded,
+    TResult? Function()? planAdded,
+    TResult? Function()? planDeleted,
+    TResult? Function()? planEdited,
+    TResult? Function()? addingPlan,
+    TResult? Function(ApiErrorModel errorModel)? plansFailure,
+  }) {
+    return addingPlan?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? plansLoading,
+    TResult Function(List<UserPlan> plans)? plansLoaded,
+    TResult Function()? planAdded,
+    TResult Function()? planDeleted,
+    TResult Function()? planEdited,
+    TResult Function()? addingPlan,
+    TResult Function(ApiErrorModel errorModel)? plansFailure,
+    required TResult orElse(),
+  }) {
+    if (addingPlan != null) {
+      return addingPlan();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(UserPlansLoading value) plansLoading,
+    required TResult Function(UserPlansLoaded value) plansLoaded,
+    required TResult Function(PlanAddedSuccess value) planAdded,
+    required TResult Function(PlanDeletedSuccess value) planDeleted,
+    required TResult Function(PlanEditedSuccess value) planEdited,
+    required TResult Function(AddingPlan value) addingPlan,
+    required TResult Function(UserPlansFailure value) plansFailure,
+  }) {
+    return addingPlan(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(UserPlansLoading value)? plansLoading,
+    TResult? Function(UserPlansLoaded value)? plansLoaded,
+    TResult? Function(PlanAddedSuccess value)? planAdded,
+    TResult? Function(PlanDeletedSuccess value)? planDeleted,
+    TResult? Function(PlanEditedSuccess value)? planEdited,
+    TResult? Function(AddingPlan value)? addingPlan,
+    TResult? Function(UserPlansFailure value)? plansFailure,
+  }) {
+    return addingPlan?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(UserPlansLoading value)? plansLoading,
+    TResult Function(UserPlansLoaded value)? plansLoaded,
+    TResult Function(PlanAddedSuccess value)? planAdded,
+    TResult Function(PlanDeletedSuccess value)? planDeleted,
+    TResult Function(PlanEditedSuccess value)? planEdited,
+    TResult Function(AddingPlan value)? addingPlan,
+    TResult Function(UserPlansFailure value)? plansFailure,
+    required TResult orElse(),
+  }) {
+    if (addingPlan != null) {
+      return addingPlan(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class AddingPlan implements UserPlansState {
+  const factory AddingPlan() = _$AddingPlanImpl;
 }
 
 /// @nodoc
@@ -556,6 +1216,10 @@ class _$UserPlansFailureImpl implements UserPlansFailure {
     required TResult Function() initial,
     required TResult Function() plansLoading,
     required TResult Function(List<UserPlan> plans) plansLoaded,
+    required TResult Function() planAdded,
+    required TResult Function() planDeleted,
+    required TResult Function() planEdited,
+    required TResult Function() addingPlan,
     required TResult Function(ApiErrorModel errorModel) plansFailure,
   }) {
     return plansFailure(errorModel);
@@ -567,6 +1231,10 @@ class _$UserPlansFailureImpl implements UserPlansFailure {
     TResult? Function()? initial,
     TResult? Function()? plansLoading,
     TResult? Function(List<UserPlan> plans)? plansLoaded,
+    TResult? Function()? planAdded,
+    TResult? Function()? planDeleted,
+    TResult? Function()? planEdited,
+    TResult? Function()? addingPlan,
     TResult? Function(ApiErrorModel errorModel)? plansFailure,
   }) {
     return plansFailure?.call(errorModel);
@@ -578,6 +1246,10 @@ class _$UserPlansFailureImpl implements UserPlansFailure {
     TResult Function()? initial,
     TResult Function()? plansLoading,
     TResult Function(List<UserPlan> plans)? plansLoaded,
+    TResult Function()? planAdded,
+    TResult Function()? planDeleted,
+    TResult Function()? planEdited,
+    TResult Function()? addingPlan,
     TResult Function(ApiErrorModel errorModel)? plansFailure,
     required TResult orElse(),
   }) {
@@ -593,6 +1265,10 @@ class _$UserPlansFailureImpl implements UserPlansFailure {
     required TResult Function(_Initial value) initial,
     required TResult Function(UserPlansLoading value) plansLoading,
     required TResult Function(UserPlansLoaded value) plansLoaded,
+    required TResult Function(PlanAddedSuccess value) planAdded,
+    required TResult Function(PlanDeletedSuccess value) planDeleted,
+    required TResult Function(PlanEditedSuccess value) planEdited,
+    required TResult Function(AddingPlan value) addingPlan,
     required TResult Function(UserPlansFailure value) plansFailure,
   }) {
     return plansFailure(this);
@@ -604,6 +1280,10 @@ class _$UserPlansFailureImpl implements UserPlansFailure {
     TResult? Function(_Initial value)? initial,
     TResult? Function(UserPlansLoading value)? plansLoading,
     TResult? Function(UserPlansLoaded value)? plansLoaded,
+    TResult? Function(PlanAddedSuccess value)? planAdded,
+    TResult? Function(PlanDeletedSuccess value)? planDeleted,
+    TResult? Function(PlanEditedSuccess value)? planEdited,
+    TResult? Function(AddingPlan value)? addingPlan,
     TResult? Function(UserPlansFailure value)? plansFailure,
   }) {
     return plansFailure?.call(this);
@@ -615,6 +1295,10 @@ class _$UserPlansFailureImpl implements UserPlansFailure {
     TResult Function(_Initial value)? initial,
     TResult Function(UserPlansLoading value)? plansLoading,
     TResult Function(UserPlansLoaded value)? plansLoaded,
+    TResult Function(PlanAddedSuccess value)? planAdded,
+    TResult Function(PlanDeletedSuccess value)? planDeleted,
+    TResult Function(PlanEditedSuccess value)? planEdited,
+    TResult Function(AddingPlan value)? addingPlan,
     TResult Function(UserPlansFailure value)? plansFailure,
     required TResult orElse(),
   }) {

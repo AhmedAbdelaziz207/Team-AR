@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/utils/app_assets.dart';
 
-void main()async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Easy Localization init
   await EasyLocalization.ensureInitialized();
   // Dependency Injection
- await setupServiceLocator();
+  await setupServiceLocator();
 
-
-  runApp( EasyLocalization(
+  runApp(
+    EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
       path: AppAssets.translationsPath,
       fallbackLocale: const Locale('en'),
-      child: const App()
-  ),
+      child: const App(),
+    ),
   );
 }
 

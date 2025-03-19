@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
-import 'package:team_ar/features/plans_screen/widget/plans_list_item.dart';
+import 'package:team_ar/core/widgets/plans_list_card.dart';
 
 class PlansList extends StatelessWidget {
   const PlansList({super.key, required this.plans});
@@ -10,7 +10,7 @@ class PlansList extends StatelessWidget {
     return ListView.builder(
       itemCount: plans.length,
       itemBuilder: (context, index) {
-        return PlansListItem(plan: plans[index]);
+        return PlansListCard(plan: plans[index]);
       },
     );
   }

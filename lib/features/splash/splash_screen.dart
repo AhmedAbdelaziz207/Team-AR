@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.pushNamedAndRemoveUntil(context, Routes.adminLanding,(route) => false,);
       }
         if(userRole == UserRole.User.name){
-        Navigator.pushNamedAndRemoveUntil(context, Routes.Userhome,(route) => false,);
+        Navigator.pushNamedAndRemoveUntil(context, Routes.userHome,(route) => false,);
       }
 
 

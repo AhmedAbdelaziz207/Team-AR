@@ -8,7 +8,7 @@ import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_cubit.dart';
 import 'package:team_ar/features/confirm_subscription/widget/confirm_subscription_form.dart';
-import 'package:team_ar/features/plans_screen/widget/plans_list_item.dart';
+import 'package:team_ar/core/widgets/plans_list_card.dart';
 import '../../core/utils/app_local_keys.dart';
 import '../plans_screen/model/user_plan.dart';
 
@@ -53,7 +53,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PlansListItem(
+              PlansListCard(
                 isSelected: true,
                 plan: widget.userPlan,
               ),

@@ -16,6 +16,7 @@ class UserPlan {
     this.newPrice,
     this.duration,
     this.isActive,
+    this.oldPrice,
     this.packageType,
   });
 

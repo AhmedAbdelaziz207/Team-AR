@@ -25,9 +25,9 @@ abstract class ApiService {
   Future<UserPlan> addPlan(@Body() Map<String, dynamic> body);
 
   @PUT(ApiEndPoints.plans)
-  Future<UserPlan> updatePlan(@Body() Map<String, dynamic> body);
+  Future<void> updatePlan(@Body() Map<String, dynamic> body);
 
-  @DELETE(ApiEndPoints.plans)
+  @DELETE("${ApiEndPoints.plans}/{Id}")
   Future<UserPlan> deletePlan(@Path("Id") int id);
 
   @POST(ApiEndPoints.trainerData)
