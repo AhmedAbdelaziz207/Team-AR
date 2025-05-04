@@ -7,8 +7,11 @@ part of 'trainee_model.dart';
 // **************************************************************************
 
 TraineeModel _$TraineeModelFromJson(Map<String, dynamic> json) => TraineeModel(
-      json['status'] as String?,
+      status: json['status'] as String?,
+      role: json['role'] as String?,
+      exerciseId: (json['exerciseId'] as num?)?.toInt(),
       password: json['password'] as String?,
+      packageId: (json['packageId'] as num?)?.toInt(),
       address: json['address'] as String?,
       remindDays: (json['reminderOfPackage'] as num?)?.toInt(),
       image: json['imageUrl'] as String?,
@@ -46,6 +49,8 @@ Map<String, dynamic> _$TraineeModelToJson(TraineeModel instance) =>
       'duration': instance.duration,
       'oldPrice': instance.oldPrice,
       'newPrice': instance.newPrice,
+      'role': instance.role,
+      'exerciseId': instance.exerciseId,
       'gender': instance.gender,
       'imageUrl': instance.image,
       'phoneNumber': instance.phone,
@@ -53,4 +58,5 @@ Map<String, dynamic> _$TraineeModelToJson(TraineeModel instance) =>
       'password': instance.password,
       'address': instance.address,
       'status': instance.status,
+      'packageId': instance.packageId,
     };

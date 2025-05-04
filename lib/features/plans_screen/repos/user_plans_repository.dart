@@ -20,20 +20,27 @@ class UserPlansRepository {
     }
   }
 
+  Future<ApiResult<UserPlan>> getPlan(id) async {
+    try {
+      final UserPlan plans = await _apiService.getPlan(id);
+      return ApiResult.success(plans);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
 
   Future<ApiResult<void>> addPlan(UserPlan body) async {
     try {
-     await _apiService.addPlan(body.toJson());
+      await _apiService.addPlan(body.toJson());
       return const ApiResult.success(true);
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
   }
 
-
   Future<ApiResult<void>> updatePlan(UserPlan body) async {
     try {
-       await _apiService.updatePlan(body.toJson());
+      await _apiService.updatePlan(body.toJson());
       return const ApiResult.success(true);
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));
@@ -42,13 +49,10 @@ class UserPlansRepository {
 
   Future<ApiResult<void>> deletePlan(int id) async {
     try {
-       await _apiService.deletePlan(id);
+      await _apiService.deletePlan(id);
       return const ApiResult.success(true);
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
   }
-
-
-
 }

@@ -19,7 +19,7 @@ class _LogoutButtonState extends State<LogoutButton> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: AppColors.newPrimaryColor,
       ),
       onPressed: isPressed
           ? null
@@ -31,7 +31,7 @@ class _LogoutButtonState extends State<LogoutButton> {
             },
       child: isPressed
           ? const CircularProgressIndicator(
-              color: AppColors.primaryColor,
+              color: AppColors.newPrimaryColor,
             )
           : Text(
               AppLocalKeys.logout.tr(),

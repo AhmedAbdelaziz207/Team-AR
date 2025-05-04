@@ -27,7 +27,7 @@
   "error.bad_response": "Bad response from server",
   "error.connection_error": "Connection error",
   "error.unknown_error": "Unknown error",
-  "error.unexpectedError": "Internal Server Error",
+  "error.unexpectedError": "There are connection problems, please try again",
   "ok": "OK",
   "cancel": "Cancel",
   "loginError": "Login Error",

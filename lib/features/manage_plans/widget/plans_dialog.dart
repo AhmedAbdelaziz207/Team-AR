@@ -2,11 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_cubit.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_state.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
-import 'package:team_ar/features/plans_screen/repos/user_plans_repository.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_local_keys.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
@@ -31,7 +29,7 @@ showPlanDialog(context, {isForEdit = false, UserPlan? plan}) {
     backgroundColor: AppColors.white,
     builder: (context) {
       return BlocProvider(
-        create: (context) => UserPlansCubit(getIt<UserPlansRepository>()),
+        create: (context) => UserPlansCubit(),
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           decoration: BoxDecoration(

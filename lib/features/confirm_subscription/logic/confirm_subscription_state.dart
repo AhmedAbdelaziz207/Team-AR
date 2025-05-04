@@ -1,6 +1,16 @@
-part of 'confirm_subscription_cubit.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-@immutable
-sealed class ConfirmSubscriptionState {}
+import '../../../core/network/api_error_model.dart';
+import '../../auth/register/model/register_response.dart';
+part 'confirm_subscription_state.freezed.dart';
+@freezed
+class ConfirmSubscriptionState with _$ConfirmSubscriptionState{
+  const factory ConfirmSubscriptionState.initial() = _Initial;
 
-final class ConfirmSubscriptionInitial extends ConfirmSubscriptionState {}
+  const factory ConfirmSubscriptionState.loading() = SubscriptionLoading;
+
+  const factory ConfirmSubscriptionState.success(RegisterResponse data) = SubscriptionSuccess;
+
+  const factory ConfirmSubscriptionState.failure(ApiErrorModel errorModel) = SubscriptionFailure;
+
+}

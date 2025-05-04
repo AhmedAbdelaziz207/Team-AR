@@ -56,7 +56,7 @@ class AppLocalKeys {
   static const numberOfDaysForTraining = "numberOfDaysForTraining";
   static const confirmSubscription = "confirmSubscription";
   static const haveAnyPain = "haveAnyPain";
-  static const aboutYourWor = "aboutYourWork";
+  static const aboutYourWork = "aboutYourWork";
   static const allergyOfFood = "allergyOfFood";
   static const areYouSmoking = "Are You Smoking?";
   static const sendBodyImages =
@@ -92,7 +92,7 @@ class AppLocalKeys {
 // new
   static var logout = "Logout";
 
-  static String  language = "Language";
+  static String language = "Language";
 
   static var edit = "Edit";
 
@@ -104,7 +104,7 @@ class AppLocalKeys {
 
   static var priceBeforeDiscount = "Price Before Discount";
 
-  static var priceAfterDiscount  = "Price After Discount";
+  static var priceAfterDiscount = "Price After Discount";
 
   static var vip = "VIP";
 
@@ -116,5 +116,148 @@ class AppLocalKeys {
 
   static const months = "Months";
 
+  static var carbs = "Carbs";
+
+  static var calories = "Calories";
+
+  static var proteins = "Proteins";
+
+  static var fats = "Fats";
+
+  static var noImage = "Image not available";
+
+  static var addMeal = "Add Meal";
+
+  static var numOfCarbs = "Number Of Carbs in 1(g)";
+
+  static var numOfProteins = "Number Of Proteins in 1(g)";
+
+  static var numOfFat = "Number Of Fat in 1(g)";
+
+  static var numOfCalories = "Number Of Calories in 1(g)";
+
+  static var files = "Files";
+
+  static var filesDescription = "Become the best trainer in the world";
+
+  static var diet = "DIET";
+
+  static var training = "Training";
+
+  static var tipsAndGuides = "Tips And Guides";
+
+  static var yourJourney = "You are on your journey";
+
+  static var yourDietPlan = "Your Diet Plan";
+
+  static var account = "Account";
+
+  static var general = "General";
+
+  static var welcome = "Welcome";
+
+  static var changePassword = "Change Password";
+
+  static var notifications = "Notifications";
+
+  static var numberOfMeals = "Number Of Meals";
+
+  static var aimOfJoin = "Aim Of Join";
+
+  static var whatYouWantInFood = "What You Want In Diet";
+
+  static var firstMeal = "First Meal";
+
+  static var secondMeal = "Second Meal";
+
+  static var thirdMeal = "Third Meal";
+
+  static var fourthMeal = "Fourth Meal";
+
+  static var fifthMeal = "Fifth Meal";
+
+  static var sixthMeal = "Sixth Meal";
+
+  static var noMeals = "No diet plan found";
+
+  static var gram = "gram";
+
+  static var sets = "Sets";
+
+  static var reps = "Reps";
+
+  static var restTime = "Rest Time";
+
+  static var note = "Note";
+
+  static var totalRequests = "Total Requests";
+
+  static String foodSystem = "Food System";
+
+  static var subscribed = "Subscribed";
+
+  static var createWorkoutSystem = "Create Workout System";
+
+  static var workoutSystemName = "Workout System Name";
+
+  static var vegetables = "Vegetables";
+
+  static var selectMealType = 'Select Meal Type';
+
+  static var addNewUser = 'Add New User';
+
+  static var selectPdf = 'Select Pdf';
+
+  static var selectMeals = 'Select Meals';
+
+  static var traineeInfo = 'Trainee Profile';
+
+  static var plan = 'Plan';
+
+  static var usersManagement = "Users Management";
+
+  static var usersAboutToExpire = "Users About To Expire";
+
+  static var progress = "Progress";
+
+  static var noUsers = "No Users Found";
+
+  static var success = "Success";
+
+  static var registerSuccessfully = "Register Successfully";
+
+  static var registerNewTrainer  = "Register New Trainer";
+
+  static var readOnly  = "Read Only";
+
+  static var copiedToClipboard  = "Copied to clipboard";
+
+  static var shareToWhatsApp  = "Share to WhatsApp";
+
+  static var newUser  = "New";
+
+  static var pleaseSelectImage  = "Please Select Image";
+
+  static var workoutSystems  = "Workout Systems";
+
+  static var noResultsFounds = "No Results Founds";
+
+  static const active = "Active";
+
+  static const expired = "Expired";
+
+  static var addWorkout = "Add Workout";
+
+  static var selectWorkout = "Select Workout";
+
+  static var failedToLoadWorkouts = "Failed to load workouts";
+
+  static var noWorkouts = "No Workouts Found";
+
+  static var workouts = "Workouts";
+
+  static var manageUserMeals = "Manage User Meals";
+
+  static var replace = "Replace";
 
 }

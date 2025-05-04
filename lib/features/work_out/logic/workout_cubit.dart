@@ -1,33 +1,26 @@
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
+import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/features/work_out/logic/workout_state.dart';
-
-import '../model/workout_model.dart';
-
+import '../../workout_systems/repo/workout_system_repository.dart';
 
 class WorkoutCubit extends Cubit<WorkoutState> {
-  WorkoutCubit() : super(WorkoutState(selectedDay: 1,exercises:[]));
-  void selectDay(int day) {
-    List<WorkoutModel> exercise = [];
+  WorkoutCubit() : super(const WorkoutState.workoutInitial());
 
-    if(day==1){
-      exercise= [
-        WorkoutModel(title: "كيفية التسخين قبل التمرين",
-            image1: "assets/images/workout1.png", image2: "assets/images/workout1.png"),
-        WorkoutModel(title: "تمرين الصدر بالدامبل", image1: "assets/images/workout1.png",
-            image2: "assets/images/workout1.png"),
-      ];
+  final repo = WorkoutSystemRepository(getIt<ApiService>());
 
-    }
-    if(day==2){
-      exercise= [
-        WorkoutModel(title: "تمرين الأرجل بالبار", image1: "assets/images/workout1.png", image2: "assets/images/workout1.png"),
-        WorkoutModel(title: "تمرين القرفصاء", image1: "assets/images/workout1.png", image2: "assets/images/workout1.png"),
-      ];
-    }
+  void getWorkout(workoutId) async {
+    emit(const WorkoutState.workoutLoading());
 
-    emit(state.copyWith(selectedDay: day, exercises: exercise));
+    final result = await repo.getWorkout(workoutId);
 
+    result.when(
+      success: (data) => emit(WorkoutState.workoutSuccess(data)),
+      failure: (error) => emit(
+        WorkoutState.workoutFailure(
+          error.getErrorsMessage() ?? "Something went wrong",
+        ),
+      ),
+    );
   }
-
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/theme/app_colors.dart';
 
 class TextStyles {
   static TextTheme arabicTextStyle() {
@@ -8,12 +9,13 @@ class TextStyles {
         fontFamily: 'Cairo',
         fontWeight: FontWeight.bold,
         fontSize: 32.sp,
+        color: AppColors.black,
       ),
       headlineMedium: TextStyle(
-        fontFamily: 'Cairo',
-        fontWeight: FontWeight.w600,
-        fontSize: 20.sp,
-      ),
+          fontFamily: 'Cairo',
+          fontWeight: FontWeight.w600,
+          fontSize: 20.sp,
+          color: AppColors.black),
       bodyLarge: TextStyle(
         fontFamily: 'Cairo',
         fontWeight: FontWeight.w400,

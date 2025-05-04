@@ -2,6 +2,40 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>sms</string>  <!-- Open Messages App -->
+  <string>tel</string>  <!-- Open Phone Dialer -->
+  <string>mailto</string>  <!-- Open Email Client -->
+  <string>whatsapp</string>  <!-- Open WhatsApp -->
+  <string>fb</string>  <!-- Open Facebook -->
+  <string>instagram</string>  <!-- Open Instagram -->
+  <string>twitter</string>  <!-- Open Twitter -->
+  <string>tg</string>  <!-- Open Telegram -->
+  <string>youtube</string>  <!-- Open YouTube -->
+  <string>maps</string>  <!-- Open Apple Maps -->
+  <string>comgooglemaps</string>  <!-- Open Google Maps -->
+  <string>waze</string>  <!-- Open Waze Navigation -->
+  <string>uber</string>  <!-- Open Uber -->
+  <string>lyft</string>  <!-- Open Lyft -->
+  <string>itms</string>  <!-- Open App Store -->
+  <string>itms-apps</string>  <!-- Open App Store (Direct) -->
+  <string>paypal</string>  <!-- Open PayPal -->
+  <string>zoomus</string>  <!-- Open Zoom -->
+</array>
+<key>NSDocumentsUsageDescription</key>
+<string>This app needs access to your files to upload a PDF.</string>
+<key>UIFileSharingEnabled</key>
+<true/>
+<key>LSSupportsOpeningDocumentsInPlace</key>
+<true/>
+
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key><true/>
+</dict>
+
 <key>CFBundleLocalizations</key>
 <array>
 	<string>en</string>

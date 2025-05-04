@@ -8,15 +8,18 @@ import '../routing/routes.dart';
 import '../theme/app_colors.dart';
 
 class PlansListCard extends StatelessWidget {
-  const PlansListCard(
-      {super.key,
-      required this.plan,
-      this.isSelected = false,
-      this.isAdmin = false});
+  const PlansListCard({
+    super.key,
+    required this.plan,
+    this.isSelected = false,
+    this.isAdmin = false,
+    this.backgroundColor,
+  });
 
   final UserPlan plan;
   final bool isSelected;
   final bool isAdmin;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +34,9 @@ class PlansListCard extends StatelessWidget {
                   padding:
                       EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
                   decoration: BoxDecoration(
-                    color: AppColors.secondaryColor,
+                    // color: AppColors.secondaryColor,
+                    color: backgroundColor?.withOpacity(.3) ??
+                        AppColors.newSecondaryColor.withOpacity(.28),
                     borderRadius: BorderRadiusDirectional.only(
                         bottomStart: Radius.circular(12.r),
                         topStart: Radius.circular(12.r)),
@@ -45,9 +50,11 @@ class PlansListCard extends StatelessWidget {
                           .textTheme
                           .headlineMedium
                           ?.copyWith(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.primaryColor),
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w400,
+                            color:
+                                backgroundColor ?? AppColors.newSecondaryColor,
+                          ),
                     ),
                   ),
                 ),
@@ -58,7 +65,9 @@ class PlansListCard extends StatelessWidget {
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                   decoration: BoxDecoration(
-                    color: AppColors.lightLavender,
+                    // color: AppColors.secondaryColor,
+                    color: backgroundColor?.withOpacity(.2) ??
+                        AppColors.dustyGreyColor.withOpacity(.3),
                     borderRadius: BorderRadiusDirectional.only(
                         bottomEnd: Radius.circular(12.r),
                         topEnd: Radius.circular(12.r)),
@@ -75,8 +84,10 @@ class PlansListCard extends StatelessWidget {
                                   .textTheme
                                   .bodyLarge
                                   ?.copyWith(
-                                      fontSize: 16.sp,
-                                      color: AppColors.primaryColor),
+                                    fontSize: 16.sp,
+                                    color: backgroundColor ??
+                                        AppColors.newSecondaryColor,
+                                  ),
                             ),
                           ),
                           SizedBox(width: 12.h),
@@ -89,8 +100,9 @@ class PlansListCard extends StatelessWidget {
                                   ?.copyWith(
                                     fontSize: 16.sp,
                                     decoration: TextDecoration.lineThrough,
-                                    color:
-                                        AppColors.primaryColor.withOpacity(.5),
+                                    color: backgroundColor?.withOpacity(.5) ??
+                                        AppColors.newSecondaryColor
+                                            .withOpacity(.5),
                                   ),
                             ),
                           ),
@@ -103,15 +115,18 @@ class PlansListCard extends StatelessWidget {
                               ? null
                               : () {
                                   Navigator.pushNamed(
-                                      context, Routes.confirmSubscription,
-                                      arguments: plan);
+                                    context,
+                                    Routes.confirmSubscription,
+                                    arguments: plan,
+                                  );
                                 },
                           style: ElevatedButton.styleFrom(
                             minimumSize: Size(180.w, 40.h),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12.r),
                               side: BorderSide(
-                                color: AppColors.grey.withOpacity(.3),
+                                color: backgroundColor?.withOpacity(.3) ??
+                                    AppColors.newSecondaryColor.withOpacity(.3),
                               ),
                             ),
                           ),
@@ -119,9 +134,10 @@ class PlansListCard extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               if (isSelected)
-                                const Icon(
+                                Icon(
                                   Icons.check_circle,
-                                  color: AppColors.primaryColor,
+                                  color: backgroundColor ??
+                                      AppColors.newPrimaryColor,
                                   size: 30,
                                 ),
                               if (isSelected)
@@ -129,13 +145,16 @@ class PlansListCard extends StatelessWidget {
                                   width: 16.w,
                                 ),
                               Text(
-                                AppLocalKeys.subscribe.tr(),
+                                isSelected
+                                    ? AppLocalKeys.subscribed.tr()
+                                    : AppLocalKeys.subscribe.tr(),
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyLarge
                                     ?.copyWith(
                                       fontSize: 16.sp,
-                                      color: AppColors.primaryColor,
+                                      color: backgroundColor ??
+                                          AppColors.newSecondaryColor,
                                     ),
                               ),
                             ],

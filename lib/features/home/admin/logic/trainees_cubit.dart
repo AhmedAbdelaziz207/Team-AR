@@ -13,7 +13,41 @@ class TraineeCubit extends Cubit<TraineeState> {
   void getNewTrainees() async {
     emit(const TraineeState.loading());
 
+    final response = await traineesRepository.getNewTrainees();
+    log("trainees Response: $response");
+
+    response.whenOrNull(
+      success: (trainees) => emit(
+        TraineeState.success(trainees),
+      ),
+      failure: (error) => emit(
+        TraineeState.failure(
+          error.getErrorsMessage() ?? AppLocalKeys.unexpectedError.tr(),
+        ),
+      ),
+    );
+  }
+  void getAllTrainees() async {
+    emit(const TraineeState.loading());
+
     final response = await traineesRepository.getAllTrainees();
+    log("trainees Response: $response");
+
+    response.whenOrNull(
+      success: (trainees) => emit(
+        TraineeState.success(trainees),
+      ),
+      failure: (error) => emit(
+        TraineeState.failure(
+          error.getErrorsMessage() ?? AppLocalKeys.unexpectedError.tr(),
+        ),
+      ),
+    );
+  }
+  void getUsersAboutToExpired() async {
+    emit(const TraineeState.loading());
+
+    final response = await traineesRepository.getUsersAboutToExpired();
     log("trainees Response: $response");
 
     response.whenOrNull(

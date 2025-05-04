@@ -21,10 +21,10 @@ class LanguageOption extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.purple.shade50 : Colors.transparent,
+        color: isSelected ? Colors.white : Colors.white,
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(
-          color: isSelected ? AppColors.primaryColor : AppColors.secondaryColor,
+          color: isSelected ? AppColors.newPrimaryColor : AppColors.secondaryColor,
         ),
       ),
       child: ListTile(
@@ -38,8 +38,8 @@ class LanguageOption extends StatelessWidget {
         ),
         subtitle: Text(nativeLanguage),
         trailing: isSelected
-            ? const Icon(Icons.check_circle, color: AppColors.primaryColor)
-            : const Icon(Icons.circle_outlined, color: AppColors.primaryColor),
+            ? const Icon(Icons.check_circle, color: AppColors.newPrimaryColor)
+            : const Icon(Icons.circle_outlined, color: AppColors.lightGrey),
       ),
     );
   }

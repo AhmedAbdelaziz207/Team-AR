@@ -15,11 +15,11 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
-  void initState()  {
-
+  void initState() {
     Future.delayed(
       const Duration(seconds: 3),
-      ()  async {
+      () async {
+        // Navigator.pushNamed(context, Routes.onboarding);
         await handleNavigation();
       },
     );
@@ -39,23 +39,25 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> handleNavigation() async {
-    final token =await  SharedPreferencesHelper.getString(AppConstants.token);
-    final userRole =await  SharedPreferencesHelper.getString(AppConstants.userRole);
+    final token = await SharedPreferencesHelper.getString(AppConstants.token);
+    final userRole =
+        await SharedPreferencesHelper.getString(AppConstants.userRole);
 
-    if(token != null && userRole != null && context.mounted){
-      if(userRole == UserRole.Admin.name){
-        Navigator.pushNamedAndRemoveUntil(context, Routes.adminLanding,(route) => false,);
+    if (token != null && userRole != null && context.mounted) {
+      if (userRole.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.adminLanding,
+          (route) => false,
+        );
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.rootScreen,
+          (route) => false,
+        );
       }
-        if(userRole == UserRole.User.name){
-        Navigator.pushNamedAndRemoveUntil(context, Routes.userHome,(route) => false,);
-      }
-
-
-
-    }
-
-
-    else{
+    } else {
       Navigator.pushNamed(context, Routes.onboarding);
     }
   }

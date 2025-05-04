@@ -9,9 +9,13 @@ class AppAssets {
   static const englishIcon = "assets/icons/english_icon.png";
   static const coachImage1 = "assets/images/coach_1.png";
   static const coachImage2 = "assets/images/coach_2.JPG";
+  static const coachImage3 = "assets/images/coach_3.jpeg";
   static const emptyPageEmpty = "assets/images/empty_page.png";
   static const tempProfileImage = "assets/images/temp_profile.jpg";
   static const dumbbell = "assets/images/dumbbell.png";
   static const iconDish = "assets/images/dish.png";
-
+  static const iconHome = "assets/icons/home.png";
+  static const avatar = "assets/images/avatar.png";
+  static const iconCart = "assets/icons/cart.png";
+  static const progressWave = "assets/images/progress_wave.png";
 }

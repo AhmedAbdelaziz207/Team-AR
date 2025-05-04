@@ -12,6 +12,7 @@ LoginResponse _$LoginResponseFromJson(Map<String, dynamic> json) =>
       userName: json['userName'] as String?,
       role: json['role'] as String?,
       id: json['id'] as String?,
+      isPaid: json['isPaid'] as bool?,
     );
 
 Map<String, dynamic> _$LoginResponseToJson(LoginResponse instance) =>
@@ -20,4 +21,5 @@ Map<String, dynamic> _$LoginResponseToJson(LoginResponse instance) =>
       'userName': instance.userName,
       'role': instance.role,
       'id': instance.id,
+      'isPaid': instance.isPaid,
     };

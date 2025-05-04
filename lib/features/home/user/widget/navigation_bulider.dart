@@ -16,33 +16,34 @@ class NavigationBuilder extends StatelessWidget {
     return BlocBuilder<NavigationCubit, NavigationState>(
       builder: (context, state) {
         return BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
           currentIndex: state.index,
           showSelectedLabels: false,
           showUnselectedLabels: false,
+          elevation: 0,
           items: [
             BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home_outlined,
-                color: AppColors.grey,
+              icon: ImageIcon(
+                const AssetImage(AppAssets.iconHome),
+                color: AppColors.lightGrey,
                 size: 28.sp,
               ),
-              activeIcon: Icon(
-                Icons.home_outlined,
-                color: AppColors.primaryColor,
+              activeIcon: ImageIcon(
+                const AssetImage(AppAssets.iconHome),
+                color: AppColors.newPrimaryColor,
                 size: 30.sp,
               ),
-              label: 'Home',
+              label: 'Food',
             ),
             BottomNavigationBarItem(
               icon: ImageIcon(
                 const AssetImage(AppAssets.dumbbell),
-                color: AppColors.grey,
+                color: AppColors.lightGrey,
                 size: 28.sp,
               ),
               activeIcon: ImageIcon(
                 const AssetImage(AppAssets.dumbbell),
-                color: AppColors.primaryColor,
+                color: AppColors.newPrimaryColor,
                 size: 30.sp,
               ),
               label: 'Workouts',
@@ -55,7 +56,7 @@ class NavigationBuilder extends StatelessWidget {
               ),
               activeIcon: ImageIcon(
                 const AssetImage(AppAssets.iconDish),
-                color: AppColors.primaryColor,
+                color: AppColors.newPrimaryColor,
                 size: 30.sp,
               ),
               label: 'Food',
@@ -68,7 +69,7 @@ class NavigationBuilder extends StatelessWidget {
               ),
               activeIcon: Icon(
                 Icons.menu,
-                color: AppColors.primaryColor,
+                color: AppColors.newPrimaryColor,
                 size: 30.sp,
               ),
               label: 'Profile',
@@ -82,12 +83,9 @@ class NavigationBuilder extends StatelessWidget {
               getNavBarItem(NavBarItems.workouts, context);
             }
             if (index == 2) {
-              getNavBarItem(NavBarItems.thoughts, context);
-            }
-            if (index == 3) {
               getNavBarItem(NavBarItems.food, context);
             }
-            if (index == 4) {
+            if (index == 3) {
               getNavBarItem(NavBarItems.profile, context);
             }
           },

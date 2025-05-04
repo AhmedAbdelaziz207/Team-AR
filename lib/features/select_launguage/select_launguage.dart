@@ -23,6 +23,7 @@ class _SelectLanguageState extends State<SelectLanguage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 21.0.h, horizontal: 8.w),
@@ -37,6 +38,7 @@ class _SelectLanguageState extends State<SelectLanguage> {
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: 24.sp,
+                        color: AppColors.black
                       ),
                   textAlign: TextAlign.center,
                 ),
@@ -93,47 +95,50 @@ class _SelectLanguageState extends State<SelectLanguage> {
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    if(isArabicLangSelected){
-                      context.setLocale(const Locale(AppConstants.languageArabicCode));
-                    }
-                    if(isEnglishLangSelected){
-                      context.setLocale(const Locale(AppConstants.languageEnglishCode));
-                    }
+                Align(
+                  alignment: Alignment.center,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if(isArabicLangSelected){
+                        context.setLocale(const Locale(AppConstants.languageArabicCode));
+                      }
+                      if(isEnglishLangSelected){
+                        context.setLocale(const Locale(AppConstants.languageEnglishCode));
+                      }
 
-                    setLanguageAndNavigate(isEnglishLangSelected, context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(150.w, 46.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      setLanguageAndNavigate(isEnglishLangSelected, context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(150.w, 46.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      backgroundColor: AppColors.newPrimaryColor,
                     ),
-                    backgroundColor: AppColors.mediumLavender,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        AppLocalKeys.continueText.tr(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                      ),
-                      SizedBox(
-                        width: 8.w,
-                      ),
-                      const Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ],
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          AppLocalKeys.continueText.tr(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                        ),
+                        SizedBox(
+                          width: 8.w,
+                        ),
+                        const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(

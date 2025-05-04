@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../core/network/api_error_model.dart';
 import '../model/user_plan.dart';
-
 part 'user_plans_state.freezed.dart';
 
 @freezed
@@ -16,6 +15,7 @@ class UserPlansState with _$UserPlansState {
   const factory UserPlansState.planAdded() = PlanAddedSuccess;
 
   const factory UserPlansState.planDeleted() = PlanDeletedSuccess;
+
   const factory UserPlansState.planEdited() = PlanEditedSuccess;
 
   const factory UserPlansState.addingPlan() = AddingPlan;

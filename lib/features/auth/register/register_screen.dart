@@ -8,7 +8,7 @@ import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/core/widgets/custom_text_form_field.dart';
 import 'package:team_ar/features/auth/register/logic/register_cubit.dart';
 import 'package:team_ar/features/auth/register/logic/register_state.dart';
-import 'package:team_ar/features/auth/register/widget/register_bloc_listener.dart';
+import 'package:team_ar/features/confirm_subscription/widget/register_bloc_listener.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -81,7 +81,10 @@ class RegisterScreen extends StatelessWidget {
                           )
                         : TextButton(
                             onPressed: state is RegisterLoading ? null : () {
-                              context.read<RegisterCubit>().addTrainer();
+                              if(context.read<RegisterCubit>().formKey.currentState!.validate()){
+                                context.read<RegisterCubit>().addTrainer();
+                              }
+
                             },
                             style: ElevatedButton.styleFrom(
                               minimumSize: Size(250.w, 30.h),

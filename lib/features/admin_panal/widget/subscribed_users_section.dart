@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +20,7 @@ class SubscribedUsersSection extends StatefulWidget {
 class _SubscribedUsersSectionState extends State<SubscribedUsersSection> {
   @override
   void initState() {
-  context.read<TraineeCubit>().getNewTrainees();
+    context.read<TraineeCubit>().getAllTrainees();
     super.initState();
   }
 
@@ -44,8 +43,10 @@ class _SubscribedUsersSectionState extends State<SubscribedUsersSection> {
                 const Spacer(),
                 InkWell(
                   onTap: () {
-                    final trainees = state is TraineeSuccess ? state.trainees : [];
-                    Navigator.pushNamed(context, Routes.adminTraineesScreen,arguments: trainees);
+                    final trainees =
+                        state is TraineeSuccess ? state.trainees : [];
+                    Navigator.pushNamed(context, Routes.adminTraineesScreen,
+                        arguments: trainees);
                   },
                   child: Text(
                     AppLocalKeys.seeAll.tr(),

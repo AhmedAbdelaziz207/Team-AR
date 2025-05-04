@@ -6,9 +6,9 @@ import '../theme/app_colors.dart';
 import 'dart:ui' as ui;
 
 class CustomTextFormField extends StatefulWidget {
-  const CustomTextFormField({
-    super.key,
+  const CustomTextFormField({super.key,
     this.formKey,
+    this.readOnly,
     this.validator,
     this.hintText,
     this.suffixIcon,
@@ -22,7 +22,7 @@ class CustomTextFormField extends StatefulWidget {
     this.iconColor,
     this.onChanged,
     this.onSaved,
-  });
+    this.isAdmin = false});
 
   final GlobalKey<FormState>? formKey;
   final String? Function(String?)? validator;
@@ -38,6 +38,8 @@ class CustomTextFormField extends StatefulWidget {
   final Function(String)? onChanged;
   final void Function(String?)? onSaved;
   final Color? iconColor;
+  final bool? isAdmin;
+  final bool? readOnly;
 
   @override
   State<CustomTextFormField> createState() => _CustomTextFormFieldState();
@@ -50,6 +52,13 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       textDirection: ui.TextDirection.rtl,
       child: TextFormField(
         onFieldSubmitted: widget.onFieldSubmitted,
+        readOnly: widget.readOnly ?? false,
+        style: TextStyle(
+          color: AppColors.black,
+          fontSize: 14.sp,
+          fontWeight: FontWeight.w500,
+          fontFamily: "Cairo",
+        ),
         onChanged: widget.onChanged,
         onSaved: widget.onSaved,
         keyboardType: widget.keyboardType,
@@ -57,7 +66,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         controller: widget.controller,
         obscureText: widget.obscureText ?? false,
         validator: widget.validator ??
-            (value) {
+                (value) {
               if (value == null || value.isEmpty) {
                 return AppLocalKeys.fieldRequired.tr();
               }
@@ -68,14 +77,27 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         decoration: InputDecoration(
           hintText: widget.hintText,
           // Use EasyLocalization for dynamic hints.
-          hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: AppColors.black.withOpacity(.3)),
-          suffixIcon:
-              Icon(widget.suffixIcon, color: widget.iconColor ?? Colors.grey),
+          hintStyle: Theme
+              .of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: AppColors.black.withOpacity(.3),
+          ),
+          prefixIcon: Icon(
+            widget.prefixIcon,
+            color: widget.iconColor ?? Colors.grey,
+          ),
+          suffixIcon: Icon(
+            widget.suffixIcon,
+            color: widget.iconColor ?? Colors.grey,
+          ),
           // prefixIcon: Icon(widget.prefixIcon, color: Colors.grey),
           filled: true,
-          fillColor: AppColors.darkLavender.withOpacity(.3),
+          fillColor: widget.isAdmin!
+              ? AppColors.primaryColor.withOpacity(.055)
+              : AppColors.copperColor.withOpacity(.055),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.sp),
             borderSide: BorderSide.none,

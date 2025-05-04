@@ -28,25 +28,27 @@ class LoginBlocListener extends StatelessWidget {
             );
           }
         }, loginSuccess: (loginResponse) {
-         navigateToHomeScreen(context,loginResponse);
-
+          // Navigator.pushNamed(context, Routes.adminLanding);
+          navigateToHomeScreen(context, loginResponse);
         });
       },
-      child:  SizedBox(height: 20.h,),
+      child: SizedBox(
+        height: 20.h,
+      ),
     );
   }
 
   void navigateToHomeScreen(BuildContext context, LoginResponse loginResponse) {
-    if(loginResponse.role == UserRole.Admin.name){
+    if (loginResponse.role?.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
       Navigator.pushNamed(context, Routes.adminLanding);
+    } else {
+      Navigator.pushNamed(context, Routes.rootScreen);
     }
 
-    if(loginResponse.role == UserRole.User.name){
+    if (loginResponse.role == UserRole.User.name) {
       /// Navigate to User Home Screen
 
       // Navigator.pushNamed(context, Routes.adminHome);
-
     }
-
   }
 }

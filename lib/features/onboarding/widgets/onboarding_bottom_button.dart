@@ -33,7 +33,7 @@ class OnboardingBottomButton extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              backgroundColor: AppColors.mediumLavender,
+              backgroundColor: AppColors.newPrimaryColor,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

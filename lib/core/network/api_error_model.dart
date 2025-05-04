@@ -1,4 +1,8 @@
+import 'dart:developer';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:team_ar/core/utils/app_local_keys.dart';
 
 part 'api_error_model.g.dart';
 
@@ -16,7 +20,11 @@ class ApiErrorModel {
   Map<String, dynamic> toJson() => _$ApiErrorModelToJson(this);
 
   String? getErrorsMessage() {
+    log("errors: $errors , message: $message");
     if (errors == null || errors!.isEmpty) {
+      if (message?.toLowerCase() == "Internal Server Error".toLowerCase()) {
+        return  AppLocalKeys.unexpectedError.tr();
+      }
       return message;
     }
 
@@ -25,6 +33,7 @@ class ApiErrorModel {
         .map((entry) => entry.value.join('\n')) // Join list of errors for each field
         .join('\n'); // Join all field errors into a single string
 
-    return errorMessages;
+    log("errorMessages: $errorMessages , message: $message");
+    return errorMessages == 'Internal Server Error' ? "Some thing went wrong" : errorMessages;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_local_keys.dart';
 
 class LoginTopSection extends StatelessWidget {
@@ -15,6 +16,7 @@ class LoginTopSection extends StatelessWidget {
           AppLocalKeys.welcomeBack.tr(),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w600,
+            color: AppColors.black
           ),
         ),
         Text(

@@ -4,8 +4,6 @@ import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/features/auth/login/logic/login_cubit.dart';
 import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_cubit.dart';
 import 'package:team_ar/features/home/admin/logic/trainees_cubit.dart';
-import 'package:team_ar/features/plans_screen/logic/user_plans_cubit.dart';
-import 'package:team_ar/features/plans_screen/repos/user_plans_repository.dart';
 import '../../features/auth/login/repos/login_repository.dart';
 import '../../features/auth/register/logic/register_cubit.dart';
 import '../../features/auth/register/repos/register_repository.dart';
@@ -25,9 +23,9 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton(() => LoginRepository(getIt()));
   getIt.registerFactory(() => LoginCubit(getIt()));
 
-  // User Plans
-  getIt.registerFactory(() => UserPlansRepository(getIt()));
-  getIt.registerFactory(() => UserPlansCubit(getIt()));
+  // // User Plans
+  // getIt.registerLazySingleton(() => UserPlansRepository(getIt()));
+  // getIt.registerLazySingleton(() => UserPlansCubit());
 
   // Confirm Subscription
   getIt.registerFactory(() => ConfirmSubscriptionCubit());

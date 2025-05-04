@@ -54,7 +54,10 @@ class OnboardingScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const OnboardingBottomButton()
+              const Align(
+                alignment: Alignment.center,
+                child: OnboardingBottomButton(),
+              )
             ],
           ),
         ),

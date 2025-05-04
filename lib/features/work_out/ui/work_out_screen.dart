@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:team_ar/features/work_out/widgets/workout_card.dart';
-
+import 'package:team_ar/core/utils/app_local_keys.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_assets.dart';
+import '../widgets/workout_card.dart';
 
 class WorkOutScreen extends StatelessWidget {
   const WorkOutScreen({super.key});
@@ -14,8 +14,9 @@ class WorkOutScreen extends StatelessWidget {
     String todayDate = DateFormat('EEEE d MMM').format(DateTime.now());
 
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(100.h),
+        preferredSize: Size.fromHeight(110.h),
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: AppColors.white,
@@ -32,12 +33,12 @@ class WorkOutScreen extends StatelessWidget {
                       AppAssets.appLogo,
                       height: 100.h,
                       width: 100.w,
+                      color: AppColors.newPrimaryColor,
                     ),
                     Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         // Prevent extra space
-
                         children: [
                           Text(todayDate,
                               style: TextStyle(
@@ -46,7 +47,7 @@ class WorkOutScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w500,
                               )),
                           Text(
-                            "You are on your journey",
+                            AppLocalKeys.yourJourney.tr(),
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -63,7 +64,7 @@ class WorkOutScreen extends StatelessWidget {
                   bottom: 35,
                   child: IconButton(
                     icon: Icon(
-                      Icons.notifications_on_outlined,
+                      Icons.notifications_none_rounded,
                       size: 30.sp,
                     ),
                     onPressed: () {},
@@ -77,7 +78,6 @@ class WorkOutScreen extends StatelessWidget {
       body: const WorkoutCard()
 
     );
-
 
   }
 }

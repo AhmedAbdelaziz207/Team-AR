@@ -18,6 +18,9 @@ class AdminHomeScreen extends StatefulWidget {
 }
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
+  int totalTrainees = 0;
+  bool isLoading = false;
+
   @override
   void initState() {
     context.read<TraineeCubit>().getNewTrainees();
@@ -27,36 +30,108 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        centerTitle: false,
         title: Text(
           AppLocalKeys.home.tr(),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: AppColors.black,
               ),
         ),
         actions: [
           IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.notifications_outlined,
-                size: 30,
-                color: AppColors.grey,
-              ))
+            onPressed: () {},
+            icon: Icon(
+              Icons.notifications_outlined,
+              size: 25.sp,
+              color: AppColors.grey,
+            ),
+          )
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: RefreshIndicator(
-          onRefresh: () {
+          onRefresh: () async {
             context.read<TraineeCubit>().getNewTrainees();
-            return Future.value();
           },
-          child: Column(
-            children: [
-              const UserInfoSection(),
-              BlocBuilder<TraineeCubit, TraineeState>(
-                builder: (context, state) {
-                  return state.whenOrNull(
+          child: BlocBuilder<TraineeCubit, TraineeState>(
+            builder: (context, state) {
+              isLoading = state is TraineeLoading;
+              totalTrainees = state is TraineeSuccess ? state.trainees.length : 0;
+              return Column(
+                children: [
+                  SizedBox(height: 12.h),
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.secondaryColor.withOpacity(.4),
+                      borderRadius: BorderRadius.circular(20.sp),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 21.0, vertical: 21.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                AppLocalKeys.totalRequests.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineMedium
+                                    ?.copyWith(
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.sp,
+                                    ),
+                              ),
+                              Icon(
+                                Icons.more_horiz,
+                                color: AppColors.primaryColor,
+                                size: 25.sp,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 21.h,
+                          ),
+                          isLoading
+                              ? const CircularProgressIndicator(
+                                  color: AppColors.lightBlue,
+                                )
+                              : Text(
+                                  totalTrainees.toString(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(
+                                        color: AppColors.primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.sp,
+                                      ),
+                                ),
+                          SizedBox(
+                            height: 12.h,
+                          ),
+                          Image.asset(
+                            AppAssets.progressWave,
+                            height: 60.h,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  const UserInfoSection(),
+
+                  state.whenOrNull(
                         loading: () => const Center(
                           child: CircularProgressIndicator(
                             color: AppColors.lightBlue,
@@ -68,7 +143,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(color: AppColors.red),
+                                ?.copyWith(
+                                  color: AppColors.red,
+                                ),
                           ),
                         ),
                         success: (trainees) {
@@ -101,23 +178,26 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           return Expanded(
                             child: ListView.separated(
                               itemCount: trainees.length,
-                              itemBuilder: (context, index) =>
-                                  NewTraineeCard(trainee: trainees[index]),
+                              itemBuilder: (context, index) => NewTraineeCard(
+                                trainee: trainees[index],
+                              ),
                               separatorBuilder: (context, index) => Column(
                                 children: [
                                   SizedBox(height: 21.h),
                                   const Divider(
-                                      color: AppColors.grey, thickness: .1),
+                                    color: AppColors.grey,
+                                    thickness: .1,
+                                  ),
                                 ],
                               ),
                             ),
                           );
                         },
                       ) ??
-                      const SizedBox(); // Default case
-                },
-              ),
-            ],
+                      const SizedBox() // Default case
+                ],
+              );
+            },
           ),
         ),
       ),

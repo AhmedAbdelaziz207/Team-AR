@@ -7,7 +7,7 @@ class TraineeModel {
   final String? id;
   final String? userName;
   final String? email;
-  final int ?long;
+  final int? long;
   final int? weight;
   final int? age;
   final DateTime? startPackage;
@@ -15,7 +15,9 @@ class TraineeModel {
   final String? name;
   final int? duration;
   final int? oldPrice;
-  final int ?newPrice;
+  final int? newPrice;
+  final String? role;
+  final int? exerciseId;
   final String? gender;
   @JsonKey(name: 'imageUrl')
   final String? image;
@@ -25,10 +27,15 @@ class TraineeModel {
   final int? remindDays;
   final String? password;
   final String? address;
-  final String? status ;
+  final String? status;
+  final int? packageId;
 
-  TraineeModel(this.status, {
+  TraineeModel({
+    this.status,
+    this.role,
+    this.exerciseId,
     this.password,
+    this.packageId,
     this.address,
     this.remindDays,
     this.image,
@@ -52,4 +59,15 @@ class TraineeModel {
       _$TraineeModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$TraineeModelToJson(this);
+
+  double getPackageProgress() {
+    if (startPackage == null || endPackage == null || remindDays == null) {
+      return 0;
+    }
+    int? totalDays = endPackage?.difference(startPackage!).inDays;
+    if (totalDays! <= 0 ){
+      return 0 ;
+    }
+    return ((totalDays - remindDays!) / totalDays) ;
+  }
 }

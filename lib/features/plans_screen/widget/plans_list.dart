@@ -10,7 +10,7 @@ class PlansList extends StatelessWidget {
     return ListView.builder(
       itemCount: plans.length,
       itemBuilder: (context, index) {
-        return PlansListCard(plan: plans[index]);
+        return PlansListCard(plan: plans[index],isAdmin: false,isSelected: false,);
       },
     );
   }

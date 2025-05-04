@@ -8,7 +8,6 @@ import '../../../core/widgets/custom_text_form_field.dart';
 import '../logic/confirm_subscription_cubit.dart';
 import 'gender_selection_widget.dart';
 
-
 class ConfirmSubscriptionForm extends StatelessWidget {
   const ConfirmSubscriptionForm({super.key});
 
@@ -46,6 +45,20 @@ class ConfirmSubscriptionForm extends StatelessWidget {
             hintText: AppLocalKeys.address.tr(),
           ),
           SizedBox(height: 16.h),
+          CustomTextFormField(
+            controller: cubit.emailController,
+            suffixIcon: Icons.email_outlined,
+            hintText: AppLocalKeys.email.tr(),
+            keyboardType: TextInputType.emailAddress,
+          ),
+          SizedBox(height: 16.h),
+          CustomTextFormField(
+            controller: cubit.passwordController,
+            suffixIcon: Icons.password,
+            hintText: AppLocalKeys.password.tr(),
+            obscureText: true,
+          ),
+          SizedBox(height: 16.h),
           Row(
             children: [
               Expanded(
@@ -77,6 +90,12 @@ class ConfirmSubscriptionForm extends StatelessWidget {
           ),
           SizedBox(height: 16.h),
           CustomTextFormField(
+            controller: cubit.numberOfMealsController,
+            hintText: AppLocalKeys.numberOfMeals.tr(),
+            keyboardType: TextInputType.number,
+          ),
+          SizedBox(height: 16.h),
+          CustomTextFormField(
             controller: cubit.smokingController,
             hintText: AppLocalKeys.areYouSmoking.tr(),
           ),
@@ -84,7 +103,13 @@ class ConfirmSubscriptionForm extends StatelessWidget {
           CustomTextFormField(
             controller: cubit.lastTrainedController,
             hintText: AppLocalKeys.lastTimeTrained.tr(),
-          ),     SizedBox(height: 16.h),
+          ),
+          SizedBox(height: 16.h),
+          CustomTextFormField(
+            controller: cubit.aimOfJoinController,
+            hintText: AppLocalKeys.aimOfJoin.tr(),
+          ),
+          SizedBox(height: 16.h),
           CustomTextFormField(
             controller: cubit.painController,
             hintText: AppLocalKeys.haveAnyPain.tr(),
@@ -92,14 +117,20 @@ class ConfirmSubscriptionForm extends StatelessWidget {
           ),
           SizedBox(height: 16.h),
           CustomTextFormField(
-            controller: cubit.lastTrainedController,
-            hintText: AppLocalKeys.aboutYourWor.tr(),
+            controller: cubit.dailyWorkController,
+            hintText: AppLocalKeys.aboutYourWork.tr(),
             isMultiline: true,
           ),
           SizedBox(height: 16.h),
           CustomTextFormField(
             controller: cubit.allergyController,
             hintText: AppLocalKeys.allergyOfFood.tr(),
+            isMultiline: true,
+          ),
+          SizedBox(height: 16.h),
+          CustomTextFormField(
+            controller: cubit.foodSystemController,
+            hintText: AppLocalKeys.whatYouWantInFood.tr(),
             isMultiline: true,
           ),
           SizedBox(height: 16.h),

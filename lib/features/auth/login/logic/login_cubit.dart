@@ -25,18 +25,18 @@ class LoginCubit extends Cubit<LoginState> {
       success: (data) async {
         final loginResponse = data as LoginResponse;
         log("User token: ${loginResponse.token}");
+        //Todo : Refactor [DIO RESET]...
+       await DioFactory.resetDio(loginResponse.token);
 
         saveUserData(loginResponse);
 
-        //Todo : Refactor [DIO RESET]...
-        DioFactory.resetDio();
         emit(LoginState.loginSuccess(data));
       },
       failure: (apiErrorModel) => emit(LoginState.loginFailure(apiErrorModel)),
     );
   }
 
-  void saveUserData(LoginResponse loginResponse) async{
+  void saveUserData(LoginResponse loginResponse) async {
     await SharedPreferencesHelper.setData(
       AppConstants.token,
       loginResponse.token,
@@ -49,6 +49,5 @@ class LoginCubit extends Cubit<LoginState> {
       AppConstants.userRole,
       loginResponse.role,
     );
-
   }
 }

@@ -42,6 +42,9 @@ class LoginForm extends StatelessWidget {
             return Align(
               alignment: Alignment.center,
               child: ElevatedButton(
+                style:  ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.newPrimaryColor,
+                ),
                 onPressed: state is LoginLoading
                     ? null
                     : () {
@@ -83,7 +86,7 @@ class LoginForm extends StatelessWidget {
                   AppLocalKeys.subscribe.tr(),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.mediumLavender,
+                        color: AppColors.newPrimaryColor,
                         decoration: TextDecoration.underline,
                       ),
                 ),

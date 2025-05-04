@@ -42,14 +42,16 @@ class _TraineesScreenState extends State<TraineesScreen> {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: AppColors.white,
         leading: const AppBarBackButton(),
         title: Text(
           AppLocalKeys.subscribedUsers.tr(),
-          style: Theme.of(context)
-              .textTheme
-              .headlineMedium
-              ?.copyWith(fontSize: 21.sp, fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontSize: 21.sp,
+                fontWeight: FontWeight.bold,
+                color: AppColors.black,
+              ),
         ),
       ),
       body: GestureDetector(
@@ -63,14 +65,14 @@ class _TraineesScreenState extends State<TraineesScreen> {
                 hintText: AppLocalKeys.searchByName.tr(),
                 suffixIcon: Icons.search,
                 iconColor: AppColors.primaryColor,
-                onChanged: _filterTrainees, // Updates the list dynamically
+                onChanged: _filterTrainees,
               ),
               SizedBox(height: 30.h),
               const UsersTableHeader(),
               SizedBox(height: 12.h),
               Expanded(
                 child: filteredTrainees.isEmpty
-                    ? const Center(child: Text("No results found"))
+                    ? Center(child: Text(AppLocalKeys.noResultsFounds.tr()))
                     : ListView.separated(
                         itemBuilder: (context, index) => SubscribedUserCard(
                             trainer: filteredTrainees[index]),

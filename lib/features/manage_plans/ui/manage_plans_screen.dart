@@ -66,10 +66,6 @@ class _ManagePlansScreenState extends State<ManagePlansScreen> {
                         ),
                       ),
                     ),
-                    planDeleted:  () {
-                      getData();
-                      return const SizedBox();
-                    },
                     plansFailure: (messageModel) => Center(
                       child: Center(
                         child: Text(
@@ -79,7 +75,6 @@ class _ManagePlansScreenState extends State<ManagePlansScreen> {
                       ),
                     ),
                     orElse: () {
-                      getData();
                       return const SizedBox();
                     },
                   );

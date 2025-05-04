@@ -29,8 +29,8 @@ android {
     defaultConfig {
         applicationId = "com.thecore.team_ar"
         minSdk = 21
-        targetSdk = 34
-        compileSdk = 34
+        targetSdk = 35
+        compileSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }

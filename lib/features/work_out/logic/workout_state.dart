@@ -1,19 +1,14 @@
-import 'package:equatable/equatable.dart';
-import 'package:team_ar/features/work_out/model/workout_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'workout_state.freezed.dart';
 
-class WorkoutState extends Equatable {
-final int selectedDay;
-final List<WorkoutModel> exercises;
+@freezed
+sealed class WorkoutState {
+  const factory WorkoutState.workoutInitial() = WorkoutInitial;
 
-WorkoutState({required this.selectedDay, required this.exercises});
+  const factory WorkoutState.workoutLoading() = WorkoutLoading;
 
-@override
-List<Object?> get props => [selectedDay, exercises];
+  const factory WorkoutState.workoutSuccess(String? url) = WorkoutSuccess;
 
-WorkoutState copyWith({int? selectedDay, List<WorkoutModel>? exercises}) {
- return WorkoutState(
-  selectedDay: selectedDay ?? this.selectedDay,
-  exercises: exercises ?? this.exercises,
- );
-}
+  const factory WorkoutState.workoutFailure(String message) =
+      WorkoutFailure;
 }
