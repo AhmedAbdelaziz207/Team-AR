@@ -24,16 +24,19 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   @override
   void initState() {
     log("Get User Id from SharedPref");
-    SharedPreferencesHelper.getString(AppConstants.userId).then(
-      (value) {
+   loadData();
+    super.initState();
+  }
+
+  loadData() async {
+  await  SharedPreferencesHelper.getString(AppConstants.userId).then(
+          (value) {
         log("Get User Data ");
         context.read<UserCubit>().getUser(value!);
       },
     );
 
-    super.initState();
   }
-
   @override
   Widget build(BuildContext context) {
     String todayDate = DateFormat('EEEE d MMM').format(DateTime.now());

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +18,6 @@ class MealCubit extends Cubit<MealState> {
 
   String? userId;
   int mealNum = 1;
-
-  void setUserId(String id) {
-    userId = id;
-  }
 
   final nameController = TextEditingController();
   final caloriesController = TextEditingController();
@@ -158,7 +155,9 @@ class MealCubit extends Cubit<MealState> {
     return total;
   }
 
-  Future<void> assignDietMealForUser(String userId) async {
+  Future<void> assignDietMealForUser(String userId, {bool? isUpdate}) async {
+    log("isUpdate Meal : $isUpdate");
+
     // Step 0: Validate state
     final currentState = state;
     if (currentState is! MealsLoaded) return;
@@ -166,19 +165,22 @@ class MealCubit extends Cubit<MealState> {
     final allMeals = currentState.meals;
 
     // ✅ Step 1: Check if any item is selected
-    final selectedMeals = allMeals.where((meal) => meal.isSelected == true).toList();
+    final selectedMeals =
+        allMeals.where((meal) => meal.isSelected == true).toList();
     if (selectedMeals.isEmpty) {
       // emit(const MealState.failure(message: "Please select at least one meal."));
       return;
     }
 
-    emit(const MealState.loading());
+    // emit(const MealState.loading());
 
-    final selectedFoods = selectedMeals.map((meal) => FoodItem(
-      foodId: meal.id!,
-      note: "", // or attach a note if you support it
-      numOfGrams: meal.numOfGrams ?? 100,
-    )).toList();
+    final selectedFoods = selectedMeals
+        .map((meal) => FoodItem(
+              foodId: meal.id!,
+              note: "", // or attach a note if you support it
+              numOfGrams: meal.numOfGrams ?? 100,
+            ))
+        .toList();
 
     final userMeal = UserMealRequestModel(
       applicationUserId: userId,
@@ -186,16 +188,19 @@ class MealCubit extends Cubit<MealState> {
       foodType: mealNum,
     );
 
-    final result = await mealRepository.assignDietMealToTrainee(userMeal);
+    final result = await mealRepository.assignDietMealToTrainee(
+      userMeal,
+      isUpdate: isUpdate ?? false,
+    );
 
     result.when(
       success: (_) {
         // ✅ Step 2: Reset all meals to unselected/default
         final resetMeals = allMeals
             .map((meal) => meal.copyWith(
-          isSelected: false,
-          numOfGrams: 100,
-        ))
+                  isSelected: false,
+                  numOfGrams: 100,
+                ))
             .toList();
 
         mealNum++;

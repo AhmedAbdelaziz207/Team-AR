@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
+import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/features/trainer_register_success/model/register_success_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -16,6 +17,11 @@ class TrainerRegistrationSuccess extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: const AppBarBackButton(),
+      ),
       body: Center(
         child: Container(
           margin: const EdgeInsets.all(12),

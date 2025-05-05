@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/features/work_out/logic/workout_cubit.dart';
@@ -22,8 +24,16 @@ class ExerciseScreen extends StatefulWidget {
 class _ExerciseScreenState extends State<ExerciseScreen> {
   @override
   void initState() {
-    context.read<WorkoutCubit>().getWorkout(3);
+    loadData();
     super.initState();
+  }
+
+  void loadData() async {
+    await SharedPreferencesHelper.getInt(AppConstants.exerciseId).then(
+      (value) {
+        context.read<WorkoutCubit>().getWorkout(value);
+      },
+    );
   }
 
   @override

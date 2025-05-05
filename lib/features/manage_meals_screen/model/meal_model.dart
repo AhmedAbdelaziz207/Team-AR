@@ -1,8 +1,10 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 part 'meal_model.g.dart';
 
 @JsonSerializable()
-class DietMealModel {
+class DietMealModel extends Equatable {
   final int? id;
   final String? name;
   final bool? isSelected;
@@ -63,4 +65,7 @@ class DietMealModel {
       image: image ?? this.image,
     );
   }
+
+  @override
+  List<Object?> get props => [id, name, imageURL, isSelected, numOfGrams];
 }

@@ -28,6 +28,7 @@ class _MealListState extends State<MealList> {
         loading: () => true,
         loaded: (_) => true,
         failure: (_) => true,
+
         orElse: () => false,
       ),
       builder: (context, state) {
@@ -36,20 +37,31 @@ class _MealListState extends State<MealList> {
           loaded: (value) {
             final meals = value.meals;
 
-            final categories = meals
-                .map((e) => e.foodCategory)
-                .whereType<String>()
-                .toSet()
-                .toList();
+            final proteinsMeals = meals.where((meal) => meal.foodCategory == 0).toList();
+            final fatsMeals = meals.where((meal) => meal.foodCategory == 1).toList();
+            final carbsMeals = meals.where((meal) => meal.foodCategory == 2).toList();
+            final vegetablesMeals = meals.where((meal) => meal.foodCategory == 3).toList();
 
-            return ListView(
-              children: categories.map((category) {
 
-                return MealCategory(
-                  title: category,
-                  meals: meals,
-                );
-              }).toList(),
+            return Expanded(
+              child: ListView(
+                children: [
+                  MealCategory(
+                    title: AppLocalKeys.proteins.tr(),
+                    meals: proteinsMeals,
+                  ),
+                      MealCategory(
+                    title: AppLocalKeys.fats.tr(),
+                    meals: fatsMeals,
+                  ),     MealCategory(
+                    title: AppLocalKeys.carbs.tr(),
+                    meals: carbsMeals,
+                  ),     MealCategory(
+                    title: AppLocalKeys.vegetables.tr(),
+                    meals: vegetablesMeals,
+                  ),
+                ],
+              ),
             );
           },
           failure: (value) => Center(
@@ -58,6 +70,7 @@ class _MealListState extends State<MealList> {
               style: const TextStyle(color: Colors.red),
             ),
           ),
+
           orElse: () => const SizedBox.shrink(),
         );
       },

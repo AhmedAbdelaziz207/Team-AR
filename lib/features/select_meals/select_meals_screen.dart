@@ -19,7 +19,8 @@ class SelectMealsScreen extends StatelessWidget {
     this.params,
   });
 
-  final SelectMealParams? params ;
+  final SelectMealParams? params;
+
   @override
   Widget build(BuildContext context) {
     context.read<MealCubit>().mealNum = params!.mealNum;
@@ -62,7 +63,10 @@ class SelectMealsScreen extends StatelessWidget {
           const Expanded(
             child: MealList(),
           ),
-          MealSummaryFooter(userId: params!.userId),
+          MealSummaryFooter(
+            userId: params!.userId,
+            isUpdate: params!.isUpdate ?? false,
+          ),
         ],
       ),
     );

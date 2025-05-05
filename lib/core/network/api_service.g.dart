@@ -452,6 +452,32 @@ class _ApiService implements ApiService {
   }
 
   @override
+  Future<void> updateDietMealForUser(Map<String, dynamic> body) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(body);
+    final _options = _setStreamType<void>(Options(
+      method: 'PUT',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/api/UserFood/AddFoodsToUser',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
   Future<DietMealModel> updateDietMeal(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -617,7 +643,7 @@ class _ApiService implements ApiService {
   @override
   Future<String> getWorkout(int id) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'Id': id};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<String>(Options(
@@ -627,7 +653,7 @@ class _ApiService implements ApiService {
     )
         .compose(
           _dio.options,
-          'api/Exercise{/Id}',
+          'api/Exercise',
           queryParameters: queryParameters,
           data: _data,
         )

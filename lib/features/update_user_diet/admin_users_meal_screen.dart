@@ -124,6 +124,7 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
                                   arguments: SelectMealParams(
                                     userId: widget.userId!,
                                     mealNum:   entry.key,
+                                    isUpdate: true
                                   ),
                                 );
                               },
@@ -161,8 +162,8 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
                           (userDiet) => AdminMealCard(
                             mealName:
                                 userDiet.meal?.name ?? userDiet.name ?? '',
-                            calories:
-                                userDiet.meal?.numOfGrams?.toString() ?? '0',
+                            amount:
+                                userDiet.numOfGrams?.toString() ?? '0',
                             imageUrl: userDiet.meal?.imageURL ?? '',
                             onReplace: () {
                               // Replace logic

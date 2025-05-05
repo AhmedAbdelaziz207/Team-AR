@@ -1,4 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
 import '../../manage_meals_screen/logic/meal_cubit.dart';
 
@@ -18,7 +22,6 @@ class CounterWidget extends StatefulWidget {
 
 class _CounterWidgetState extends State<CounterWidget> {
   final TextEditingController _controller = TextEditingController();
-  late MealCubit _mealCubit; // Store cubit safely
   int _count = 100;
 
   @override
@@ -31,10 +34,11 @@ class _CounterWidgetState extends State<CounterWidget> {
       final text = _controller.text;
       final grams = int.tryParse(text);
       if (grams != null && widget.meal != null) {
-        _mealCubit.updateMealQuantity(widget.meal!.id!, grams);
+        context.read<MealCubit>().updateMealQuantity(widget.meal!.id!, grams);
       }
     });
   }
+
   // @override
   // void didChangeDependencies() {
   //   super.didChangeDependencies();
@@ -64,7 +68,7 @@ class _CounterWidgetState extends State<CounterWidget> {
       });
 
       if (widget.meal != null && mounted) {
-        _mealCubit.updateMealQuantity(widget.meal!.id!, _count);
+        context.read<MealCubit>().updateMealQuantity(widget.meal!.id!, _count);
       }
     } else {
       _controller.text = _count.toString(); // Reset invalid input
@@ -80,7 +84,7 @@ class _CounterWidgetState extends State<CounterWidget> {
     });
 
     if (widget.meal != null && mounted) {
-      _mealCubit.updateMealQuantity(widget.meal!.id!, _count);
+      context.read<MealCubit>().updateMealQuantity(widget.meal!.id!, _count);
     }
 
     widget.onChanged!(_count);
@@ -94,7 +98,7 @@ class _CounterWidgetState extends State<CounterWidget> {
       });
 
       if (widget.meal != null && mounted) {
-        _mealCubit.updateMealQuantity(widget.meal!.id!, _count);
+        context.read<MealCubit>().updateMealQuantity(widget.meal!.id!, _count);
       }
     }
     widget.onChanged!(_count);
@@ -134,6 +138,14 @@ class _CounterWidgetState extends State<CounterWidget> {
           icon: const Icon(Icons.add_circle_outline),
           onPressed: _increment,
         ),
+        Text(
+          AppLocalKeys.gram.tr(),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 12.sp,
+            fontFamily: "Cairo",
+          ),
+        )
       ],
     );
   }

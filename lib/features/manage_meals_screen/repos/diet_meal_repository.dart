@@ -67,10 +67,15 @@ class DietMealRepository {
   }
 
   Future<ApiResult<void>> assignDietMealToTrainee(
-    UserMealRequestModel userMeal,
-  ) async {
+    UserMealRequestModel userMeal, {
+    bool isUpdate = false,
+  }) async {
     try {
-      await _apiService.assignDietMealForUser(userMeal.toJson());
+      if (isUpdate) {
+        await _apiService.updateDietMealForUser(userMeal.toJson());
+      } else {
+        await _apiService.assignDietMealForUser(userMeal.toJson());
+      }
       log("Success Assign Diet Meal");
       return const ApiResult.success(null);
     } catch (e) {

@@ -9,6 +9,7 @@ import 'package:team_ar/features/users_management/widget/user_status_card.dart';
 import 'package:team_ar/features/users_management/widget/users_table.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/app_assets.dart';
 import '../../../core/widgets/app_bar_back_button.dart';
 
 class UsersAboutToExpireScreen extends StatefulWidget {
@@ -54,7 +55,6 @@ class _UsersAboutToExpireScreenState extends State<UsersAboutToExpireScreen> {
               child: Column(
                 children: [
                   const UsersTable(),
-
                   SizedBox(
                     height: 16.h,
                   ),
@@ -80,14 +80,28 @@ class _UsersAboutToExpireScreenState extends State<UsersAboutToExpireScreen> {
                       ),
                     ),
                   if (state is TraineeSuccess && state.trainees.isEmpty)
-                    Center(
-                      child: Text(
-                        AppLocalKeys.noUsers.tr(),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.black,
-                              fontSize: 21.sp,
-                            ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            AppAssets.emptyPageEmpty,
+                            height: 200.h,
+                            width: 200.w,
+                          ),
+                          SizedBox(
+                            height: 12.h,
+                          ),
+                          Text(
+                            AppLocalKeys.noUsers.tr(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.black.withOpacity(.7),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ],
                       ),
                     ),
                   if (state is TraineeFailure)

@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     SharedPreferencesHelper.getString(AppConstants.userId).then(
       (value) {
-        context.read<UserCubit>().getTrainee(value!);
+        context.read<UserCubit>().getUser(value!);
       },
     );
     super.initState();
@@ -82,6 +82,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ));
                 }
                 if (state is UserSuccess) {
+                  final user = state.userData;
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -96,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           Text(
-                            ",   احمد",
+                            ",   ${user.userName}",
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
@@ -106,8 +108,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SizedBox(
                             width: 8.w,
                           ),
-                          const Icon(Icons.waving_hand,
-                              color: AppColors.newPrimaryColor),
+                          const Icon(
+                            Icons.waving_hand,
+                            color: AppColors.newPrimaryColor,
+                          ),
                         ],
                       ),
                       SizedBox(height: 21.h),
@@ -141,18 +145,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Stack(
                                 children: [
                                   CircleAvatar(
-                                      radius: 30.r,
-                                      backgroundColor:
-                                      AppColors.grey.withOpacity(.2),
-                                      backgroundImage: image != null
-                                          ? FileImage(image!)
-                                          : null,
-                                      child: image != null
-                                          ? null
-                                          : Image.asset(
-                                        AppAssets.avatar,
-                                        color: AppColors.newPrimaryColor,
-                                      )),
+                                    radius: 30.r,
+                                    backgroundColor:
+                                        AppColors.grey.withOpacity(.2),
+                                    backgroundImage: image != null
+                                        ? FileImage(image!)
+                                        : null,
+                                    child: image != null || user.image != null
+                                        ? null
+                                        : Image.asset(
+                                            AppAssets.avatar,
+                                            color: AppColors.newPrimaryColor,
+                                          ),
+                                  ),
                                   Positioned(
                                     bottom: 0,
                                     right: 0,
@@ -173,25 +178,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                       ),
                       SizedBox(height: 16.h),
-
-                      Text(AppLocalKeys.account.tr(),
-                          style: TextStyle(
-                              fontSize: 21.sp, fontWeight: FontWeight.bold)),
+                      Text(
+                        AppLocalKeys.account.tr(),
+                        style: TextStyle(
+                          fontSize: 21.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       SizedBox(
                         height: 30.h,
                       ),
-
                       Text(
                         AppLocalKeys.userName.tr(),
                         style: TextStyle(
-                            fontSize: 12.sp, fontWeight: FontWeight.bold),
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       SizedBox(
                         height: 8.h,
                       ),
                       CustomTextFormField(
                         readOnly: true,
-                        controller: TextEditingController(text: "Ahmed Ramadan"),
+                        controller: TextEditingController(text: user.userName),
                         suffixIcon: Icons.person,
                         prefixIcon: Icons.lock,
                         iconColor: AppColors.newPrimaryColor,
@@ -209,8 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       CustomTextFormField(
                         readOnly: true,
-                        controller:
-                        TextEditingController(text: "ahmed@ramadan.com"),
+                        controller: TextEditingController(text: user.email),
                         suffixIcon: Icons.email_outlined,
                         prefixIcon: Icons.lock,
                         iconColor: AppColors.newPrimaryColor,
@@ -292,7 +300,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(height: 21.h),
                     ],
                   );
-
                 }
                 return const SizedBox();
               },

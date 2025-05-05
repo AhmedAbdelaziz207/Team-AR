@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
@@ -32,7 +31,7 @@ class MealCategory extends StatelessWidget {
           fontSize: 14.sp,
         ),
       ),
-      initiallyExpanded: title == AppLocalKeys.carbs,
+      initiallyExpanded: title == AppLocalKeys.proteins.tr(),
       iconColor: AppColors.black,
       collapsedIconColor: AppColors.black,
       children: meals.map(

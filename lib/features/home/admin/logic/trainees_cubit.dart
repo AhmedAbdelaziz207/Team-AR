@@ -27,6 +27,7 @@ class TraineeCubit extends Cubit<TraineeState> {
       ),
     );
   }
+
   void getAllTrainees() async {
     emit(const TraineeState.loading());
 
@@ -34,9 +35,14 @@ class TraineeCubit extends Cubit<TraineeState> {
     log("trainees Response: $response");
 
     response.whenOrNull(
-      success: (trainees) => emit(
-        TraineeState.success(trainees),
-      ),
+      success: (trainees) {
+        final normalUsers = trainees
+            .where(
+              (user) => user.role?.toLowerCase() != 'admin',
+            )
+            .toList();
+        emit(TraineeState.success(normalUsers));
+      },
       failure: (error) => emit(
         TraineeState.failure(
           error.getErrorsMessage() ?? AppLocalKeys.unexpectedError.tr(),
@@ -44,6 +50,7 @@ class TraineeCubit extends Cubit<TraineeState> {
       ),
     );
   }
+
   void getUsersAboutToExpired() async {
     emit(const TraineeState.loading());
 

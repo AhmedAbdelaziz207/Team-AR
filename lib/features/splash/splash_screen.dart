@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/routing/routes.dart';
+import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_assets.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
 
@@ -17,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Future.delayed(
-      const Duration(seconds: 3),
+      const Duration(seconds: 1),
       () async {
         // Navigator.pushNamed(context, Routes.onboarding);
         await handleNavigation();
@@ -28,12 +29,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(AppAssets.appLogo),
-        ],
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          color: AppColors.newPrimaryColor,
+        ),
       ),
     );
   }

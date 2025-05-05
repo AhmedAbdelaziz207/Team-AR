@@ -22,6 +22,7 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
     getData();
     super.initState();
   }
+
   final List<String> categories = [
     AppLocalKeys.proteins.tr(),
     AppLocalKeys.fats.tr(),
@@ -33,6 +34,7 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
   getData() async {
     context.read<MealCubit>().getMeals();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,35 +58,43 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                     final isSelected = selectedTab == index;
                     return GestureDetector(
                       onTap: () {
-                        setState(() => selectedTab = index);
+                        setState(
+                          () => selectedTab = index,
+                        );
                       },
                       child: Card(
                         elevation: isSelected ? 4 : 1,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                           side: BorderSide(
-                            color: isSelected ? AppColors.lightBlue : Colors.grey.shade300,
+                            color: isSelected
+                                ? AppColors.lightBlue
+                                : Colors.grey.shade300,
                             width: 1.5,
                           ),
                         ),
-                        color: isSelected ? AppColors.lightBlue.withOpacity(0.85) : Colors.white,
-                        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        color: isSelected
+                            ? AppColors.lightBlue.withOpacity(0.85)
+                            : Colors.white,
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(20),
                           onTap: () => setState(() => selectedTab = index),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 12),
                             child: Text(
                               categories[index],
                               style: TextStyle(
-                                color: isSelected ? Colors.white : AppColors.grey,
+                                color:
+                                    isSelected ? Colors.white : AppColors.grey,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                         ),
-                      )
-                      ,
+                      ),
                     );
                   },
                 ),
@@ -97,9 +107,11 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                 child: BlocBuilder<MealCubit, MealState>(
                   builder: (context, state) {
                     return state.maybeMap(
-                      loading: (_) => const Center(child: CircularProgressIndicator()),
+                      loading: (_) =>
+                          const Center(child: CircularProgressIndicator()),
                       failure: (value) => Center(
-                        child: Text(value.message, style: const TextStyle(color: Colors.red)),
+                        child: Text(value.message,
+                            style: const TextStyle(color: Colors.red)),
                       ),
                       loaded: (value) {
                         final filteredMeals = value.meals
@@ -135,5 +147,4 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
       ),
     );
   }
-
 }

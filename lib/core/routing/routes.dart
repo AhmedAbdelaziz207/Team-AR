@@ -15,11 +15,8 @@ class Routes {
   static const managePlansScreen = '/managePlansScreen';
   static const manageMealsScreen = '/manageMealsScreen';
   static const editPlan = '/editPlan';
-
   static const mealDetails = '/mealDetails';
-
   static const addMeal = '/addMeal';
-
   static const selectUserMeals = '/addUserMeals';
 
   static const userInfo = '/userInfo';

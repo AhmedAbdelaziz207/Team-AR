@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
+
 part 'user_diet.g.dart';
 
 @JsonSerializable()
@@ -13,7 +14,7 @@ class UserDiet {
   @JsonKey(name: 'food') // maps to the JSON array you shared
   final DietMealModel? meal;
   final int? foodType;
-
+  final int? numOfGrams;
   final int? totalItems;
   final int? totalCalories;
   final String? note;
@@ -26,6 +27,7 @@ class UserDiet {
     this.totalCalories,
     this.note,
     this.foodType,
+    this.numOfGrams,
   });
 
   factory UserDiet.fromJson(Map<String, dynamic> json) =>

@@ -180,7 +180,7 @@ class AppLocalKeys {
 
   static var noMeals = "No diet plan found";
 
-  static var gram = "gram";
+  static var gram = "Gram";
 
   static var sets = "Sets";
 

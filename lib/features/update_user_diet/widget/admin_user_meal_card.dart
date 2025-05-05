@@ -6,7 +6,7 @@ import '../../../core/utils/app_local_keys.dart';
 
 class AdminMealCard extends StatelessWidget {
   final String mealName;
-  final String calories;
+  final String amount;
   final VoidCallback onReplace;
   final String imageUrl;
 
@@ -14,7 +14,7 @@ class AdminMealCard extends StatelessWidget {
     super.key,
     required this.imageUrl,
     required this.mealName,
-    required this.calories,
+    required this.amount,
     required this.onReplace,
   });
 
@@ -68,7 +68,7 @@ class AdminMealCard extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  "$calories ${AppLocalKeys.gram.tr()}",
+                  "$amount ${AppLocalKeys.gram.tr()}",
                   style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.hintColor,
                       fontFamily: "Cairo",

@@ -51,7 +51,6 @@ class UsersManagementScreen extends StatelessWidget {
                 title: AppLocalKeys.usersAboutToExpire.tr(),
                 cardColor: AppColors.newPrimaryColor,
                 onTap: () {
-
                   Navigator.pushNamed(context, Routes.usersAboutToExpire);
                 },
               ),

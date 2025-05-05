@@ -41,7 +41,7 @@ class RegisterBlocListener extends StatelessWidget {
                   AppConstants.userRole);
 
               if (role?.toLowerCase() == "admin") {
-                Navigator.pushNamed(context, Routes.registerSuccess,arguments: RegisterSuccessModel(
+                Navigator.pushReplacementNamed(context, Routes.registerSuccess,arguments: RegisterSuccessModel(
                   userName: context
                       .read<ConfirmSubscriptionCubit>()
                       .nameController

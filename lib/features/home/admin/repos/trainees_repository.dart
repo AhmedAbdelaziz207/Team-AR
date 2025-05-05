@@ -30,7 +30,7 @@ class TraineesRepository {
 
   Future<ApiResult<List<TraineeModel>>> getNewTrainees() async {
     try {
-      log("getAllTrainees ${apiService.getAllTrainees()}");
+      log("getAllTrainees ${apiService.getNewTrainees()}");
 
       List<TraineeModel> trainees = await apiService.getNewTrainees();
 
