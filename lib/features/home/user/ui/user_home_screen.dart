@@ -9,6 +9,7 @@ import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/home/user/logic/user_cubit.dart';
 import 'package:team_ar/features/home/user/widget/banner_carousel_slider.dart';
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../widget/file_list.dart';
 import '../widget/member_ship_card.dart';
@@ -59,52 +60,68 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Image.asset(
-                          color: AppColors.newPrimaryColor,
-                          AppAssets.appLogo,
-                          height: 100.h,
-                          width: 100.w,
+                        Flexible(
+                          flex: 0,
+                          child: Image.asset(
+                            color: AppColors.newPrimaryColor,
+                            AppAssets.appLogo,
+                            height: 80.h, // Reduced size to prevent overflow
+                            width: 80.w,  // Reduced size to prevent overflow
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.image_not_supported,
+                                size: 80.sp,
+                                color: AppColors.newPrimaryColor,
+                              );
+                            },
+                          ),
                         ),
-                        Column(
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
-                            // Prevent extra space
                             children: [
-                              Text(todayDate,
-                                  style: TextStyle(
-                                    color: AppColors.black,
-                                    fontSize: 16.sp,
-                                    fontFamily: "Cairo",
-                                    fontWeight: FontWeight.w500,
-                                  )),
+                              Text(
+                                todayDate,
+                                style: TextStyle(
+                                  color: AppColors.black,
+                                  fontSize: 16.sp,
+                                  fontFamily: "Cairo",
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                               Text(
                                 AppLocalKeys.yourJourney.tr(),
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium
                                     ?.copyWith(
-                                      fontSize: 16.sp,
-                                      fontFamily: "Cairo",
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                  fontSize: 16.sp,
+                                  fontFamily: "Cairo",
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            ]),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: Positioned(
-                      right: 10,
-                      bottom: 35,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.notifications_none_rounded,
-                          size: 30.sp,
-                          color: AppColors.black,
-                        ),
-                        onPressed: () {},
+                  Positioned(
+                    right: 10,
+                    bottom: 35,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.notifications_none_rounded,
+                        size: 30.sp,
+                        color: AppColors.black,
                       ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, Routes.notification);
+                      },
                     ),
                   )
                 ]),
