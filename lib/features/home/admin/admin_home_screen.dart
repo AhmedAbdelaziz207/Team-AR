@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:team_ar/core/routing/app_router.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/features/home/admin/logic/trainees_cubit.dart';
 import 'package:team_ar/features/home/admin/logic/trainees_state.dart';
@@ -10,7 +9,6 @@ import 'package:team_ar/features/home/admin/widget/new_trainee_card.dart';
 import 'package:team_ar/features/home/admin/widget/user_info_section.dart';
 import '../../../core/utils/app_assets.dart';
 import '../../../core/utils/app_local_keys.dart';
-import '../../notification/test.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -47,12 +45,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NotificationTestPage(),
-                ),
-              );
+
             },
 
             icon: Icon(
