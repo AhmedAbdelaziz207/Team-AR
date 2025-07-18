@@ -2,11 +2,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/routing/app_router.dart';
-import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_theme.dart';
 
 class App extends StatelessWidget {
-  const App({super.key});
+  const App({super.key, required this.initialRoute});
+
+  final String initialRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class App extends StatelessWidget {
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
-          initialRoute: Routes.splash,
+          initialRoute: initialRoute,
           theme: appTheme(context),
           onGenerateRoute: AppRouter.onGenerateRoute,
         );

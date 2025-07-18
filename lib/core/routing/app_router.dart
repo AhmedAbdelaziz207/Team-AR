@@ -5,7 +5,10 @@ import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/features/add_workout/model/add_workout_params.dart';
 import 'package:team_ar/features/auth/login/ui/login_screen.dart';
 import 'package:team_ar/features/auth/register/logic/register_cubit.dart';
+import 'package:team_ar/features/auth/register/model/user_model.dart';
 import 'package:team_ar/features/auth/register/register_screen.dart';
+import 'package:team_ar/features/chat/logic/chat_cubit.dart';
+import 'package:team_ar/features/chat/ui/message_screen.dart';
 import 'package:team_ar/features/confirm_subscription/confirm_subscription_screen.dart';
 import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_cubit.dart';
 import 'package:team_ar/features/home/admin/data/trainee_model.dart';
@@ -236,13 +239,23 @@ class AppRouter {
             ),
           ),
         );
-      default:
+
+      case Routes.chat:
+        final user =  settings?.arguments as UserModel;
         return MaterialPageRoute(
-          builder: (context) => Scaffold(
-            body: Center(
-              child: Text('No route defined for ${settings?.name}'),
+          builder: (context) => BlocProvider(
+            create: (context) => ChatCubit(),
+            child: MessagesScreen(
+              receiver: user,
             ),
           ),
+        );
+      default:
+        return MaterialPageRoute(
+          builder: (context) {
+            Navigator.of(context);
+            return const Scaffold();
+          },
         );
     }
   }

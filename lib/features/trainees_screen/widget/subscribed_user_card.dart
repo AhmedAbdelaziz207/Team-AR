@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
+import '../../../core/network/api_endpoints.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/utils/app_assets.dart';
 import '../../../core/widgets/status_badge.dart';
@@ -36,7 +37,7 @@ class SubscribedUserCard extends StatelessWidget {
                         AppAssets.avatar,
                       )
                     : NetworkImage(
-                        trainer.image!,
+                        ApiEndPoints.usersImagesBaseUrl + trainer.image!,
                       ),
                 radius: 24,
               ),
@@ -52,7 +53,9 @@ class SubscribedUserCard extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           StatusBadge(
-            status: trainer.remindDays! > 0 ? AppLocalKeys.active.tr() : AppLocalKeys.expired.tr(),
+            status: trainer.remindDays! > 0
+                ? AppLocalKeys.active.tr()
+                : AppLocalKeys.expired.tr(),
           ),
         ],
       ),

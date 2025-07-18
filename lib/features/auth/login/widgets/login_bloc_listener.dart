@@ -28,7 +28,6 @@ class LoginBlocListener extends StatelessWidget {
             );
           }
         }, loginSuccess: (loginResponse) {
-          // Navigator.pushNamed(context, Routes.adminLanding);
           navigateToHomeScreen(context, loginResponse);
         });
       },
@@ -39,16 +38,13 @@ class LoginBlocListener extends StatelessWidget {
   }
 
   void navigateToHomeScreen(BuildContext context, LoginResponse loginResponse) {
-    if (loginResponse.role?.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
-      Navigator.pushNamed(context, Routes.adminLanding);
+    if (loginResponse.role?.toLowerCase() ==
+        UserRole.Admin.name.toLowerCase()) {
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.adminLanding, (arguments) => false);
     } else {
-      Navigator.pushNamed(context, Routes.rootScreen);
-    }
-
-    if (loginResponse.role == UserRole.User.name) {
-      /// Navigate to User Home Screen
-
-      // Navigator.pushNamed(context, Routes.adminHome);
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.rootScreen, (arguments) => false);
     }
   }
 }

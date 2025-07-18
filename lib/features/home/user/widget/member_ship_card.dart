@@ -35,7 +35,6 @@ class MemberShipCard extends StatelessWidget {
               ),
               success: (user) {
                 saveUserExerciseInfo(user.userData);
-
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

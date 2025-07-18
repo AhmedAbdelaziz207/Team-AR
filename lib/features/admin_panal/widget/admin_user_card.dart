@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/utils/app_assets.dart';
 import 'package:team_ar/features/home/admin/data/trainee_model.dart';
+import '../../../core/network/api_endpoints.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 
 class AdminUserCard extends StatelessWidget {
-  const AdminUserCard({super.key, this.trainee});
+  const AdminUserCard({
+    super.key,
+    this.trainee,
+  });
 
   final TraineeModel? trainee;
 
@@ -30,7 +34,7 @@ class AdminUserCard extends StatelessWidget {
                     AppAssets.avatar,
                   )
                 : NetworkImage(
-                    trainee!.image!,
+                    ApiEndPoints.usersImagesBaseUrl + trainee!.image!,
                   ),
           ),
           const SizedBox(

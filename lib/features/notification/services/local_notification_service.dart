@@ -147,6 +147,8 @@ class LocalNotificationService {
         enableVibration: true,
         enableLights: true,
         ledColor: NotificationHelper.getNotificationColor(notification.type),
+        ledOnMs: 1000,
+        ledOffMs: 500,
         ticker: notification.title,
       );
 

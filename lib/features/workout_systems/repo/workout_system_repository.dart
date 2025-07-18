@@ -13,7 +13,7 @@ class WorkoutSystemRepository {
 
   WorkoutSystemRepository(this._apiService);
 
-  Future<ApiResult<String>> getWorkout(int id ) async {
+  Future<ApiResult<WorkoutSystemModel>> getWorkout(int id ) async {
     try {
       final data = await _apiService.getWorkout(id);
       return ApiResult.success(data);

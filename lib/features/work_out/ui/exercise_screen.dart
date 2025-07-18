@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +31,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   }
 
   void loadData() async {
+    log("Get Workout with Id ${await SharedPreferencesHelper.getInt(AppConstants.exerciseId)}");
+
     await SharedPreferencesHelper.getInt(AppConstants.exerciseId).then(
       (value) {
         context.read<WorkoutCubit>().getWorkout(value);
@@ -48,8 +52,10 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
         ),
         title: Text(
           AppLocalKeys.workouts.tr(),
-          style:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
       ),
@@ -57,14 +63,14 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
         builder: (context, state) {
           if (state is WorkoutSuccess) {
             return SfPdfViewer.network(
-              '${ApiEndPoints.baseUrl}/Exercises/4224ea72-8e6d-4df2-a61a-6d25d15f323cdummy.pdf',
+              '${ApiEndPoints.baseUrl}/Exercises/${state.url}',
             );
           }
 
           if (state is WorkoutFailure) {
             return Center(
               child: Text(
-                state.message,
+                AppLocalKeys.noWorkouts.tr(),
                 style: TextStyle(
                   color: Colors.red,
                   fontSize: 20.sp,

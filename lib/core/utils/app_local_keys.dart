@@ -260,4 +260,6 @@ class AppLocalKeys {
 
   static var replace = "Replace";
 
+  static var mustBeAlphanumeric = "Must be alphanumeric";
+
 }

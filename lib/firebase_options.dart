@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAvy-yFST1mx9aMQ2acNyvrTm3pxQPJF1Q',
-    appId: '1:104561655905:android:edaa0c173b0694d7396a20',
-    messagingSenderId: '104561655905',
-    projectId: 'team-ar-app',
-    storageBucket: 'team-ar-app.firebasestorage.app',
+    apiKey: 'AIzaSyAZB-BNJXmQvy46gtGPe7Y-Ex4DVFJ0QZM',
+    appId: '1:516254771758:android:c1c77eed876f1b341b4dbf',
+    messagingSenderId: '516254771758',
+    projectId: 'teamar-a88ba',
+    storageBucket: 'teamar-a88ba.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBDCrbjX3A5W4NmARXJ_mOk4YcdUh_WLVQ',
-    appId: '1:104561655905:ios:0a013dbade0ab523396a20',
-    messagingSenderId: '104561655905',
-    projectId: 'team-ar-app',
-    storageBucket: 'team-ar-app.firebasestorage.app',
+    apiKey: 'AIzaSyB1-9ywxFapltZOS_BBiPJePZDdJuk7ZlA',
+    appId: '1:516254771758:ios:ecb5603b99ba1eaa1b4dbf',
+    messagingSenderId: '516254771758',
+    projectId: 'teamar-a88ba',
+    storageBucket: 'teamar-a88ba.firebasestorage.app',
     iosBundleId: 'com.thecore.baseApp',
   );
+
 }

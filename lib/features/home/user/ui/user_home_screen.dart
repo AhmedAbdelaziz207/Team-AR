@@ -23,28 +23,28 @@ class UserHomeScreen extends StatefulWidget {
 class _UserHomeScreenState extends State<UserHomeScreen> {
   @override
   void initState() {
-    log("Get User Id from SharedPref");
-   loadData();
+    loadData();
     super.initState();
   }
 
   loadData() async {
-  await  SharedPreferencesHelper.getString(AppConstants.userId).then(
-          (value) {
-        log("Get User Data ");
+    await SharedPreferencesHelper.getString(AppConstants.userId).then(
+      (value) {
         context.read<UserCubit>().getUser(value!);
       },
     );
-
   }
+
   @override
   Widget build(BuildContext context) {
-    String todayDate = DateFormat('EEEE d MMM').format(DateTime.now());
+    log(context.locale.languageCode.toString());
+    String todayDate = DateFormat('EEEE d MMM', context.locale.languageCode)
+        .format(DateTime.now());
 
     return Scaffold(
         backgroundColor: AppColors.white,
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(110.h),
+          preferredSize: Size.fromHeight(120.h),
           child: AppBar(
             automaticallyImplyLeading: false,
             backgroundColor: AppColors.white,
@@ -54,50 +54,57 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Stack(children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Image.asset(
-                        color: AppColors.newPrimaryColor,
-                        AppAssets.appLogo,
-                        height: 100.h,
-                        width: 100.w,
-                      ),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          // Prevent extra space
-                          children: [
-                            Text(todayDate,
-                                style: TextStyle(
-                                  color: AppColors.black,
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
-                                )),
-                            Text(
-                              AppLocalKeys.yourJourney.tr(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          color: AppColors.newPrimaryColor,
+                          AppAssets.appLogo,
+                          height: 100.h,
+                          width: 100.w,
+                        ),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            // Prevent extra space
+                            children: [
+                              Text(todayDate,
+                                  style: TextStyle(
+                                    color: AppColors.black,
                                     fontSize: 16.sp,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          ]),
-                    ],
+                                    fontFamily: "Cairo",
+                                    fontWeight: FontWeight.w500,
+                                  )),
+                              Text(
+                                AppLocalKeys.yourJourney.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      fontSize: 16.sp,
+                                      fontFamily: "Cairo",
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                            ]),
+                      ],
+                    ),
                   ),
-                  Positioned(
-                    right: 10,
-                    bottom: 35,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.notifications_none_rounded,
-                        size: 30.sp,
-                        color: AppColors.black,
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: Positioned(
+                      right: 10,
+                      bottom: 35,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.notifications_none_rounded,
+                          size: 30.sp,
+                          color: AppColors.black,
+                        ),
+                        onPressed: () {},
                       ),
-                      onPressed: () {
-                      },
                     ),
                   )
                 ]),

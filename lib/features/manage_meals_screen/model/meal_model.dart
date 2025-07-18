@@ -9,11 +9,11 @@ class DietMealModel extends Equatable {
   final String? name;
   final bool? isSelected;
   final String? imageURL;
-  final int? numOfGrams;
-  final int? numOfCalories;
-  final int? numOfProtein;
-  final int? numOfCarbs;
-  final int? numOfFats;
+  final double? numOfGrams;
+  final double? numOfCalories;
+  final double? numOfProtein;
+  final double? numOfCarbs;
+  final double? numOfFats;
   final int? foodCategory;
   @JsonKey(ignore: true)
   final String? image;
@@ -43,11 +43,11 @@ class DietMealModel extends Equatable {
     String? name,
     bool? isSelected,
     String? imageURL,
-    int? numOfGrams,
-    int? numOfCalories,
-    int? numOfProtein,
-    int? numOfCarbs,
-    int? numOfFats,
+    double? numOfGrams,
+    double? numOfCalories,
+    double? numOfProtein,
+    double? numOfCarbs,
+    double? numOfFats,
     int? foodCategory,
     String? image,
   }) {

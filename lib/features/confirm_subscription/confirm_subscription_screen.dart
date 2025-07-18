@@ -9,6 +9,8 @@ import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription
 import 'package:team_ar/features/confirm_subscription/widget/confirm_subscription_form.dart';
 import 'package:team_ar/core/widgets/plans_list_card.dart';
 import 'package:team_ar/features/confirm_subscription/widget/register_bloc_listener.dart';
+import '../../core/prefs/shared_pref_manager.dart';
+import '../../core/utils/app_constants.dart';
 import '../../core/utils/app_local_keys.dart';
 import '../plans_screen/model/user_plan.dart';
 
@@ -74,9 +76,10 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
               Text(
                 AppLocalKeys.forSubscription.tr(),
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontSize: 14.sp,
-                    color: AppColors.lightGrey,
-                    fontWeight: FontWeight.w500),
+                      fontSize: 14.sp,
+                      color: AppColors.lightGrey,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               SizedBox(height: 21.h),
               const ConfirmSubscriptionForm(),
@@ -118,7 +121,15 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                     child: state is SubscriptionLoading
                         ? const CircularProgressIndicator()
                         : MaterialButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              final role =
+                                  await SharedPreferencesHelper.getString(
+                                      AppConstants.userRole);
+
+                              if (role?.toLowerCase() != "admin") {
+                                showComingSoonDialog(context);
+                              }
+
                               if (context
                                       .read<ConfirmSubscriptionCubit>()
                                       .formKey
@@ -131,7 +142,6 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                                     .read<ConfirmSubscriptionCubit>()
                                     .subscribe();
                               }
-
                             },
                             color: AppColors.newPrimaryColor,
                             padding: EdgeInsets.symmetric(
@@ -157,4 +167,32 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
       ),
     );
   }
+}
+
+void showComingSoonDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.info_outline, color: Colors.blue),
+            SizedBox(width: 8),
+            Text('Coming Soon'),
+          ],
+        ),
+        content: const Text(
+          'This feature will be enabled for users soon. Stay tuned!',
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK', style: TextStyle(color: Colors.blue)),
+          ),
+        ],
+      );
+    },
+  );
 }

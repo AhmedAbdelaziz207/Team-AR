@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/features/home/admin/logic/trainees_cubit.dart';
 import 'package:team_ar/features/home/admin/logic/trainees_state.dart';
-
 import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_local_keys.dart';

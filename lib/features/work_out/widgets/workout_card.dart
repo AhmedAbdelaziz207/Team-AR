@@ -1,6 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:team_ar/core/utils/app_local_keys.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_assets.dart';
@@ -65,7 +66,7 @@ class WorkoutCard extends StatelessWidget {
 
                   // Workout Title
                   Text(
-                    "Workout",
+                    AppLocalKeys.workouts.tr(),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 22.sp,
@@ -94,7 +95,7 @@ class WorkoutCard extends StatelessWidget {
                         Navigator.pushNamed(context, Routes.exercise);
                       },
                       child: Text(
-                        "View details",
+                        AppLocalKeys.seeDetails.tr(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14.sp,

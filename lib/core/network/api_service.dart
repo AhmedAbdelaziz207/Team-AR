@@ -4,6 +4,7 @@ import 'package:team_ar/features/auth/login/model/login_response.dart';
 import 'package:team_ar/features/auth/register/model/user_model.dart';
 import 'package:team_ar/features/diet/model/user_diet.dart';
 import '../../features/auth/register/model/register_response.dart';
+import '../../features/chat/model/chat_model.dart';
 import '../../features/home/admin/data/trainee_model.dart';
 import '../../features/manage_meals_screen/model/meal_model.dart';
 import '../../features/plans_screen/model/user_plan.dart';
@@ -15,7 +16,10 @@ part 'api_service.g.dart';
 
 @RestApi(baseUrl: ApiEndPoints.baseUrl)
 abstract class ApiService {
-  factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
+  factory ApiService(
+    Dio dio, {
+    String baseUrl,
+  }) = _ApiService;
 
   @POST(ApiEndPoints.login)
   Future<LoginResponse> login(
@@ -60,7 +64,7 @@ abstract class ApiService {
     @Body() Map<String, dynamic> body,
   );
 
-  @PUT(ApiEndPoints.addDietMealForUser)
+  @PUT(ApiEndPoints.updateDietMealForUser)
   Future<void> updateDietMealForUser(
     @Body() Map<String, dynamic> body,
   );
@@ -80,8 +84,8 @@ abstract class ApiService {
   @GET(ApiEndPoints.exercise)
   Future<List<WorkoutSystemModel>> getWorkoutSystems();
 
-  @GET(ApiEndPoints.exercise)
-  Future<String> getWorkout(@Query("Id") int id);
+  @GET("${ApiEndPoints.exercise}/{Id}")
+  Future<WorkoutSystemModel> getWorkout(@Path("Id") int id);
 
   @DELETE(ApiEndPoints.exercise)
   Future<void> deleteWorkoutSystem(@Query("Id") int id);
@@ -91,4 +95,17 @@ abstract class ApiService {
     @Query("ExerciseId") int workoutId,
     @Query("UserId") String userId,
   );
+
+  @GET(ApiEndPoints.allChats)
+  Future<List<UserModel>> getAllChas();
+
+  @GET(ApiEndPoints.chat)
+  Future<List<ChatMessageModel>> getChat(@Query("receiverId") String id);
+
+  @POST(ApiEndPoints.sendMessage)
+  Future<void> sendMessage(@Body() Map<String, dynamic> body);
+
+  @DELETE(ApiEndPoints.deleteChat)
+  Future<void> deleteMessage({@Query("MessageID") required String id});
+
 }

@@ -141,8 +141,10 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
         backgroundColor: AppColors.lightBlue,
         child: const Icon(Icons.add, color: Colors.white),
         onPressed: () async {
-          await Navigator.pushNamed(context, Routes.addMeal);
           getData();
+          await Navigator.pushNamed(context, Routes.addMeal).then(
+            (value) => getData(),
+          );
         },
       ),
     );

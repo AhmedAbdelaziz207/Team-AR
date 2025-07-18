@@ -74,8 +74,8 @@ class _WorkoutSystemsScreenState extends State<WorkoutSystemsScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => BlocProvider(
@@ -83,6 +83,8 @@ class _WorkoutSystemsScreenState extends State<WorkoutSystemsScreen> {
                 child: const CreateWorkoutScreen(),
               ),
             ),
+          ).then(
+            (value) => context.read<WorkoutSystemCubit>().getWorkoutSystems(),
           );
         },
         backgroundColor: AppColors.primaryColor,

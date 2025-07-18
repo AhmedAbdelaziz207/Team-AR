@@ -49,7 +49,7 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
     return UserModel(
       id: 0,
       // Keep as default or update based on logic
-      userName: nameController.text,
+      userName: nameController.text.trim(),
       age: int.tryParse(ageController.text) ?? 0,
       address: addressController.text,
       phone: phoneController.text,

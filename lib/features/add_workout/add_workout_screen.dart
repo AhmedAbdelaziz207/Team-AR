@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,6 +34,7 @@ class _AddWorkoutScreenState extends State<AddWorkoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log("selectedWorkoutId: $_selectedWorkoutId");
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -114,11 +117,14 @@ class _AddWorkoutScreenState extends State<AddWorkoutScreen> {
                 },
               ),
             ),
-            BlocBuilder<WorkoutSystemCubit, WorkoutSystemState>(
+            BlocConsumer<WorkoutSystemCubit, WorkoutSystemState>(
+             listener: (context, state) {
+               if (state is WorkoutSystemAssignedSuccess) {
+                 if (mounted) Navigator.pop(context); // ✅ Safe place to do this
+               }
+             },
               builder: (context, state) {
-                if (state is WorkoutSystemAssignedSuccess) {
-                  Navigator.pop(context);
-                }
+
 
                 return ElevatedButton(
                   onPressed: () {

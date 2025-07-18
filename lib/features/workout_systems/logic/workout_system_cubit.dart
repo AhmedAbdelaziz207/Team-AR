@@ -1,10 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/features/workout_systems/logic/workout_system_state.dart';
 import 'package:team_ar/features/workout_systems/model/workout_system_model.dart';
-
 import '../../../core/di/dependency_injection.dart';
 import '../../../core/network/api_result.dart';
 import '../../../core/network/api_service.dart';
@@ -12,8 +10,9 @@ import '../repo/workout_system_repository.dart';
 
 class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
   WorkoutSystemCubit() : super(const WorkoutSystemState.initial());
-  final WorkoutSystemRepository repo =
-      WorkoutSystemRepository(getIt<ApiService>());
+  final WorkoutSystemRepository repo = WorkoutSystemRepository(
+    getIt<ApiService>(),
+  );
   final nameController = TextEditingController();
   File? workoutPdf;
 

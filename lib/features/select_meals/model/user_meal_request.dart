@@ -24,7 +24,7 @@ class UserMealRequestModel {
 class FoodItem {
   final int? foodId;
   final String? note;
-  final int? numOfGrams;
+  final double? numOfGrams;
 
   FoodItem({
      this.foodId,

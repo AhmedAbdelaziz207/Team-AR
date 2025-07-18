@@ -28,13 +28,16 @@ class AdminManageCard extends StatelessWidget {
       padding: EdgeInsets.all(16.sp),
       child: Stack(
         children: [
-          const Positioned(
-            right: -10,
-            bottom: 20,
-            child: Icon(
-              Icons.fitness_center, // Represents a dumbbell
-              size: 80,
-              color: AppColors.primaryColor,
+          const Align(
+            alignment:  AlignmentDirectional.bottomEnd,
+            child: Positioned(
+              right: -10,
+              bottom: 20,
+              child: Icon(
+                Icons.fitness_center, // Represents a dumbbell
+                size: 80,
+                color: AppColors.primaryColor,
+              ),
             ),
           ),
           Column(

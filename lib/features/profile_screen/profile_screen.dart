@@ -65,6 +65,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: BlocBuilder<UserCubit, UserState>(
+              buildWhen: (context, state) =>
+                  state is UserLoading ||
+                  state is UserSuccess ||
+                  state is UserFailure,
               builder: (context, state) {
                 if (state is UserLoading) {
                   return const Center(child: CircularProgressIndicator());

@@ -14,7 +14,7 @@ class MealsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalCalories = userDiet
+    final double totalCalories = userDiet
         .map((e) => e.meal?.numOfCalories ?? 0)
         .fold(0, (sum, cal) => sum + cal);
 

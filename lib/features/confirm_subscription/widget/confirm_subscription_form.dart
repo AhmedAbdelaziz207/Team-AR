@@ -22,7 +22,15 @@ class ConfirmSubscriptionForm extends StatelessWidget {
           CustomTextFormField(
             controller: cubit.nameController,
             suffixIcon: Icons.person,
-            hintText: AppLocalKeys.name.tr(),
+            hintText: AppLocalKeys.userName.tr(),
+            validator: (value) {
+
+                final regex = RegExp(r'^[a-zA-Z0-9]+$');
+                 if (!regex.hasMatch(value!)) {
+                  return '${AppLocalKeys.userName.tr()} ${AppLocalKeys.mustBeAlphanumeric.tr()}';
+                }
+
+            },
           ),
           SizedBox(height: 8.h),
           CustomTextFormField(

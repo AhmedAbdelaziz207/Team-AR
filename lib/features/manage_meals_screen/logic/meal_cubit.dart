@@ -77,10 +77,10 @@ class MealCubit extends Cubit<MealState> {
       diet: DietMealModel(
         id: 0,
         name: nameController.text,
-        numOfCalories: int.parse(caloriesController.text),
-        numOfCarbs: int.parse(carbsController.text),
-        numOfFats: int.parse(fatController.text),
-        numOfProtein: int.parse(proteinController.text),
+        numOfCalories: double.parse(caloriesController.text),
+        numOfCarbs: double.parse(carbsController.text),
+        numOfFats: double.parse(fatController.text),
+        numOfProtein: double.parse(proteinController.text),
         foodCategory: mealType,
       ),
       dietImage: image!,
@@ -101,9 +101,9 @@ class MealCubit extends Cubit<MealState> {
     );
   }
 
-  int totalCalories = 0;
+  double totalCalories = 0;
 
-  void toggleMealSelection(int mealId, int quantity) {
+  void toggleMealSelection(int mealId, double quantity) {
     final currentState = state;
 
     if (currentState is MealsLoaded) {
@@ -120,7 +120,7 @@ class MealCubit extends Cubit<MealState> {
     }
   }
 
-  void updateMealQuantity(int mealId, int newQuantity) {
+  void updateMealQuantity(int mealId, double newQuantity) {
     final currentState = state;
 
     if (currentState is MealsLoaded) {
@@ -137,8 +137,8 @@ class MealCubit extends Cubit<MealState> {
     }
   }
 
-  int calculateTotalCalories(List<DietMealModel> meals) {
-    int total = 0;
+  double calculateTotalCalories(List<DietMealModel> meals) {
+    double total = 0;
     for (var meal in meals) {
       if (meal.isSelected ?? false) {
         final grams = meal.numOfGrams ?? 0;

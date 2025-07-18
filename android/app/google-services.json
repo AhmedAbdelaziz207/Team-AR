@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "104561655905",
-    "project_id": "team-ar-app",
-    "storage_bucket": "team-ar-app.firebasestorage.app"
+    "project_number": "516254771758",
+    "project_id": "teamar-a88ba",
+    "storage_bucket": "teamar-a88ba.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:104561655905:android:edaa0c173b0694d7396a20",
+        "mobilesdk_app_id": "1:516254771758:android:c1c77eed876f1b341b4dbf",
         "android_client_info": {
-          "package_name": "TeamAR.team_ar"
+          "package_name": "com.thecore.team_ar"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAvy-yFST1mx9aMQ2acNyvrTm3pxQPJF1Q"
+          "current_key": "AIzaSyAZB-BNJXmQvy46gtGPe7Y-Ex4DVFJ0QZM"
         }
       ],
       "services": {

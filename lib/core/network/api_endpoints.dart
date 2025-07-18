@@ -1,6 +1,7 @@
 class ApiEndPoints {
   static const baseUrl = "http://gymapp.runasp.net/";
   static const imagesBaseUrl = "http://gymapp.runasp.net/Images/FoodImages/";
+  static const usersImagesBaseUrl = "http://gymapp.runasp.net/Images/UserImages/";
   static const login = "api/Account/Login";
   static const plans = "api/Package";
   static const trainerDataById = "/api/TrainerData/GetById";
@@ -11,11 +12,14 @@ class ApiEndPoints {
   static const getUserAboutToExpire = "/api/Account/GetUsersNearExpirePackage";
   static const dietMeals = "api/Food";
   static const addDietMealForUser = "/api/UserFood/AddFoodsToUser";
+  static const updateDietMealForUser = "/api/UserFood";
   static const getUserById = "api/Account/GetUserById";
   static const getUserDiet = "api/UserFood/GetFoodsForUser";
   static const exercise = "api/Exercise";
   static const addExerciseForUser = "api/Account/AddExerciseToUser";
-
   static var updateUserImage = "api/Account/UpdateImage";
-
+  static const allChats = "api/Chat/GetContactUsers";
+  static const chat = "api/Chat/GetChat";
+  static const deleteChat = "api/Chat";
+  static const sendMessage = "api/Chat/send";
 }

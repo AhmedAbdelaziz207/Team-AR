@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,6 +6,8 @@ import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/widgets/plans_list_card.dart';
 import 'package:team_ar/features/manage_plans/widget/plans_dialog.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_state.dart';
+import '../../../core/utils/app_local_keys.dart';
+import '../../../core/widgets/app_bar_back_button.dart';
 import '../../plans_screen/logic/user_plans_cubit.dart';
 
 class ManagePlansScreen extends StatefulWidget {
@@ -33,6 +36,20 @@ class _ManagePlansScreenState extends State<ManagePlansScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
+      appBar:  AppBar(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        centerTitle: true,
+        leading:  const AppBarBackButton(),
+        title: Text(
+          AppLocalKeys.managePlans.tr(),
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.black,
+                fontSize: 21.sp,
+              ),
+        ),
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {

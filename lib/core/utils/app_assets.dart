@@ -18,4 +18,6 @@ class AppAssets {
   static const avatar = "assets/images/avatar.png";
   static const iconCart = "assets/icons/cart.png";
   static const progressWave = "assets/images/progress_wave.png";
+  static const noData = "assets/images/no_data.jpg";
+  static const hungry = "assets/images/hungry.jpg";
 }

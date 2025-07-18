@@ -17,7 +17,7 @@ final getIt = GetIt.instance;
 Future<void> setupServiceLocator() async {
   // Dio and ApiService
   Dio dio = await DioFactory.getDio();
-  getIt.registerLazySingleton<ApiService>(() => ApiService(dio));
+  getIt.registerFactory<ApiService>(() => ApiService(dio));
 
   // Login
   getIt.registerLazySingleton(() => LoginRepository(getIt()));

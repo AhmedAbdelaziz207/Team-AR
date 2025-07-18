@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'trainee_model.g.dart';
@@ -19,7 +21,7 @@ class TraineeModel {
   final String? role;
   final int? exerciseId;
   final String? gender;
-  @JsonKey(name: 'imageUrl')
+  @JsonKey(name: 'imageURL')
   final String? image;
   @JsonKey(name: 'phoneNumber')
   final String? phone;
@@ -64,10 +66,15 @@ class TraineeModel {
     if (startPackage == null || endPackage == null || remindDays == null) {
       return 0;
     }
+
     int? totalDays = endPackage?.difference(startPackage!).inDays;
-    if (totalDays! <= 0 ){
-      return 0 ;
+    if (totalDays == null || totalDays <= 0) {
+      return 0;
     }
-    return ((totalDays - remindDays!) / totalDays) ;
+
+    log("totalDays : $totalDays");
+
+    double remainingRatio = remindDays!  / totalDays;
+    return (remainingRatio * 10).clamp(0.0, 10.0);
   }
 }

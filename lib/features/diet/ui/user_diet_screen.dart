@@ -2,10 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/utils/app_assets.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/diet/logic/user_diet_state.dart';
 import 'package:team_ar/features/diet/widgets/meal_list.dart';
-import '../../manage_meals_screen/model/meal_model.dart';
 import '../logic/user_diet_cubit.dart';
 import '../model/user_diet.dart';
 
@@ -65,24 +65,25 @@ class _UserDietScreenState extends State<UserDietScreen> {
                           ),
                           child: state.maybeMap(
                             orElse: () => const Text("Not found "),
-                            // success: (value) => value.diet.isEmpty
-                            //     ?  Center(
-                            //         child: Text(
-                            //       AppLocalKeys.noMeals.tr(),
-                            //       style: TextStyle(
-                            //         color: AppColors.black,
-                            //         fontSize: 20.sp,
-                            //         fontWeight: FontWeight.bold,
-                            //         fontFamily: "Cairo",
-                            //       ),
-                            //         ))
                             success: (value) {
                               final userDietList = value.diet;
 
                               // Return empty if null or empty
-                              if (userDietList == null ||
-                                  userDietList.isEmpty) {
-                                return const SizedBox.shrink();
+                              if (userDietList.isEmpty) {
+                                return Column(
+                                  children: [
+                                    Image.asset(AppAssets.hungry),
+                                    Text(
+                                      AppLocalKeys.noMeals.tr(),
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 22.sp,
+                                        fontFamily: "Cairo",
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                );
                               }
 
                               // Group meals by foodType
@@ -103,7 +104,6 @@ class _UserDietScreenState extends State<UserDietScreen> {
                                 ),
                               );
                             },
-
                             failure: (value) => Center(
                               child: Text(
                                 value.errorMessage.message ??

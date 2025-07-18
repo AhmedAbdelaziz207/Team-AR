@@ -14,7 +14,7 @@ class CounterWidget extends StatefulWidget {
   });
 
   final DietMealModel? meal;
-  final void Function(int value)? onChanged;
+  final void Function(double value)? onChanged;
 
   @override
   State<CounterWidget> createState() => _CounterWidgetState();
@@ -22,7 +22,7 @@ class CounterWidget extends StatefulWidget {
 
 class _CounterWidgetState extends State<CounterWidget> {
   final TextEditingController _controller = TextEditingController();
-  int _count = 100;
+  double _count = 100;
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _CounterWidgetState extends State<CounterWidget> {
 
     _controller.addListener(() {
       final text = _controller.text;
-      final grams = int.tryParse(text);
+      final  grams = double.tryParse(text);
       if (grams != null && widget.meal != null) {
         context.read<MealCubit>().updateMealQuantity(widget.meal!.id!, grams);
       }
@@ -61,7 +61,7 @@ class _CounterWidgetState extends State<CounterWidget> {
   // }
 
   void _updateCount(String value) {
-    final parsed = int.tryParse(value);
+    final double? parsed = double.tryParse(value);
     if (parsed != null && parsed >= 0) {
       setState(() {
         _count = parsed;

@@ -20,9 +20,28 @@ class MealCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible(
       key: UniqueKey(),
+      direction: DismissDirection.startToEnd,
       onDismissed: (direction) {
         context.read<MealCubit>().deleteMeal(meal!.id!);
       },
+      background: Container(
+        alignment: AlignmentDirectional.centerStart,
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        margin: EdgeInsets.all(8.r),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(20.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 2,
+              blurRadius: 2,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
       child: Container(
         padding: EdgeInsets.all(16.r),
         margin: EdgeInsets.all(8.r),

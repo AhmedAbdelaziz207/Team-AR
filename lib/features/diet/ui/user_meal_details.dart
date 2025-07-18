@@ -18,7 +18,7 @@ class UserMealDetails extends StatelessWidget {
           // Background Image (below sheet)
           Positioned.fill(
             child: Image.network(
-                ApiEndPoints.imagesBaseUrl + meal!.imageURL! ?? "",
+                ApiEndPoints.imagesBaseUrl + meal!.imageURL!,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
               return Container(
@@ -67,16 +67,6 @@ class UserMealDetails extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 8.h),
-                    // Text(
-                    //   'سلطة (طماطم وجزر وفلفل وخيار)',
-                    //   textAlign: TextAlign.right,
-                    //   style: TextStyle(
-                    //     fontSize: 16.sp,
-                    //     color: Colors.grey[700],
-                    //     fontFamily: "Cairo",
-                    //   ),
-                    // ),
-                    // SizedBox(height: 20.h),
                     Wrap(
                       spacing: 8.w,
                       runSpacing: 8.h,

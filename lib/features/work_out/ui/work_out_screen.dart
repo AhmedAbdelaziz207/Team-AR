@@ -16,7 +16,7 @@ class WorkOutScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(110.h),
+        preferredSize: Size.fromHeight(120.h),
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: AppColors.white,
@@ -26,48 +26,54 @@ class WorkOutScreen extends StatelessWidget {
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Stack(children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Image.asset(
-                      AppAssets.appLogo,
-                      height: 100.h,
-                      width: 100.w,
-                      color: AppColors.newPrimaryColor,
-                    ),
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        // Prevent extra space
-                        children: [
-                          Text(todayDate,
-                              style: TextStyle(
-                                color: AppColors.black,
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        AppAssets.appLogo,
+                        height: 100.h,
+                        width: 100.w,
+                        color: AppColors.newPrimaryColor,
+                      ),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          // Prevent extra space
+                          children: [
+                            Text(todayDate,
+                                style: TextStyle(
+                                  color: AppColors.black,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
+                                )),
+                            Text(
+                              AppLocalKeys.yourJourney.tr(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
                                 fontSize: 16.sp,
-                                fontWeight: FontWeight.w500,
-                              )),
-                          Text(
-                            AppLocalKeys.yourJourney.tr(),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                        ]),
-                  ],
+                          ]),
+                    ],
+                  ),
                 ),
-                Positioned(
-                  right: 10,
-                  bottom: 35,
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.notifications_none_rounded,
-                      size: 30.sp,
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Positioned(
+                    right: 10,
+                    bottom: 35,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.notifications_none_rounded,
+                        size: 30.sp,
+                      ),
+                      onPressed: () {},
                     ),
-                    onPressed: () {},
                   ),
                 )
               ]),

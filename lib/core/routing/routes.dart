@@ -31,5 +31,6 @@ class Routes {
 
   static const adminUserMeals = '/adminUserMeals';
 
-  static const notification = '/notification';
+  static const chat = '/chat';
+  static const notif = '/notification';
 }

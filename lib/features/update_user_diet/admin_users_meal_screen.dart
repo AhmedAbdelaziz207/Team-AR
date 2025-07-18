@@ -1,17 +1,16 @@
 import 'dart:developer';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
+import 'package:team_ar/core/utils/app_assets.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/features/diet/logic/user_diet_cubit.dart';
 import 'package:team_ar/features/diet/logic/user_diet_state.dart';
 import 'package:team_ar/features/update_user_diet/widget/admin_user_meal_card.dart';
-
 import '../diet/model/user_diet.dart';
 import '../select_meals/model/select_meal_params.dart';
 
@@ -84,6 +83,29 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
           if (state is UserDietSuccess) {
             final meals = state.diet;
 
+            if (meals.isEmpty) {
+              return Column(
+                children: [
+                  SizedBox(
+                    height: 40.h,
+                  ),
+                  Image.asset(AppAssets.noData),
+                  SizedBox(
+                    height: 21.h,
+                  ),
+                  Center(
+                    child: Text(
+                      AppLocalKeys.noMeals.tr(),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.black,
+                            fontFamily: "Cairo",
+                          ),
+                    ),
+                  ),
+                ],
+              );
+            }
             // Group meals by foodType
             final grouped = <int, List<UserDiet>>{};
             for (var meal in meals) {
@@ -122,10 +144,9 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
                                   context,
                                   Routes.selectUserMeals,
                                   arguments: SelectMealParams(
-                                    userId: widget.userId!,
-                                    mealNum:   entry.key,
-                                    isUpdate: true
-                                  ),
+                                      userId: widget.userId!,
+                                      mealNum: entry.key,
+                                      isUpdate: true),
                                 );
                               },
                               style: TextButton.styleFrom(
@@ -162,8 +183,7 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
                           (userDiet) => AdminMealCard(
                             mealName:
                                 userDiet.meal?.name ?? userDiet.name ?? '',
-                            amount:
-                                userDiet.numOfGrams?.toString() ?? '0',
+                            amount: userDiet.numOfGrams?.toString() ?? '0',
                             imageUrl: userDiet.meal?.imageURL ?? '',
                             onReplace: () {
                               // Replace logic

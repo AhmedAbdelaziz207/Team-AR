@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
@@ -14,8 +16,9 @@ class WorkoutCubit extends Cubit<WorkoutState> {
 
     final result = await repo.getWorkout(workoutId);
 
+    log("result: $result");
     result.when(
-      success: (data) => emit(WorkoutState.workoutSuccess(data)),
+      success: (data) => emit(WorkoutState.workoutSuccess(data.url)),
       failure: (error) => emit(
         WorkoutState.workoutFailure(
           error.getErrorsMessage() ?? "Something went wrong",
