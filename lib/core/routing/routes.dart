@@ -30,4 +30,6 @@ class Routes {
   static const changePassword = '/changePassword';
 
   static const adminUserMeals = '/adminUserMeals';
+
+  static const notification = '/notification';
 }

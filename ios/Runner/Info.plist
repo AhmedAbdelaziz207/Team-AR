@@ -51,6 +51,10 @@
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Your description here</string>
 
+    <key>UIBackgroundModes</key>
+    <array>
+    <string>background-processing</string>
+    </array>
 
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
