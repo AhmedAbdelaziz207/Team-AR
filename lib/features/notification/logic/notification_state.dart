@@ -90,6 +90,16 @@ class NotificationActionPerformed extends NotificationState {
   List get props => [notificationId, action];
 }
 
+class NotificationSent extends NotificationState {
+  final String message;
+
+  const NotificationSent({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+
 class NotificationSettingsUpdated extends NotificationState {
   final NotificationSettingsModel settings;
 

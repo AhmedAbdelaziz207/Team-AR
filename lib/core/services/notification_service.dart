@@ -36,7 +36,60 @@ class NotificationService {
   })  : _localNotificationService = localNotificationService,
         _repository = repository;
 
-  // Initialize service with enhanced initialization
+  static Future<NotificationService> create({
+    required LocalNotificationService localNotificationService,
+    required NotificationRepository repository,
+  }) async {
+    final service = NotificationService(
+      localNotificationService: localNotificationService,
+      repository: repository,
+    );
+
+    try {
+      await service.initialize();
+      return service;
+    } catch (e) {
+      if (kDebugMode) {
+        print('خطأ في تهيئة NotificationService: $e');
+      }
+      return service;
+    }
+  }
+
+  Future<void> sendSubscriptionExpiryNotification({
+    required String userId,
+    required String userEmail,
+    required DateTime expiryDate,
+  }) async {
+    try {
+      final notification = NotificationHelper.createSubscriptionExpiryNotification(
+        daysLeft: 0,
+        customData: {
+          'user_id': userId,
+          'user_email': userEmail,
+          'expiry_date': expiryDate.toIso8601String(),
+          'notification_type': 'expired',
+        },
+      );
+
+      await sendNotification(notification);
+
+      if (kDebugMode) {
+        print('تم إرسال إشعار انتهاء الاشتراك للمستخدم: $userEmail');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('فشل في إرسال إشعار انتهاء الاشتراك: $e');
+      }
+      throw NotificationServiceException(
+        'فشل في إرسال إشعار انتهاء الاشتراك: ${e.toString()}',
+        originalError: e,
+      );
+    }
+  }
+
+
+  // Initialize service
   Future initialize() async {
     try {
       // طلب إذن الإشعارات أولاً
@@ -342,33 +395,13 @@ class NotificationService {
     }
   }
 
-  // Send subscription expiry notification with enhanced functionality
-  Future sendSubscriptionExpiryNotification({
-    required int daysLeft,
-    required String subscriptionType,
-  }) async {
-    try {
-      if (daysLeft > 0) {
-        // إرسال تحذير
-        await showSubscriptionWarning(daysLeft);
-      } else {
-        // إرسال إشعار انتهاء
-        await showSubscriptionExpired();
-      }
-    } catch (e) {
-      throw NotificationServiceException(
-        'فشل في إرسال إشعار انتهاء الاشتراك: ${e.toString()}',
-        originalError: e,
-      );
-    }
-  }
 
   // Send admin notification
   Future sendAdminNotification({
     required String title,
     required String body,
     required NotificationType type,
-    Map? customData,
+    Map<String, dynamic>? customData,
   }) async {
     try {
       if (!type.isAdminNotification) {
@@ -428,7 +461,7 @@ class NotificationService {
     }
   }
 
-  // Enhanced permission request
+  //  permission request
   Future<bool> requestPermissions() async {
     try {
       // طلب إذن من النظام
@@ -463,7 +496,7 @@ class NotificationService {
     }
   }
 
-  // Check permissions with enhanced checking
+  // Check permissions
   Future<bool> checkPermissions() async {
     try {
       final permissionStatus = await Permission.notification.status;

@@ -14,7 +14,7 @@ class _ApiService implements ApiService {
     this.baseUrl,
     this.errorLogger,
   }) {
-    baseUrl ??= 'http://gymapp.runasp.net/';
+    baseUrl ??= 'https://gymapp.runasp.net/';
   }
 
   final Dio _dio;

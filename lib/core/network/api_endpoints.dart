@@ -1,7 +1,7 @@
 class ApiEndPoints {
-  static const baseUrl = "http://gymapp.runasp.net/";
-  static const imagesBaseUrl = "http://gymapp.runasp.net/Images/FoodImages/";
-  static const usersImagesBaseUrl = "http://gymapp.runasp.net/Images/UserImages/";
+  static const baseUrl = "https://gymapp.runasp.net/";
+  static const imagesBaseUrl = "https://gymapp.runasp.net/Images/FoodImages/";
+  static const usersImagesBaseUrl = "https://gymapp.runasp.net/Images/UserImages/";
   static const login = "api/Account/Login";
   static const plans = "api/Package";
   static const trainerDataById = "/api/TrainerData/GetById";

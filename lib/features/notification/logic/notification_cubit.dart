@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
+
 import '../../../core/common/notification_model.dart';
 import '../../../core/common/notification_settings_model.dart';
 import '../../../core/common/notification_type_enum.dart';
@@ -8,51 +9,41 @@ import '../../../core/utils/notification_validator.dart';
 import '../services/local_notification_service.dart';
 import '../services/notification_repository.dart';
 import '../../../core/services/notification_service.dart';
+import '../services/notification_storage.dart';
 import 'notification_state.dart';
 
 class NotificationCubit extends Cubit<NotificationState> {
   final NotificationService _notificationService;
   final NotificationRepository _repository;
   final LocalNotificationService _localNotificationService;
+  final NotificationStorage _storage;
 
   late StreamSubscription _notificationSubscription;
+  Timer? _refreshTimer;
 
   NotificationCubit({
     required NotificationService notificationService,
     required NotificationRepository repository,
     required LocalNotificationService localNotificationService,
+    required NotificationStorage storage,
   })  : _notificationService = notificationService,
         _repository = repository,
         _localNotificationService = localNotificationService,
+        _storage = storage,
         super(NotificationInitial()) {
     _initializeNotifications();
+    _startPeriodicRefresh();
   }
 
-  // Initialize notifications
-  // void _initializeNotifications() {
-  //   _notificationSubscription = _notificationService.notificationStream.listen(
-  //         (notification) {
-  //       emit(NotificationReceived(notification: notification));
-  //       _addNotificationToState(notification);
-  //     },
-  //     onError: (error) {
-  //       emit(NotificationError(message: error.toString()));
-  //     },
-  //   );
-  // }
-
+  /// تهيئة الإشعارات
   void _initializeNotifications() {
     _notificationSubscription = _notificationService.notificationStream.listen(
           (notification) async {
         try {
-          // حفظ الإشعار محليًا
           await _repository.saveNotification(notification);
-
-          // عرض إشعار محلي إن أردت (اختياري)
           await _localNotificationService.showNotification(notification);
+          await _refreshNotifications();
 
-          // تحديث الحالة
-          _addNotificationToState(notification);
           emit(NotificationReceived(notification: notification));
         } catch (e) {
           emit(NotificationError(message: 'فشل في استقبال الإشعار: ${e.toString()}'));
@@ -64,8 +55,51 @@ class NotificationCubit extends Cubit<NotificationState> {
     );
   }
 
+  /// بدء التحديث الدوري
+  void _startPeriodicRefresh() {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
+      if (state is NotificationLoaded) {
+        await _refreshNotifications();
+      }
+    });
+  }
 
-  // Load notifications from storage
+  /// تحديث الإشعارات من التخزين
+  Future _refreshNotifications() async {
+    try {
+      final notifications = await _repository.getAllNotifications();
+      final settings = await _repository.getNotificationSettings();
+      final unreadCount = notifications.where((n) => !n.isRead).length;
+
+      if (state is NotificationLoaded) {
+        final currentState = state as NotificationLoaded;
+        if (_notificationsChanged(currentState.notifications, notifications)) {
+          emit(NotificationLoaded(
+            notifications: notifications,
+            unreadCount: unreadCount,
+            settings: settings,
+          ));
+        }
+      }
+    } catch (_) {
+      // تجاهل الأخطاء
+    }
+  }
+
+  /// التحقق من تغيير الإشعارات
+  bool _notificationsChanged(List oldList, List newList) {
+    if (oldList.length != newList.length) return true;
+    for (int i = 0; i < oldList.length; i++) {
+      if (oldList[i].id != newList[i].id ||
+          oldList[i].isRead != newList[i].isRead ||
+          oldList[i].title != newList[i].title) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// تحميل الإشعارات
   Future loadNotifications() async {
     try {
       emit(NotificationLoading());
@@ -80,40 +114,39 @@ class NotificationCubit extends Cubit<NotificationState> {
         settings: settings,
       ));
     } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في تحميل الإشعارات: ${e.toString()}',
-      ));
+      emit(NotificationError(message: 'فشل في تحميل الإشعارات: ${e.toString()}'));
     }
   }
 
-  // Add new notification
+  /// إضافة إشعار
   Future addNotification(NotificationModel notification) async {
     try {
-      NotificationValidator.validateNotification(notification);
+      if (notification.title.isEmpty || notification.body.isEmpty) {
+        throw Exception('بيانات الإشعار غير صحيحة');
+      }
 
       await _repository.saveNotification(notification);
       await _localNotificationService.showNotification(notification);
 
       _addNotificationToState(notification);
+
+      emit(NotificationReceived(notification: notification));
     } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في إضافة الإشعار: ${e.toString()}',
-      ));
+      emit(NotificationError(message: 'فشل في إضافة الإشعار: ${e.toString()}'));
     }
   }
 
-  // Schedule notification
+  /// جدولة إشعار
   Future scheduleNotification({
     required NotificationModel notification,
     required DateTime scheduledTime,
   }) async {
     try {
-      NotificationValidator.validateNotification(notification);
-      NotificationValidator.validateScheduleTime(scheduledTime);
+      if (scheduledTime.isBefore(DateTime.now())) {
+        throw Exception('لا يمكن جدولة إشعار في الماضي');
+      }
 
-      final scheduledNotification = notification.copyWith(
-        scheduledAt: scheduledTime,
-      );
+      final scheduledNotification = notification.copyWith(scheduledAt: scheduledTime);
 
       await _repository.saveNotification(scheduledNotification);
       await _localNotificationService.scheduleNotification(
@@ -128,19 +161,18 @@ class NotificationCubit extends Cubit<NotificationState> {
 
       _addNotificationToState(scheduledNotification);
     } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في جدولة الإشعار: ${e.toString()}',
-      ));
+      emit(NotificationError(message: 'فشل في جدولة الإشعار: ${e.toString()}'));
     }
   }
 
-  // Mark notification as read
+  /// تحديد كمقروء
   Future markAsRead(String notificationId) async {
     try {
       await _repository.markAsRead(notificationId);
 
       if (state is NotificationLoaded) {
         final currentState = state as NotificationLoaded;
+
         final updatedNotifications = currentState.notifications.map((n) {
           return n.id == notificationId ? n.copyWith(isRead: true) : n;
         }).toList();
@@ -153,19 +185,18 @@ class NotificationCubit extends Cubit<NotificationState> {
         ));
       }
     } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في تحديث حالة الإشعار: ${e.toString()}',
-      ));
+      emit(NotificationError(message: 'فشل في تحديث حالة الإشعار: ${e.toString()}'));
     }
   }
 
-  // Mark all notifications as read
+  /// تحديد الكل كمقروء
   Future markAllAsRead() async {
     try {
       await _repository.markAllAsRead();
 
       if (state is NotificationLoaded) {
         final currentState = state as NotificationLoaded;
+
         final updatedNotifications = currentState.notifications.map((n) {
           return n.copyWith(isRead: true);
         }).toList();
@@ -176,13 +207,11 @@ class NotificationCubit extends Cubit<NotificationState> {
         ));
       }
     } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في تحديث الإشعارات: ${e.toString()}',
-      ));
+      emit(NotificationError(message: 'فشل في تحديث الإشعارات: ${e.toString()}'));
     }
   }
 
-  // Delete notification
+  /// حذف إشعار
   Future deleteNotification(String notificationId) async {
     try {
       await _repository.deleteNotification(notificationId);
@@ -190,6 +219,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
       if (state is NotificationLoaded) {
         final currentState = state as NotificationLoaded;
+
         final updatedNotifications = currentState.notifications
             .where((n) => n.id != notificationId)
             .toList();
@@ -202,13 +232,11 @@ class NotificationCubit extends Cubit<NotificationState> {
         ));
       }
     } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في حذف الإشعار: ${e.toString()}',
-      ));
+      emit(NotificationError(message: 'فشل في حذف الإشعار: ${e.toString()}'));
     }
   }
 
-  // Clear all notifications
+  /// مسح الكل
   Future clearAllNotifications() async {
     try {
       await _repository.clearAllNotifications();
@@ -216,99 +244,106 @@ class NotificationCubit extends Cubit<NotificationState> {
 
       if (state is NotificationLoaded) {
         final currentState = state as NotificationLoaded;
+
         emit(currentState.copyWith(
           notifications: [],
           unreadCount: 0,
         ));
       }
     } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في مسح الإشعارات: ${e.toString()}',
-      ));
+      emit(NotificationError(message: 'فشل في مسح الإشعارات: ${e.toString()}'));
     }
   }
 
-  // Update notification settings
-  Future updateSettings(NotificationSettingsModel settings) async {
+  /// فحص الاشتراك
+  Future checkSubscriptionStatus({
+    required DateTime expiryDate,
+    required String userId,
+  }) async {
     try {
-      await _repository.saveNotificationSettings(settings);
+      final now = DateTime.now();
+      final difference = expiryDate.difference(now).inDays;
 
-      if (state is NotificationLoaded) {
-        final currentState = state as NotificationLoaded;
-        emit(currentState.copyWith(settings: settings));
+      if (difference <= 0) {
+        await _sendSubscriptionExpiredNotification(userId);
+      } else if ([7, 3, 1].contains(difference)) {
+        await _sendSubscriptionExpiringNotification(difference, userId);
       }
-
-      emit(NotificationSettingsUpdated(settings: settings));
     } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في تحديث الإعدادات: ${e.toString()}',
-      ));
+      emit(NotificationError(message: 'فشل في فحص حالة الاشتراك: ${e.toString()}'));
     }
   }
 
-  // Schedule workout reminder
-  Future scheduleWorkoutReminder({
-    required String title,
-    required String body,
-    required DateTime reminderTime,
-    Map? customData,
-  }) async {
+  Future _sendSubscriptionExpiredNotification(String userId) async {
+    final notification = NotificationModel(
+      id: 'subscription_expired_${DateTime.now().millisecondsSinceEpoch}',
+      title: '⚠️ انتهى اشتراكك',
+      body: 'لقد انتهت صلاحية اشتراكك. يرجى تجديد الاشتراك للمتابعة.',
+      type: NotificationType.subscriptionExpiry,
+      createdAt: DateTime.now(),
+      isRead: false,
+      customData: {
+        'action': 'expired',
+        'priority': 'high',
+        'userId': userId,
+      },
+    );
+
+    await addNotification(notification);
+  }
+
+  Future _sendSubscriptionExpiringNotification(int daysLeft, String userId) async {
+    final notification = NotificationModel(
+      id: 'subscription_expiring_${daysLeft}_${DateTime.now().millisecondsSinceEpoch}',
+      title: '⏰ تنتهي صلاحية اشتراكك قريباً',
+      body: 'سينتهي اشتراكك خلال $daysLeft ${daysLeft == 1 ? 'يوم' : 'أيام'}. جدد اشتراكك الآن!',
+      type: NotificationType.subscriptionExpiry,
+      createdAt: DateTime.now(),
+      isRead: false,
+      customData: {
+        'action': 'expiring',
+        'daysLeft': daysLeft,
+        'priority': 'high',
+        'userId': userId,
+      },
+    );
+
+    await addNotification(notification);
+  }
+
+  /// اختبار
+  Future testNotifications() async {
     try {
-      final notification = NotificationHelper.createWorkoutReminder(
-        title: title,
-        body: body,
-        scheduledAt: reminderTime,
-        customData: customData,
+      final generalNotification = NotificationModel(
+        id: 'test_general_${DateTime.now().millisecondsSinceEpoch}',
+        title: '🔔 اختبار الإشعار العام',
+        body: 'هذا إشعار تجريبي للتأكد من عمل النظام',
+        type: NotificationType.system,
+        createdAt: DateTime.now(),
+        isRead: false,
       );
 
-      await scheduleNotification(
-        notification: notification,
-        scheduledTime: reminderTime,
-      );
-    } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في جدولة تذكير التمرين: ${e.toString()}',
-      ));
-    }
-  }
+      await addNotification(generalNotification);
 
-  // Send motivational notification
-  Future sendMotivationalNotification({
-    String? customMessage,
-    Map? customData,
-  }) async {
-    try {
-      final notification = NotificationHelper.createMotivationalNotification(
-        customMessage: customMessage,
-        customData: customData,
+      final subscriptionNotification = NotificationModel(
+        id: 'test_subscription_${DateTime.now().millisecondsSinceEpoch}',
+        title: '⚠️ اختبار إشعار الاشتراك',
+        body: 'هذا اختبار لإشعارات انتهاء الاشتراك',
+        type: NotificationType.subscriptionExpiry,
+        createdAt: DateTime.now(),
+        isRead: false,
       );
 
-      await addNotification(notification);
+      await addNotification(subscriptionNotification);
+
+      emit(NotificationSent(message: 'تم إرسال الإشعارات التجريبية بنجاح'));
     } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في إرسال الرسالة التحفيزية: ${e.toString()}',
-      ));
+      emit(NotificationError(message: 'فشل في إرسال الإشعارات التجريبية: ${e.toString()}'));
     }
   }
 
-  // Handle notification tap
-  Future handleNotificationTap(String notificationId) async {
-    try {
-      await markAsRead(notificationId);
-
-      emit(NotificationActionPerformed(
-        notificationId: notificationId,
-        action: 'tap',
-      ));
-    } catch (e) {
-      emit(NotificationError(
-        message: 'فشل في معالجة النقر على الإشعار: ${e.toString()}',
-      ));
-    }
-  }
-
-  // Get notifications by type
-  List getNotificationsByType(NotificationType type) {
+  /// حسب النوع
+  List<NotificationModel> getNotificationsByType(NotificationType type) {
     if (state is NotificationLoaded) {
       final currentState = state as NotificationLoaded;
       return currentState.notifications.where((n) => n.type == type).toList();
@@ -316,8 +351,8 @@ class NotificationCubit extends Cubit<NotificationState> {
     return [];
   }
 
-  // Get unread notifications
-  List getUnreadNotifications() {
+  /// غير مقروءة
+  List<NotificationModel> getUnreadNotifications() {
     if (state is NotificationLoaded) {
       final currentState = state as NotificationLoaded;
       return currentState.notifications.where((n) => !n.isRead).toList();
@@ -325,10 +360,11 @@ class NotificationCubit extends Cubit<NotificationState> {
     return [];
   }
 
-  // Add notification to current state
+  /// أضف للحالة
   void _addNotificationToState(NotificationModel notification) {
     if (state is NotificationLoaded) {
       final currentState = state as NotificationLoaded;
+
       final updatedNotifications = [notification, ...currentState.notifications];
       final unreadCount = updatedNotifications.where((n) => !n.isRead).length;
 
@@ -339,9 +375,35 @@ class NotificationCubit extends Cubit<NotificationState> {
     }
   }
 
+  /// إرسال إشعار انتهاء الاشتراك
+  Future<void> sendSubscriptionExpiryNotification({
+    required String userId,
+    required String userEmail,
+    required DateTime expiryDate,
+  }) async {
+    try {
+      await _notificationService.sendSubscriptionExpiryNotification(
+        userId: userId,
+        userEmail: userEmail,
+        expiryDate: expiryDate,
+      );
+
+      // تحديث الحالة لإظهار أنه تم إرسال الإشعار
+      emit(NotificationSent(message: 'تم إرسال إشعار انتهاء الاشتراك'));
+
+      // تحميل الإشعارات المحدثة
+      await loadNotifications();
+    } catch (e) {
+      emit(NotificationError(
+        message: 'فشل في إرسال إشعار انتهاء الاشتراك: ${e.toString()}',
+      ));
+    }
+  }
+
   @override
-  Future close() {
+  Future<void> close() {
     _notificationSubscription.cancel();
+    _refreshTimer?.cancel();
     return super.close();
   }
 }

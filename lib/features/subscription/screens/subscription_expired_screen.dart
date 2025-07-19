@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
-import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/services/subscription_service.dart';
 import 'package:team_ar/core/services/logger_service.dart';
 
 class SubscriptionExpiredScreen extends StatefulWidget {
-  const SubscriptionExpiredScreen({super.key});
+  final String? userEmail;
+  final String? endDate;
+
+  const SubscriptionExpiredScreen({
+    super.key,
+    this.userEmail,
+    this.endDate,
+  });
 
   @override
   State<SubscriptionExpiredScreen> createState() => _SubscriptionExpiredScreenState();
@@ -24,7 +29,7 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
   @override
   void initState() {
     super.initState();
-    _logger.info('Subscription expired screen opened');
+    _logger.info('Subscription expired screen opened for user: ${widget.userEmail ?? "unknown"}');
     _setupAnimations();
   }
 
@@ -51,6 +56,19 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
     ));
 
     _animationController.forward();
+  }
+
+  String _getFormattedEndDate() {
+    if (widget.endDate == null || widget.endDate!.isEmpty) {
+      return '';
+    }
+
+    try {
+      DateTime endDate = DateTime.parse(widget.endDate!);
+      return 'انتهى في: ${endDate.day}/${endDate.month}/${endDate.year}';
+    } catch (e) {
+      return '';
+    }
   }
 
   @override
@@ -85,8 +103,8 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
                           decoration: BoxDecoration(
                             gradient: RadialGradient(
                               colors: [
-                                Colors.red.withOpacity(0.1),
-                                Colors.red.withOpacity(0.05),
+                                Colors.red.withValues(alpha: 0.1),
+                                Colors.red.withValues(alpha: 0.05),
                               ],
                             ),
                             shape: BoxShape.circle,
@@ -111,6 +129,21 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
                           ),
                           textAlign: TextAlign.center,
                         ),
+
+                        // عرض تاريخ الانتهاء إن وُجد
+                        if (widget.endDate != null && widget.endDate!.isNotEmpty) ...[
+                          SizedBox(height: 8.h),
+                          Text(
+                            _getFormattedEndDate(),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.red,
+                              fontFamily: "Cairo",
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
 
                         SizedBox(height: 15.h),
 
@@ -142,7 +175,7 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
                         // زر تجديد الاشتراك
                         SizedBox(
                           width: double.infinity,
-                          height: 50.h,
+                          height: 60.h,
                           child: ElevatedButton(
                             onPressed: () {
                               _logger.info('User clicked renew subscription');
@@ -228,7 +261,7 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
                         Container(
                           padding: EdgeInsets.all(16.w),
                           decoration: BoxDecoration(
-                            color: AppColors.newPrimaryColor.withOpacity(0.1),
+                            color: AppColors.newPrimaryColor.withValues(alpha : 0.1),
                             borderRadius: BorderRadius.circular(10.r),
                           ),
                           child: Column(
@@ -277,14 +310,14 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
+        title: const Text(
           'إغلاق التطبيق',
           style: TextStyle(
             fontFamily: "Cairo",
             fontWeight: FontWeight.w600,
           ),
         ),
-        content: Text(
+        content: const Text(
           'هل أنت متأكد من رغبتك في إغلاق التطبيق؟',
           style: TextStyle(
             fontFamily: "Cairo",
@@ -293,7 +326,7 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: const Text(
               'إلغاء',
               style: TextStyle(
                 fontFamily: "Cairo",
@@ -318,161 +351,3 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:team_ar/core/theme/app_colors.dart';
-// import '../../../core/services/subscription_service.dart';
-//
-// class SubscriptionExpiredScreen extends StatelessWidget {
-//   const SubscriptionExpiredScreen({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return WillPopScope(
-//       onWillPop: () async => false, // منع الرجوع
-//       child: Scaffold(
-//         backgroundColor: AppColors.white,
-//         body: SafeArea(
-//           child: Padding(
-//             padding: EdgeInsets.all(20.w),
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 // أيقونة التحذير
-//                 Container(
-//                   width: 120.w,
-//                   height: 120.w,
-//                   decoration: BoxDecoration(
-//                     color: Colors.red.withOpacity(0.1),
-//                     shape: BoxShape.circle,
-//                   ),
-//                   child: Icon(
-//                     Icons.warning_amber_rounded,
-//                     size: 60.sp,
-//                     color: Colors.red,
-//                   ),
-//                 ),
-//
-//                 SizedBox(height: 30.h),
-//
-//                 // عنوان رئيسي
-//                 Text(
-//                   'انتهى الاشتراك',
-//                   style: TextStyle(
-//                     fontSize: 28.sp,
-//                     fontWeight: FontWeight.bold,
-//                     color: AppColors.black,
-//                     fontFamily: "Cairo",
-//                   ),
-//                   textAlign: TextAlign.center,
-//                 ),
-//
-//                 SizedBox(height: 15.h),
-//
-//                 // رسالة توضيحية
-//                 Text(
-//                   'عذراً، لقد انتهت صلاحية اشتراكك ولن تتمكن من استخدام التطبيق حتى تجديد الاشتراك.',
-//                   style: TextStyle(
-//                     fontSize: 16.sp,
-//                     color: AppColors.grey,
-//                     fontFamily: "Cairo",
-//                     height: 1.5,
-//                   ),
-//                   textAlign: TextAlign.center,
-//                 ),
-//
-//                 SizedBox(height: 40.h),
-//
-//                 // زر تجديد الاشتراك
-//                 SizedBox(
-//                   width: double.infinity,
-//                   height: 50.h,
-//                   child: ElevatedButton(
-//                     onPressed: () {
-//                       // Navigator.pushNamedAndRemoveUntil(
-//                       //   context,
-//                       //   Routes.PlansScreen(), // مسار شاشة الباقات
-//                       //       (route) => false,
-//                       // );
-//                     },
-//                     style: ElevatedButton.styleFrom(
-//                       backgroundColor: AppColors.newPrimaryColor,
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(10.r),
-//                       ),
-//                       elevation: 2,
-//                     ),
-//                     child: Text(
-//                       'تجديد الاشتراك',
-//                       style: TextStyle(
-//                         fontSize: 18.sp,
-//                         fontWeight: FontWeight.w600,
-//                         color: AppColors.white,
-//                         fontFamily: "Cairo",
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//
-//                 SizedBox(height: 15.h),
-//
-//                 // زر إغلاق التطبيق
-//                 SizedBox(
-//                   width: double.infinity,
-//                   height: 50.h,
-//                   child: OutlinedButton(
-//                     onPressed: () {
-//                       SubscriptionService.closeApp();
-//                     },
-//                     style: OutlinedButton.styleFrom(
-//                       side: BorderSide(color: AppColors.grey, width: 1.w),
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(10.r),
-//                       ),
-//                     ),
-//                     child: Text(
-//                       'إغلاق التطبيق',
-//                       style: TextStyle(
-//                         fontSize: 16.sp,
-//                         fontWeight: FontWeight.w600,
-//                         color: AppColors.grey,
-//                         fontFamily: "Cairo",
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

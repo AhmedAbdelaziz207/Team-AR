@@ -7,7 +7,7 @@ part of 'notification_settings_model.dart';
 // **************************************************************************
 
 NotificationSettingsModel _$NotificationSettingsModelFromJson(
-        Map<dynamic, dynamic> json) =>
+        Map<String, dynamic> json) =>
     NotificationSettingsModel(
       enableNotifications: json['enableNotifications'] as bool? ?? true,
       enableSound: json['enableSound'] as bool? ?? true,
