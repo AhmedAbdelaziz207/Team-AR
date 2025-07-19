@@ -22,7 +22,7 @@ class WorkOutScreen extends StatelessWidget {
           backgroundColor: AppColors.white,
           elevation: 0,
           flexibleSpace: Padding(
-            padding: EdgeInsets.only(bottom: 2.0.sp),
+            padding: EdgeInsets.only(bottom: 2.0.sp, left: 16.w, right: 16.w),
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Stack(children: [
@@ -31,23 +31,37 @@ class WorkOutScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Image.asset(
-                        AppAssets.appLogo,
-                        height: 100.h,
-                        width: 100.w,
-                        color: AppColors.newPrimaryColor,
+                      Flexible(
+                        flex: 0,
+                        child: Image.asset(
+                          AppAssets.appLogo,
+                          height: 80.h,
+                          width: 80.w,
+                          color: AppColors.newPrimaryColor,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              Icons.image_not_supported,
+                              size: 80.sp,
+                              color: AppColors.newPrimaryColor,
+                            );
+                          },
+                        ),
                       ),
-                      Column(
+                      SizedBox(width: 12.w), // Add spacing
+                      Expanded(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
-                          // Prevent extra space
                           children: [
-                            Text(todayDate,
-                                style: TextStyle(
-                                  color: AppColors.black,
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
-                                )),
+                            Text(
+                              todayDate,
+                              style: TextStyle(
+                                color: AppColors.black,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             Text(
                               AppLocalKeys.yourJourney.tr(),
                               style: Theme.of(context)
@@ -57,23 +71,24 @@ class WorkOutScreen extends StatelessWidget {
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
                               ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ]),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: Positioned(
-                    right: 10,
-                    bottom: 35,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.notifications_none_rounded,
-                        size: 30.sp,
-                      ),
-                      onPressed: () {},
+                Positioned(
+                  right: 10,
+                  bottom: 35,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.notifications_none_rounded,
+                      size: 30.sp,
+                      color: AppColors.black,
                     ),
+                    onPressed: () {},
                   ),
                 )
               ]),
@@ -81,9 +96,7 @@ class WorkOutScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: const WorkoutCard()
-
+      body: const WorkoutCard(),
     );
-
   }
 }

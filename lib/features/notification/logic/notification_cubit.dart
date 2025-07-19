@@ -7,7 +7,7 @@ import '../../../core/utils/notification_helper.dart';
 import '../../../core/utils/notification_validator.dart';
 import '../services/local_notification_service.dart';
 import '../services/notification_repository.dart';
-import '../services/notification_service.dart';
+import '../../../core/services/notification_service.dart';
 import 'notification_state.dart';
 
 class NotificationCubit extends Cubit<NotificationState> {
@@ -29,17 +29,41 @@ class NotificationCubit extends Cubit<NotificationState> {
   }
 
   // Initialize notifications
+  // void _initializeNotifications() {
+  //   _notificationSubscription = _notificationService.notificationStream.listen(
+  //         (notification) {
+  //       emit(NotificationReceived(notification: notification));
+  //       _addNotificationToState(notification);
+  //     },
+  //     onError: (error) {
+  //       emit(NotificationError(message: error.toString()));
+  //     },
+  //   );
+  // }
+
   void _initializeNotifications() {
     _notificationSubscription = _notificationService.notificationStream.listen(
-          (notification) {
-        emit(NotificationReceived(notification: notification));
-        _addNotificationToState(notification);
+          (notification) async {
+        try {
+          // حفظ الإشعار محليًا
+          await _repository.saveNotification(notification);
+
+          // عرض إشعار محلي إن أردت (اختياري)
+          await _localNotificationService.showNotification(notification);
+
+          // تحديث الحالة
+          _addNotificationToState(notification);
+          emit(NotificationReceived(notification: notification));
+        } catch (e) {
+          emit(NotificationError(message: 'فشل في استقبال الإشعار: ${e.toString()}'));
+        }
       },
       onError: (error) {
         emit(NotificationError(message: error.toString()));
       },
     );
   }
+
 
   // Load notifications from storage
   Future loadNotifications() async {

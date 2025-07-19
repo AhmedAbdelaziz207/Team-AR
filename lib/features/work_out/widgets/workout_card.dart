@@ -15,41 +15,46 @@ class WorkoutCard extends StatelessWidget {
       padding: EdgeInsets.all(15.0.sp),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.teal, // Background Color
+          color: AppColors.teal,
           borderRadius: BorderRadius.circular(20),
         ),
         width: double.infinity,
         height: 180,
         child: Stack(
           children: [
-            // Background Icon
             Positioned(
               right: 20.sp,
               bottom: 20.sp,
               child: Opacity(
                 opacity: 0.2,
                 child: Icon(
-                  Icons.fitness_center, // Dumbbell Icon
+                  Icons.fitness_center,
                   size: 80.sp,
                   color: Colors.white,
                 ),
               ),
             ),
 
-            // Content
             Padding(
               padding: EdgeInsets.all(16.0.sp),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Logo and Title
                   Row(
                     children: [
-                      // AR Logo
                       CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 15.sp,
-                        child: Image.asset(AppAssets.appLogo),
+                        child: Image.asset(
+                          AppAssets.appLogo,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              Icons.image_not_supported,
+                              size: 20.sp,
+                              color: AppColors.teal,
+                            );
+                          },
+                        ),
                       ),
                       SizedBox(width: 8.w),
                       Text(
@@ -64,7 +69,6 @@ class WorkoutCard extends StatelessWidget {
 
                   SizedBox(height: 10.h),
 
-                  // Workout Title
                   Text(
                     AppLocalKeys.workouts.tr(),
                     style: TextStyle(
@@ -75,8 +79,6 @@ class WorkoutCard extends StatelessWidget {
                   ),
 
                   const Spacer(),
-
-                  // View Details Button
                   SizedBox(
                     width: 150.w,
                     height: 35.h,
