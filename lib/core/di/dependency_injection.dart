@@ -14,7 +14,7 @@ import '../../features/notification/logic/notification_cubit.dart';
 import '../../features/notification/services/local_notification_service.dart';
 import '../../features/notification/services/notification_repo_impl.dart';
 import '../../features/notification/services/notification_repository.dart';
-import '../../features/notification/services/notification_service.dart';
+import '../services/notification_service.dart';
 import '../../features/work_out/logic/workout_cubit.dart';
 import '../network/dio_factory.dart';
 
