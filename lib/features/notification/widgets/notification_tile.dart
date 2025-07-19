@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/common/notification_model.dart';
+import '../../../core/common/notification_type_enum.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/utils/notification_helper.dart';
 import 'package:intl/intl.dart';
 
 class NotificationTile extends StatelessWidget {
@@ -20,7 +21,7 @@ class NotificationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: notification.isRead ? 1 : 3,
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.only(bottom: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
@@ -42,116 +43,29 @@ class NotificationTile extends StatelessWidget {
                 : AppColors.primaryColor.withOpacity(0.05),
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // أيقونة الإشعار
               _buildNotificationIcon(),
-              const SizedBox(width: 16),
-
+              const SizedBox(width: 12),
               // محتوى الإشعار
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // العنوان
-                    Text(
-                      notification.title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: notification.isRead
-                            ? FontWeight.w500
-                            : FontWeight.bold,
-                        color: notification.isRead
-                            ? Colors.grey.shade800
-                            : Colors.black,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
+                    // عنوان الإشعار
+                    _buildNotificationTitle(),
                     const SizedBox(height: 4),
-
-                    // الرسالة
-                    Text(
-                      notification.title,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: notification.isRead
-                            ? Colors.grey.shade600
-                            : Colors.grey.shade700,
-                        height: 1.3,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
+                    // محتوى الإشعار
+                    _buildNotificationBody(),
                     const SizedBox(height: 8),
-
-                    // التاريخ والوقت
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 14,
-                          color: Colors.grey.shade500,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          _formatDateTime(notification.createdAt),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade500,
-                          ),
-                        ),
-                        const Spacer(),
-
-                        // مؤشر الحالة
-                        if (!notification.isRead)
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: AppColors.primaryColor,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                      ],
-                    ),
+                    // وقت الإشعار
+                    _buildNotificationTime(),
                   ],
                 ),
               ),
-
-              // زر الحذف
-              PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'delete') {
-                    onDelete();
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                        SizedBox(width: 8),
-                        Text('حذف'),
-                      ],
-                    ),
-                  ),
-                ],
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.more_vert,
-                    size: 16,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ),
+              // أزرار الإجراءات
+              _buildActionButtons(),
             ],
           ),
         ),
@@ -160,38 +74,156 @@ class NotificationTile extends StatelessWidget {
   }
 
   Widget _buildNotificationIcon() {
-    final iconData = NotificationHelper.getNotificationIcon(notification.type);
-    final iconColor = NotificationHelper.getNotificationColor(notification.type);
+    IconData iconData;
+    Color iconColor;
+
+    // تحديد الأيقونة واللون حسب نوع الإشعار
+    switch (notification.type) {
+      case NotificationType.workoutPlan:
+        iconData = Icons.fitness_center;
+        iconColor = Colors.orange;
+        break;
+      case NotificationType.workoutReminder:
+        iconData = Icons.alarm;
+        iconColor = Colors.blue;
+        break;
+      case NotificationType.bookingConfirmation:
+        iconData = Icons.event_available;
+        iconColor = Colors.green;
+        break;
+      case NotificationType.subscriptionExpiry:
+        iconData = Icons.warning;
+        iconColor = Colors.red;
+        break;
+      case NotificationType.paymentConfirmation:
+        iconData = Icons.payment;
+        iconColor = Colors.green;
+        break;
+      case NotificationType.newContent:
+        iconData = Icons.new_releases;
+        iconColor = Colors.purple;
+        break;
+      case NotificationType.promotion:
+        iconData = Icons.local_offer;
+        iconColor = Colors.pink;
+        break;
+      default:
+        iconData = Icons.notifications;
+        iconColor = AppColors.primaryColor;
+    }
 
     return Container(
-      width: 48,
-      height: 48,
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
         color: iconColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Icon(
-        iconData as IconData?,
+        iconData,
         color: iconColor,
-        size: 24,
+        size: 20,
       ),
     );
   }
 
-  String _formatDateTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
+  Widget _buildNotificationTitle() {
+    return Text(
+      notification.title,
+      style: TextStyle(
+        fontSize: 16.sp,
+        fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.bold,
+        color: notification.isRead ? Colors.grey.shade700 : Colors.black87,
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
 
-    if (difference.inMinutes < 1) {
-      return 'الآن';
-    } else if (difference.inMinutes < 60) {
-      return 'منذ ${difference.inMinutes} دقيقة';
-    } else if (difference.inHours < 24) {
-      return 'منذ ${difference.inHours} ساعة';
-    } else if (difference.inDays < 7) {
-      return 'منذ ${difference.inDays} يوم';
+  Widget _buildNotificationBody() {
+    return Text(
+      notification.body,
+      style: TextStyle(
+        fontSize: 14.sp,
+        color: Colors.grey.shade600,
+        height: 1.3,
+      ),
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildNotificationTime() {
+    final timeAgo = _getTimeAgo(notification.createdAt);
+    return Text(
+      timeAgo,
+      style: TextStyle(
+        fontSize: 12.sp,
+        color: Colors.grey.shade500,
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Column(
+      children: [
+        // نقطة تشير إلى عدم القراءة
+        if (!notification.isRead)
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        const SizedBox(height: 8),
+        // زر الحذف
+        InkWell(
+          onTap: onDelete,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Colors.red.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Icon(
+              Icons.delete_outline,
+              size: 18,
+              color: Colors.red.shade400,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _getTimeAgo(DateTime createdAt) {
+    final now = DateTime.now();
+    final difference = now.difference(createdAt);
+
+    if (difference.inDays > 0) {
+      if (difference.inDays == 1) {
+        return 'منذ يوم واحد';
+      } else if (difference.inDays < 30) {
+        return 'منذ ${difference.inDays} أيام';
+      } else {
+        return DateFormat('dd/MM/yyyy').format(createdAt);
+      }
+    } else if (difference.inHours > 0) {
+      if (difference.inHours == 1) {
+        return 'منذ ساعة واحدة';
+      } else {
+        return 'منذ ${difference.inHours} ساعات';
+      }
+    } else if (difference.inMinutes > 0) {
+      if (difference.inMinutes == 1) {
+        return 'منذ دقيقة واحدة';
+      } else {
+        return 'منذ ${difference.inMinutes} دقائق';
+      }
     } else {
-      return DateFormat('dd/MM/yyyy HH:mm', 'ar').format(dateTime);
+      return 'منذ لحظات';
     }
   }
 }

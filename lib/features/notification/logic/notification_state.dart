@@ -16,7 +16,7 @@ class NotificationInitial extends NotificationState {}
 class NotificationLoading extends NotificationState {}
 
 class NotificationLoaded extends NotificationState {
-  final List notifications;
+  final List<NotificationModel> notifications;
   final int unreadCount;
   final NotificationSettingsModel settings;
 
@@ -30,7 +30,7 @@ class NotificationLoaded extends NotificationState {
   List get props => [notifications, unreadCount, settings];
 
   NotificationLoaded copyWith({
-    List? notifications,
+    List<NotificationModel>? notifications,
     int? unreadCount,
     NotificationSettingsModel? settings,
   }) {
@@ -97,4 +97,13 @@ class NotificationSettingsUpdated extends NotificationState {
 
   @override
   List get props => [settings];
+}
+
+class NotificationOperationSuccess extends NotificationState {
+  final String message;
+
+  const NotificationOperationSuccess({required this.message});
+
+  @override
+  List<Object?> get props => [message];
 }

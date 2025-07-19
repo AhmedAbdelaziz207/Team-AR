@@ -20,6 +20,7 @@ import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
 import 'package:team_ar/features/manage_meals_screen/ui/add_meal_screen.dart';
 import 'package:team_ar/features/manage_meals_screen/ui/manage_food_screen.dart';
 import 'package:team_ar/features/manage_plans/ui/manage_plans_screen.dart';
+import 'package:team_ar/features/notification/screens/notification_screen.dart';
 import 'package:team_ar/features/onboarding/onboarding_screen.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_cubit.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
@@ -43,6 +44,7 @@ import '../../features/home/admin/admin_home_screen.dart';
 import '../../features/home/admin/repos/trainees_repository.dart';
 import '../../features/home/user/logic/navigation/navigation_cubit.dart';
 import '../../features/home/user/ui/root_screen.dart';
+import '../../features/notification/logic/notification_cubit.dart';
 import '../../features/trainer_register_success/model/register_success_model.dart';
 import '../../features/user_info/trainee_info_screen.dart';
 import '../../features/work_out/ui/exercise_screen.dart';
@@ -250,6 +252,14 @@ class AppRouter {
             ),
           ),
         );
+      case Routes.notification:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => getIt<NotificationCubit>(),
+            child: const NotificationScreen(),
+          ),
+        );
+
       default:
         return MaterialPageRoute(
           builder: (context) {
