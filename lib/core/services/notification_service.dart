@@ -1,19 +1,24 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import '../../../core/common/exceptions/notification_exceptions.dart';
-import '../../../core/common/notification_model.dart';
-import '../../../core/common/notification_settings_model.dart';
-import '../../../core/common/notification_type_enum.dart';
-import '../../../core/constants/notification_constants.dart';
-import '../../../core/utils/notification_helper.dart';
-import '../../../core/utils/notification_validator.dart';
-import 'local_notification_service.dart';
-import 'notification_repository.dart';
-
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../common/exceptions/notification_exceptions.dart';
+import '../common/notification_model.dart';
+import '../common/notification_settings_model.dart';
+import '../common/notification_type_enum.dart';
+import '../constants/notification_constants.dart';
+import '../utils/notification_helper.dart';
+import '../utils/notification_validator.dart';
+import '../../features/notification/services/local_notification_service.dart';
+import '../../features/notification/services/notification_repository.dart';
 
 class NotificationService {
   final LocalNotificationService _localNotificationService;
   final NotificationRepository _repository;
+
+  // إضافة FlutterLocalNotificationsPlugin للوصول المباشر
+  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
+  FlutterLocalNotificationsPlugin();
 
   // Stream controllers
   final StreamController _notificationStreamController =
@@ -31,12 +36,40 @@ class NotificationService {
   })  : _localNotificationService = localNotificationService,
         _repository = repository;
 
-  // Initialize service
+  // Initialize service with enhanced initialization
   Future initialize() async {
     try {
+      // طلب إذن الإشعارات أولاً
+      await Permission.notification.request();
+
+      // إعداد التهيئة المحسنة
+      const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+      const DarwinInitializationSettings initializationSettingsIOS =
+      DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+
+      const InitializationSettings initializationSettings =
+      InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsIOS,
+      );
+
+      // تهيئة البرنامج المساعد مباشرة
+      await _notificationsPlugin.initialize(initializationSettings);
+
+      // تهيئة الخدمة المحلية
       await _localNotificationService.initialize(
         onNotificationTap: _handleNotificationTap,
       );
+
+      if (kDebugMode) {
+        print('تم تهيئة خدمة الإشعارات بنجاح');
+      }
     } catch (e) {
       throw NotificationServiceException(
         'فشل في تهيئة خدمة الإشعارات: ${e.toString()}',
@@ -127,6 +160,98 @@ class NotificationService {
     }
   }
 
+  // Enhanced subscription warning notification
+  Future showSubscriptionWarning(int daysRemaining) async {
+    try {
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+        'subscription_channel',
+        'Subscription Notifications',
+        channelDescription: 'Notifications about subscription status',
+        importance: Importance.max,
+        priority: Priority.high,
+      );
+
+      const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+      await _notificationsPlugin.show(
+        0,
+        'تنبيه انتهاء الاشتراك',
+        'اشتراكك سينتهي خلال $daysRemaining أيام. جدد اشتراكك الآن!',
+        platformChannelSpecifics,
+      );
+
+      // أيضاً إنشاء إشعار في النظام العادي
+      final notification = NotificationHelper.createSubscriptionExpiryNotification(
+        daysLeft: daysRemaining,
+        customData: {
+          'subscription_type': 'premium',
+          'days_left': daysRemaining,
+          'expiry_date': DateTime.now().add(Duration(days: daysRemaining)).toIso8601String(),
+          'notification_type': 'warning',
+        },
+      );
+
+      await sendNotification(notification);
+
+      if (kDebugMode) {
+        print('تم إرسال تحذير انتهاء الاشتراك: $daysRemaining أيام متبقية');
+      }
+    } catch (e) {
+      throw NotificationServiceException(
+        'فشل في إرسال تحذير انتهاء الاشتراك: ${e.toString()}',
+        originalError: e,
+      );
+    }
+  }
+
+  // Enhanced subscription expired notification
+  Future  showSubscriptionExpired() async {
+    try {
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+        'subscription_channel',
+        'Subscription Notifications',
+        channelDescription: 'Notifications about subscription status',
+        importance: Importance.max,
+        priority: Priority.high,
+      );
+
+      const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+      await _notificationsPlugin.show(
+        1,
+        'انتهى الاشتراك',
+        'اشتراكك انتهى. يرجى تجديد الاشتراك لمواصلة الاستخدام.',
+        platformChannelSpecifics,
+      );
+
+      // أيضاً إنشاء إشعار في النظام العادي
+      final notification = NotificationHelper.createSubscriptionExpiryNotification(
+        daysLeft: 0,
+        customData: {
+          'subscription_type': 'premium',
+          'days_left': 0,
+          'expiry_date': DateTime.now().toIso8601String(),
+          'notification_type': 'expired',
+        },
+      );
+
+      await sendNotification(notification);
+
+      if (kDebugMode) {
+        print('تم إرسال إشعار انتهاء الاشتراك');
+      }
+    } catch (e) {
+      throw NotificationServiceException(
+        'فشل في إرسال إشعار انتهاء الاشتراك: ${e.toString()}',
+        originalError: e,
+      );
+    }
+  }
+
   // Schedule workout reminder
   Future scheduleWorkoutReminder({
     required String workoutName,
@@ -152,7 +277,7 @@ class NotificationService {
         scheduledTime: reminderTime,
       );
     } catch (e) {
-      print (e.toString());
+      print(e.toString());
       throw NotificationSchedulingException(
         'فشل في جدولة تذكير التمرين: ${e.toString()}',
         originalError: e,
@@ -217,22 +342,19 @@ class NotificationService {
     }
   }
 
-  // Send subscription expiry notification
+  // Send subscription expiry notification with enhanced functionality
   Future sendSubscriptionExpiryNotification({
     required int daysLeft,
     required String subscriptionType,
   }) async {
     try {
-      final notification = NotificationHelper.createSubscriptionExpiryNotification(
-        daysLeft: daysLeft,
-        customData: {
-          'subscription_type': subscriptionType,
-          'days_left': daysLeft,
-          'expiry_date': DateTime.now().add(Duration(days: daysLeft)).toIso8601String(),
-        },
-      );
-
-      await sendNotification(notification);
+      if (daysLeft > 0) {
+        // إرسال تحذير
+        await showSubscriptionWarning(daysLeft);
+      } else {
+        // إرسال إشعار انتهاء
+        await showSubscriptionExpired();
+      }
     } catch (e) {
       throw NotificationServiceException(
         'فشل في إرسال إشعار انتهاء الاشتراك: ${e.toString()}',
@@ -292,6 +414,7 @@ class NotificationService {
   Future cancelAllNotifications() async {
     try {
       await _localNotificationService.cancelAllNotifications();
+      await _notificationsPlugin.cancelAll(); // إضافة إلغاء من البرنامج المساعد المباشر
       await _repository.clearAllNotifications();
 
       if (kDebugMode) {
@@ -305,19 +428,33 @@ class NotificationService {
     }
   }
 
-  // Check permissions
-  // Future checkPermissions() async {
-  //   try {
-  //     return await _localNotificationService.areNotificationsEnabled();
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
-
-  // Request permissions
-  Future requestPermissions() async {
+  // Enhanced permission request
+  Future<bool> requestPermissions() async {
     try {
-      return await _localNotificationService.requestPermissions();
+      // طلب إذن من النظام
+      final permissionStatus = await Permission.notification.request();
+
+      // طلب إذن من البرنامج المساعد (إذا كانت الطريقة متاحة)
+      bool localPermission = true;
+      try {
+        localPermission = await _localNotificationService.requestPermissions();
+      } catch (e) {
+        // في حالة عدم وجود الطريقة، استخدم البرنامج المساعد المباشر
+        final androidImpl = _notificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+
+        if (androidImpl != null) {
+          localPermission = await androidImpl.requestNotificationsPermission() ?? false;
+        }
+      }
+
+      final granted = permissionStatus.isGranted && localPermission;
+
+      if (kDebugMode) {
+        print('حالة أذونات الإشعارات: $granted');
+      }
+
+      return granted;
     } catch (e) {
       throw NotificationPermissionException(
         'فشل في طلب صلاحيات الإشعارات: ${e.toString()}',
@@ -326,11 +463,44 @@ class NotificationService {
     }
   }
 
-  // Get pending notifications
-  Future getPendingNotificationsCount() async {
+  // Check permissions with enhanced checking
+  Future<bool> checkPermissions() async {
     try {
-      final pendingNotifications = await _localNotificationService.getPendingNotifications();
-      return pendingNotifications.length;
+      final permissionStatus = await Permission.notification.status;
+
+      // التحقق من الأذونات باستخدام البرنامج المساعد المباشر
+      final androidImpl = _notificationsPlugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+
+      bool localEnabled = true;
+      if (androidImpl != null) {
+        localEnabled = await androidImpl.areNotificationsEnabled() ?? false;
+      }
+
+      return permissionStatus.isGranted && localEnabled;
+    } catch (e) {
+      // في حالة الخطأ، التحقق من الأذونات الأساسية فقط
+      try {
+        final permissionStatus = await Permission.notification.status;
+        return permissionStatus.isGranted;
+      } catch (e2) {
+        return false;
+      }
+    }
+  }
+
+  // Get pending notifications
+  Future<int> getPendingNotificationsCount() async {
+    try {
+      // محاولة استخدام الخدمة المحلية أولاً
+      try {
+        final pendingNotifications = await _localNotificationService.getPendingNotifications();
+        return pendingNotifications.length;
+      } catch (e) {
+        // في حالة عدم توفر الطريقة، استخدم البرنامج المساعد المباشر
+        final pendingNotifications = await _notificationsPlugin.pendingNotificationRequests();
+        return pendingNotifications.length;
+      }
     } catch (e) {
       return 0;
     }
@@ -414,6 +584,30 @@ class NotificationService {
     } catch (e) {
       if (kDebugMode) {
         print('فشل في إعادة جدولة الرسائل التحفيزية: ${e.toString()}');
+      }
+    }
+  }
+
+  // إضافة طريقة للتحقق من حالة الاشتراك وإرسال الإشعارات المناسبة
+  Future checkAndNotifySubscriptionStatus({
+    required DateTime expiryDate,
+    required String subscriptionType,
+    List<int> warningDays = const [7, 3, 1],
+  }) async {
+    try {
+      final now = DateTime.now();
+      final daysLeft = expiryDate.difference(now).inDays;
+
+      if (daysLeft <= 0) {
+        // الاشتراك منتهي
+        await showSubscriptionExpired();
+      } else if (warningDays.contains(daysLeft)) {
+        // إرسال تحذير
+        await showSubscriptionWarning(daysLeft);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('خطأ في فحص حالة الاشتراك: ${e.toString()}');
       }
     }
   }

@@ -1,11 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:team_ar/app.dart';
 import 'package:flutter/material.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/utils/app_assets.dart';
 import 'package:team_ar/features/notification/services/push_notifications_services.dart';
+import 'core/common/notification_model.dart';
 import 'core/prefs/shared_pref_manager.dart';
 import 'core/routing/routes.dart';
 import 'core/utils/app_constants.dart';
@@ -16,29 +18,49 @@ import 'features/notification/services/local_notification_service.dart';
 import 'firebase_options.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+FlutterLocalNotificationsPlugin();
 final localNotificationService = LocalNotificationService();
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
 
-  // await ScreenUtil.ensureScreenSize();
-  // Easy Localization init
-
-  await EasyLocalization.ensureInitialized();
-
+// Background message handler - يجب أن يكون على المستوى الأعلى
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseNotificationsServices.init();
-  initializeNotifications();
-  localNotificationService.initialize();
+  await LocalNotificationService().initialize();
+
+  final data = message.data;
+  final notification = NotificationModel.fromJson(data);
+  await LocalNotificationService().showNotification(notification);
+
+  debugPrint('Handling background message: ${message.notification?.title}');
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Easy Localization init
+  await EasyLocalization.ensureInitialized();
+
+  // Firebase initialization
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // تسجيل background message handler قبل تهيئة الخدمات
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // تهيئة خدمات الإشعارات
+  await FirebaseNotificationsServices.init();
+  await initializeNotifications();
+  await localNotificationService.initialize();
 
   // Dependency Injection
   await setupServiceLocator();
 
   final token = await SharedPreferencesHelper.getString(AppConstants.token);
   final userRole =
-      await SharedPreferencesHelper.getString(AppConstants.userRole);
+  await SharedPreferencesHelper.getString(AppConstants.userRole);
 
   String initialRoute;
   if (token != null && userRole != null) {
@@ -66,10 +88,10 @@ void main() async {
 
 Future<void> initializeNotifications() async {
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+  AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const DarwinInitializationSettings initializationSettingsIOS =
-      DarwinInitializationSettings(
+  DarwinInitializationSettings(
     requestAlertPermission: true,
     requestBadgePermission: true,
     requestSoundPermission: true,
@@ -98,7 +120,7 @@ Future<void> createNotificationChannel() async {
 
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+      AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 }
 

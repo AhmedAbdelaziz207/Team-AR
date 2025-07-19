@@ -34,4 +34,7 @@ class Routes {
   static const chat = '/chat';
 
   static const notification = '/notification';
+
+  static const String subscriptionExpired = '/subscriptionExpired';
+  static const String subscriptionPlans = '/subscriptionPlans';
 }

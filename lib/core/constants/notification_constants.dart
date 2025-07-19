@@ -6,7 +6,8 @@ class NotificationConstants {
   static const String generalChannelId = 'general_notifications';
   static const String adminChannelId = 'admin_notifications';
   static const String systemChannelId = 'system_notifications';
-
+  static const String lastNotificationDate = 'lastNotificationDate';
+  static const String subscriptionPlans = 'subscriptionPlans';
   // Limits
   static const int maxStoredNotifications = 100;
   static const int defaultOldNotificationDays = 30;

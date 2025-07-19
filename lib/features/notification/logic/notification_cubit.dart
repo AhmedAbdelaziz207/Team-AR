@@ -7,7 +7,7 @@ import '../../../core/utils/notification_helper.dart';
 import '../../../core/utils/notification_validator.dart';
 import '../services/local_notification_service.dart';
 import '../services/notification_repository.dart';
-import '../services/notification_service.dart';
+import '../../../core/services/notification_service.dart';
 import 'notification_state.dart';
 
 class NotificationCubit extends Cubit<NotificationState> {
