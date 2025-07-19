@@ -25,6 +25,8 @@ mixin _$UserState {
     required TResult Function(String errorMessage) failure,
     required TResult Function() updateImageSuccess,
     required TResult Function(String message) updateImageFailure,
+    required TResult Function() updateUserSuccess,
+    required TResult Function(String message) updateUserFailure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -36,6 +38,8 @@ mixin _$UserState {
     TResult? Function(String errorMessage)? failure,
     TResult? Function()? updateImageSuccess,
     TResult? Function(String message)? updateImageFailure,
+    TResult? Function()? updateUserSuccess,
+    TResult? Function(String message)? updateUserFailure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -47,6 +51,8 @@ mixin _$UserState {
     TResult Function(String errorMessage)? failure,
     TResult Function()? updateImageSuccess,
     TResult Function(String message)? updateImageFailure,
+    TResult Function()? updateUserSuccess,
+    TResult Function(String message)? updateUserFailure,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -59,6 +65,8 @@ mixin _$UserState {
     required TResult Function(UserFailure value) failure,
     required TResult Function(UpdateUserImageSuccess value) updateImageSuccess,
     required TResult Function(UpdateUserImageFailure value) updateImageFailure,
+    required TResult Function(UpdateUserSuccess value) updateUserSuccess,
+    required TResult Function(UpdateUserFailure value) updateUserFailure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -70,6 +78,8 @@ mixin _$UserState {
     TResult? Function(UserFailure value)? failure,
     TResult? Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult? Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult? Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult? Function(UpdateUserFailure value)? updateUserFailure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -81,6 +91,8 @@ mixin _$UserState {
     TResult Function(UserFailure value)? failure,
     TResult Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult Function(UpdateUserFailure value)? updateUserFailure,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -154,6 +166,8 @@ class _$UserInitialImpl implements UserInitial {
     required TResult Function(String errorMessage) failure,
     required TResult Function() updateImageSuccess,
     required TResult Function(String message) updateImageFailure,
+    required TResult Function() updateUserSuccess,
+    required TResult Function(String message) updateUserFailure,
   }) {
     return initial();
   }
@@ -168,6 +182,8 @@ class _$UserInitialImpl implements UserInitial {
     TResult? Function(String errorMessage)? failure,
     TResult? Function()? updateImageSuccess,
     TResult? Function(String message)? updateImageFailure,
+    TResult? Function()? updateUserSuccess,
+    TResult? Function(String message)? updateUserFailure,
   }) {
     return initial?.call();
   }
@@ -182,6 +198,8 @@ class _$UserInitialImpl implements UserInitial {
     TResult Function(String errorMessage)? failure,
     TResult Function()? updateImageSuccess,
     TResult Function(String message)? updateImageFailure,
+    TResult Function()? updateUserSuccess,
+    TResult Function(String message)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -200,6 +218,8 @@ class _$UserInitialImpl implements UserInitial {
     required TResult Function(UserFailure value) failure,
     required TResult Function(UpdateUserImageSuccess value) updateImageSuccess,
     required TResult Function(UpdateUserImageFailure value) updateImageFailure,
+    required TResult Function(UpdateUserSuccess value) updateUserSuccess,
+    required TResult Function(UpdateUserFailure value) updateUserFailure,
   }) {
     return initial(this);
   }
@@ -214,6 +234,8 @@ class _$UserInitialImpl implements UserInitial {
     TResult? Function(UserFailure value)? failure,
     TResult? Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult? Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult? Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult? Function(UpdateUserFailure value)? updateUserFailure,
   }) {
     return initial?.call(this);
   }
@@ -228,6 +250,8 @@ class _$UserInitialImpl implements UserInitial {
     TResult Function(UserFailure value)? failure,
     TResult Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult Function(UpdateUserFailure value)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -289,6 +313,8 @@ class _$UserLoadingImpl implements UserLoading {
     required TResult Function(String errorMessage) failure,
     required TResult Function() updateImageSuccess,
     required TResult Function(String message) updateImageFailure,
+    required TResult Function() updateUserSuccess,
+    required TResult Function(String message) updateUserFailure,
   }) {
     return loading();
   }
@@ -303,6 +329,8 @@ class _$UserLoadingImpl implements UserLoading {
     TResult? Function(String errorMessage)? failure,
     TResult? Function()? updateImageSuccess,
     TResult? Function(String message)? updateImageFailure,
+    TResult? Function()? updateUserSuccess,
+    TResult? Function(String message)? updateUserFailure,
   }) {
     return loading?.call();
   }
@@ -317,6 +345,8 @@ class _$UserLoadingImpl implements UserLoading {
     TResult Function(String errorMessage)? failure,
     TResult Function()? updateImageSuccess,
     TResult Function(String message)? updateImageFailure,
+    TResult Function()? updateUserSuccess,
+    TResult Function(String message)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -335,6 +365,8 @@ class _$UserLoadingImpl implements UserLoading {
     required TResult Function(UserFailure value) failure,
     required TResult Function(UpdateUserImageSuccess value) updateImageSuccess,
     required TResult Function(UpdateUserImageFailure value) updateImageFailure,
+    required TResult Function(UpdateUserSuccess value) updateUserSuccess,
+    required TResult Function(UpdateUserFailure value) updateUserFailure,
   }) {
     return loading(this);
   }
@@ -349,6 +381,8 @@ class _$UserLoadingImpl implements UserLoading {
     TResult? Function(UserFailure value)? failure,
     TResult? Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult? Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult? Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult? Function(UpdateUserFailure value)? updateUserFailure,
   }) {
     return loading?.call(this);
   }
@@ -363,6 +397,8 @@ class _$UserLoadingImpl implements UserLoading {
     TResult Function(UserFailure value)? failure,
     TResult Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult Function(UpdateUserFailure value)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -452,6 +488,8 @@ class _$UserSuccessImpl implements UserSuccess {
     required TResult Function(String errorMessage) failure,
     required TResult Function() updateImageSuccess,
     required TResult Function(String message) updateImageFailure,
+    required TResult Function() updateUserSuccess,
+    required TResult Function(String message) updateUserFailure,
   }) {
     return success(userData);
   }
@@ -466,6 +504,8 @@ class _$UserSuccessImpl implements UserSuccess {
     TResult? Function(String errorMessage)? failure,
     TResult? Function()? updateImageSuccess,
     TResult? Function(String message)? updateImageFailure,
+    TResult? Function()? updateUserSuccess,
+    TResult? Function(String message)? updateUserFailure,
   }) {
     return success?.call(userData);
   }
@@ -480,6 +520,8 @@ class _$UserSuccessImpl implements UserSuccess {
     TResult Function(String errorMessage)? failure,
     TResult Function()? updateImageSuccess,
     TResult Function(String message)? updateImageFailure,
+    TResult Function()? updateUserSuccess,
+    TResult Function(String message)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -498,6 +540,8 @@ class _$UserSuccessImpl implements UserSuccess {
     required TResult Function(UserFailure value) failure,
     required TResult Function(UpdateUserImageSuccess value) updateImageSuccess,
     required TResult Function(UpdateUserImageFailure value) updateImageFailure,
+    required TResult Function(UpdateUserSuccess value) updateUserSuccess,
+    required TResult Function(UpdateUserFailure value) updateUserFailure,
   }) {
     return success(this);
   }
@@ -512,6 +556,8 @@ class _$UserSuccessImpl implements UserSuccess {
     TResult? Function(UserFailure value)? failure,
     TResult? Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult? Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult? Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult? Function(UpdateUserFailure value)? updateUserFailure,
   }) {
     return success?.call(this);
   }
@@ -526,6 +572,8 @@ class _$UserSuccessImpl implements UserSuccess {
     TResult Function(UserFailure value)? failure,
     TResult Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult Function(UpdateUserFailure value)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -623,6 +671,8 @@ class _$GetTraineeImpl implements GetTrainee {
     required TResult Function(String errorMessage) failure,
     required TResult Function() updateImageSuccess,
     required TResult Function(String message) updateImageFailure,
+    required TResult Function() updateUserSuccess,
+    required TResult Function(String message) updateUserFailure,
   }) {
     return getTrainee(userData);
   }
@@ -637,6 +687,8 @@ class _$GetTraineeImpl implements GetTrainee {
     TResult? Function(String errorMessage)? failure,
     TResult? Function()? updateImageSuccess,
     TResult? Function(String message)? updateImageFailure,
+    TResult? Function()? updateUserSuccess,
+    TResult? Function(String message)? updateUserFailure,
   }) {
     return getTrainee?.call(userData);
   }
@@ -651,6 +703,8 @@ class _$GetTraineeImpl implements GetTrainee {
     TResult Function(String errorMessage)? failure,
     TResult Function()? updateImageSuccess,
     TResult Function(String message)? updateImageFailure,
+    TResult Function()? updateUserSuccess,
+    TResult Function(String message)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (getTrainee != null) {
@@ -669,6 +723,8 @@ class _$GetTraineeImpl implements GetTrainee {
     required TResult Function(UserFailure value) failure,
     required TResult Function(UpdateUserImageSuccess value) updateImageSuccess,
     required TResult Function(UpdateUserImageFailure value) updateImageFailure,
+    required TResult Function(UpdateUserSuccess value) updateUserSuccess,
+    required TResult Function(UpdateUserFailure value) updateUserFailure,
   }) {
     return getTrainee(this);
   }
@@ -683,6 +739,8 @@ class _$GetTraineeImpl implements GetTrainee {
     TResult? Function(UserFailure value)? failure,
     TResult? Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult? Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult? Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult? Function(UpdateUserFailure value)? updateUserFailure,
   }) {
     return getTrainee?.call(this);
   }
@@ -697,6 +755,8 @@ class _$GetTraineeImpl implements GetTrainee {
     TResult Function(UserFailure value)? failure,
     TResult Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult Function(UpdateUserFailure value)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (getTrainee != null) {
@@ -794,6 +854,8 @@ class _$UserFailureImpl implements UserFailure {
     required TResult Function(String errorMessage) failure,
     required TResult Function() updateImageSuccess,
     required TResult Function(String message) updateImageFailure,
+    required TResult Function() updateUserSuccess,
+    required TResult Function(String message) updateUserFailure,
   }) {
     return failure(errorMessage);
   }
@@ -808,6 +870,8 @@ class _$UserFailureImpl implements UserFailure {
     TResult? Function(String errorMessage)? failure,
     TResult? Function()? updateImageSuccess,
     TResult? Function(String message)? updateImageFailure,
+    TResult? Function()? updateUserSuccess,
+    TResult? Function(String message)? updateUserFailure,
   }) {
     return failure?.call(errorMessage);
   }
@@ -822,6 +886,8 @@ class _$UserFailureImpl implements UserFailure {
     TResult Function(String errorMessage)? failure,
     TResult Function()? updateImageSuccess,
     TResult Function(String message)? updateImageFailure,
+    TResult Function()? updateUserSuccess,
+    TResult Function(String message)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (failure != null) {
@@ -840,6 +906,8 @@ class _$UserFailureImpl implements UserFailure {
     required TResult Function(UserFailure value) failure,
     required TResult Function(UpdateUserImageSuccess value) updateImageSuccess,
     required TResult Function(UpdateUserImageFailure value) updateImageFailure,
+    required TResult Function(UpdateUserSuccess value) updateUserSuccess,
+    required TResult Function(UpdateUserFailure value) updateUserFailure,
   }) {
     return failure(this);
   }
@@ -854,6 +922,8 @@ class _$UserFailureImpl implements UserFailure {
     TResult? Function(UserFailure value)? failure,
     TResult? Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult? Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult? Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult? Function(UpdateUserFailure value)? updateUserFailure,
   }) {
     return failure?.call(this);
   }
@@ -868,6 +938,8 @@ class _$UserFailureImpl implements UserFailure {
     TResult Function(UserFailure value)? failure,
     TResult Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult Function(UpdateUserFailure value)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (failure != null) {
@@ -940,6 +1012,8 @@ class _$UpdateUserImageSuccessImpl implements UpdateUserImageSuccess {
     required TResult Function(String errorMessage) failure,
     required TResult Function() updateImageSuccess,
     required TResult Function(String message) updateImageFailure,
+    required TResult Function() updateUserSuccess,
+    required TResult Function(String message) updateUserFailure,
   }) {
     return updateImageSuccess();
   }
@@ -954,6 +1028,8 @@ class _$UpdateUserImageSuccessImpl implements UpdateUserImageSuccess {
     TResult? Function(String errorMessage)? failure,
     TResult? Function()? updateImageSuccess,
     TResult? Function(String message)? updateImageFailure,
+    TResult? Function()? updateUserSuccess,
+    TResult? Function(String message)? updateUserFailure,
   }) {
     return updateImageSuccess?.call();
   }
@@ -968,6 +1044,8 @@ class _$UpdateUserImageSuccessImpl implements UpdateUserImageSuccess {
     TResult Function(String errorMessage)? failure,
     TResult Function()? updateImageSuccess,
     TResult Function(String message)? updateImageFailure,
+    TResult Function()? updateUserSuccess,
+    TResult Function(String message)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (updateImageSuccess != null) {
@@ -986,6 +1064,8 @@ class _$UpdateUserImageSuccessImpl implements UpdateUserImageSuccess {
     required TResult Function(UserFailure value) failure,
     required TResult Function(UpdateUserImageSuccess value) updateImageSuccess,
     required TResult Function(UpdateUserImageFailure value) updateImageFailure,
+    required TResult Function(UpdateUserSuccess value) updateUserSuccess,
+    required TResult Function(UpdateUserFailure value) updateUserFailure,
   }) {
     return updateImageSuccess(this);
   }
@@ -1000,6 +1080,8 @@ class _$UpdateUserImageSuccessImpl implements UpdateUserImageSuccess {
     TResult? Function(UserFailure value)? failure,
     TResult? Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult? Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult? Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult? Function(UpdateUserFailure value)? updateUserFailure,
   }) {
     return updateImageSuccess?.call(this);
   }
@@ -1014,6 +1096,8 @@ class _$UpdateUserImageSuccessImpl implements UpdateUserImageSuccess {
     TResult Function(UserFailure value)? failure,
     TResult Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult Function(UpdateUserFailure value)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (updateImageSuccess != null) {
@@ -1105,6 +1189,8 @@ class _$UpdateUserImageFailureImpl implements UpdateUserImageFailure {
     required TResult Function(String errorMessage) failure,
     required TResult Function() updateImageSuccess,
     required TResult Function(String message) updateImageFailure,
+    required TResult Function() updateUserSuccess,
+    required TResult Function(String message) updateUserFailure,
   }) {
     return updateImageFailure(message);
   }
@@ -1119,6 +1205,8 @@ class _$UpdateUserImageFailureImpl implements UpdateUserImageFailure {
     TResult? Function(String errorMessage)? failure,
     TResult? Function()? updateImageSuccess,
     TResult? Function(String message)? updateImageFailure,
+    TResult? Function()? updateUserSuccess,
+    TResult? Function(String message)? updateUserFailure,
   }) {
     return updateImageFailure?.call(message);
   }
@@ -1133,6 +1221,8 @@ class _$UpdateUserImageFailureImpl implements UpdateUserImageFailure {
     TResult Function(String errorMessage)? failure,
     TResult Function()? updateImageSuccess,
     TResult Function(String message)? updateImageFailure,
+    TResult Function()? updateUserSuccess,
+    TResult Function(String message)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (updateImageFailure != null) {
@@ -1151,6 +1241,8 @@ class _$UpdateUserImageFailureImpl implements UpdateUserImageFailure {
     required TResult Function(UserFailure value) failure,
     required TResult Function(UpdateUserImageSuccess value) updateImageSuccess,
     required TResult Function(UpdateUserImageFailure value) updateImageFailure,
+    required TResult Function(UpdateUserSuccess value) updateUserSuccess,
+    required TResult Function(UpdateUserFailure value) updateUserFailure,
   }) {
     return updateImageFailure(this);
   }
@@ -1165,6 +1257,8 @@ class _$UpdateUserImageFailureImpl implements UpdateUserImageFailure {
     TResult? Function(UserFailure value)? failure,
     TResult? Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult? Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult? Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult? Function(UpdateUserFailure value)? updateUserFailure,
   }) {
     return updateImageFailure?.call(this);
   }
@@ -1179,6 +1273,8 @@ class _$UpdateUserImageFailureImpl implements UpdateUserImageFailure {
     TResult Function(UserFailure value)? failure,
     TResult Function(UpdateUserImageSuccess value)? updateImageSuccess,
     TResult Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult Function(UpdateUserFailure value)? updateUserFailure,
     required TResult orElse(),
   }) {
     if (updateImageFailure != null) {
@@ -1199,4 +1295,335 @@ abstract class UpdateUserImageFailure implements UserState {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UpdateUserImageFailureImplCopyWith<_$UpdateUserImageFailureImpl>
       get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$UpdateUserSuccessImplCopyWith<$Res> {
+  factory _$$UpdateUserSuccessImplCopyWith(_$UpdateUserSuccessImpl value,
+          $Res Function(_$UpdateUserSuccessImpl) then) =
+      __$$UpdateUserSuccessImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$UpdateUserSuccessImplCopyWithImpl<$Res>
+    extends _$UserStateCopyWithImpl<$Res, _$UpdateUserSuccessImpl>
+    implements _$$UpdateUserSuccessImplCopyWith<$Res> {
+  __$$UpdateUserSuccessImplCopyWithImpl(_$UpdateUserSuccessImpl _value,
+      $Res Function(_$UpdateUserSuccessImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UserState
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$UpdateUserSuccessImpl implements UpdateUserSuccess {
+  const _$UpdateUserSuccessImpl();
+
+  @override
+  String toString() {
+    return 'UserState.updateUserSuccess()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$UpdateUserSuccessImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function(TraineeModel userData) success,
+    required TResult Function(TrainerModel userData) getTrainee,
+    required TResult Function(String errorMessage) failure,
+    required TResult Function() updateImageSuccess,
+    required TResult Function(String message) updateImageFailure,
+    required TResult Function() updateUserSuccess,
+    required TResult Function(String message) updateUserFailure,
+  }) {
+    return updateUserSuccess();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function(TraineeModel userData)? success,
+    TResult? Function(TrainerModel userData)? getTrainee,
+    TResult? Function(String errorMessage)? failure,
+    TResult? Function()? updateImageSuccess,
+    TResult? Function(String message)? updateImageFailure,
+    TResult? Function()? updateUserSuccess,
+    TResult? Function(String message)? updateUserFailure,
+  }) {
+    return updateUserSuccess?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function(TraineeModel userData)? success,
+    TResult Function(TrainerModel userData)? getTrainee,
+    TResult Function(String errorMessage)? failure,
+    TResult Function()? updateImageSuccess,
+    TResult Function(String message)? updateImageFailure,
+    TResult Function()? updateUserSuccess,
+    TResult Function(String message)? updateUserFailure,
+    required TResult orElse(),
+  }) {
+    if (updateUserSuccess != null) {
+      return updateUserSuccess();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(UserInitial value) initial,
+    required TResult Function(UserLoading value) loading,
+    required TResult Function(UserSuccess value) success,
+    required TResult Function(GetTrainee value) getTrainee,
+    required TResult Function(UserFailure value) failure,
+    required TResult Function(UpdateUserImageSuccess value) updateImageSuccess,
+    required TResult Function(UpdateUserImageFailure value) updateImageFailure,
+    required TResult Function(UpdateUserSuccess value) updateUserSuccess,
+    required TResult Function(UpdateUserFailure value) updateUserFailure,
+  }) {
+    return updateUserSuccess(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(UserInitial value)? initial,
+    TResult? Function(UserLoading value)? loading,
+    TResult? Function(UserSuccess value)? success,
+    TResult? Function(GetTrainee value)? getTrainee,
+    TResult? Function(UserFailure value)? failure,
+    TResult? Function(UpdateUserImageSuccess value)? updateImageSuccess,
+    TResult? Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult? Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult? Function(UpdateUserFailure value)? updateUserFailure,
+  }) {
+    return updateUserSuccess?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(UserInitial value)? initial,
+    TResult Function(UserLoading value)? loading,
+    TResult Function(UserSuccess value)? success,
+    TResult Function(GetTrainee value)? getTrainee,
+    TResult Function(UserFailure value)? failure,
+    TResult Function(UpdateUserImageSuccess value)? updateImageSuccess,
+    TResult Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult Function(UpdateUserFailure value)? updateUserFailure,
+    required TResult orElse(),
+  }) {
+    if (updateUserSuccess != null) {
+      return updateUserSuccess(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class UpdateUserSuccess implements UserState {
+  const factory UpdateUserSuccess() = _$UpdateUserSuccessImpl;
+}
+
+/// @nodoc
+abstract class _$$UpdateUserFailureImplCopyWith<$Res> {
+  factory _$$UpdateUserFailureImplCopyWith(_$UpdateUserFailureImpl value,
+          $Res Function(_$UpdateUserFailureImpl) then) =
+      __$$UpdateUserFailureImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String message});
+}
+
+/// @nodoc
+class __$$UpdateUserFailureImplCopyWithImpl<$Res>
+    extends _$UserStateCopyWithImpl<$Res, _$UpdateUserFailureImpl>
+    implements _$$UpdateUserFailureImplCopyWith<$Res> {
+  __$$UpdateUserFailureImplCopyWithImpl(_$UpdateUserFailureImpl _value,
+      $Res Function(_$UpdateUserFailureImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UserState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? message = null,
+  }) {
+    return _then(_$UpdateUserFailureImpl(
+      null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$UpdateUserFailureImpl implements UpdateUserFailure {
+  const _$UpdateUserFailureImpl(this.message);
+
+  @override
+  final String message;
+
+  @override
+  String toString() {
+    return 'UserState.updateUserFailure(message: $message)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UpdateUserFailureImpl &&
+            (identical(other.message, message) || other.message == message));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, message);
+
+  /// Create a copy of UserState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UpdateUserFailureImplCopyWith<_$UpdateUserFailureImpl> get copyWith =>
+      __$$UpdateUserFailureImplCopyWithImpl<_$UpdateUserFailureImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function(TraineeModel userData) success,
+    required TResult Function(TrainerModel userData) getTrainee,
+    required TResult Function(String errorMessage) failure,
+    required TResult Function() updateImageSuccess,
+    required TResult Function(String message) updateImageFailure,
+    required TResult Function() updateUserSuccess,
+    required TResult Function(String message) updateUserFailure,
+  }) {
+    return updateUserFailure(message);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function(TraineeModel userData)? success,
+    TResult? Function(TrainerModel userData)? getTrainee,
+    TResult? Function(String errorMessage)? failure,
+    TResult? Function()? updateImageSuccess,
+    TResult? Function(String message)? updateImageFailure,
+    TResult? Function()? updateUserSuccess,
+    TResult? Function(String message)? updateUserFailure,
+  }) {
+    return updateUserFailure?.call(message);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function(TraineeModel userData)? success,
+    TResult Function(TrainerModel userData)? getTrainee,
+    TResult Function(String errorMessage)? failure,
+    TResult Function()? updateImageSuccess,
+    TResult Function(String message)? updateImageFailure,
+    TResult Function()? updateUserSuccess,
+    TResult Function(String message)? updateUserFailure,
+    required TResult orElse(),
+  }) {
+    if (updateUserFailure != null) {
+      return updateUserFailure(message);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(UserInitial value) initial,
+    required TResult Function(UserLoading value) loading,
+    required TResult Function(UserSuccess value) success,
+    required TResult Function(GetTrainee value) getTrainee,
+    required TResult Function(UserFailure value) failure,
+    required TResult Function(UpdateUserImageSuccess value) updateImageSuccess,
+    required TResult Function(UpdateUserImageFailure value) updateImageFailure,
+    required TResult Function(UpdateUserSuccess value) updateUserSuccess,
+    required TResult Function(UpdateUserFailure value) updateUserFailure,
+  }) {
+    return updateUserFailure(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(UserInitial value)? initial,
+    TResult? Function(UserLoading value)? loading,
+    TResult? Function(UserSuccess value)? success,
+    TResult? Function(GetTrainee value)? getTrainee,
+    TResult? Function(UserFailure value)? failure,
+    TResult? Function(UpdateUserImageSuccess value)? updateImageSuccess,
+    TResult? Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult? Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult? Function(UpdateUserFailure value)? updateUserFailure,
+  }) {
+    return updateUserFailure?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(UserInitial value)? initial,
+    TResult Function(UserLoading value)? loading,
+    TResult Function(UserSuccess value)? success,
+    TResult Function(GetTrainee value)? getTrainee,
+    TResult Function(UserFailure value)? failure,
+    TResult Function(UpdateUserImageSuccess value)? updateImageSuccess,
+    TResult Function(UpdateUserImageFailure value)? updateImageFailure,
+    TResult Function(UpdateUserSuccess value)? updateUserSuccess,
+    TResult Function(UpdateUserFailure value)? updateUserFailure,
+    required TResult orElse(),
+  }) {
+    if (updateUserFailure != null) {
+      return updateUserFailure(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class UpdateUserFailure implements UserState {
+  const factory UpdateUserFailure(final String message) =
+      _$UpdateUserFailureImpl;
+
+  String get message;
+
+  /// Create a copy of UserState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UpdateUserFailureImplCopyWith<_$UpdateUserFailureImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

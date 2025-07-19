@@ -16,7 +16,7 @@ class NotificationResponseModel {
     this.payload,
   });
 
-  factory NotificationResponseModel.fromJson(Map json) =>
+  factory NotificationResponseModel.fromJson(Map<String,dynamic> json) =>
       _$NotificationResponseModelFromJson(json);
 
   Map toJson() => _$NotificationResponseModelToJson(this);

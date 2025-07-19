@@ -77,10 +77,10 @@ class MealCubit extends Cubit<MealState> {
       diet: DietMealModel(
         id: 0,
         name: nameController.text,
-        numOfCalories: double.parse(caloriesController.text),
-        numOfCarbs: double.parse(carbsController.text),
-        numOfFats: double.parse(fatController.text),
-        numOfProtein: double.parse(proteinController.text),
+        numOfCalories: double.parse(caloriesController.text) / 100,
+        numOfCarbs: double.parse(carbsController.text) / 100,
+        numOfFats: double.parse(fatController.text) / 100,
+        numOfProtein: double.parse(proteinController.text) / 100,
         foodCategory: mealType,
       ),
       dietImage: image!,
@@ -102,7 +102,38 @@ class MealCubit extends Cubit<MealState> {
   }
 
   double totalCalories = 0;
+  double totalFats = 0;
+  double totalCarbs = 0;
+  double totalProtein = 0;
+  double calculateTotalCalories(List<DietMealModel> meals) {
+    double calories = 0;
+    double fats = 0;
+    double carbs = 0;
+    double protein = 0;
 
+    for (var meal in meals) {
+      if (meal.isSelected ?? false) {
+        final grams = meal.numOfGrams ?? 0;
+
+        calories += (meal.numOfCalories ?? 0) * grams;
+        fats     += (meal.numOfFats ?? 0) * grams;
+        carbs    += (meal.numOfCarbs ?? 0) * grams;
+        protein  += (meal.numOfProtein ?? 0) * grams;
+      }
+    }
+
+    totalCalories = calories;
+    totalFats     = fats;
+    totalCarbs    = carbs;
+    totalProtein  = protein;
+    log("fats : $fats , carbs : $carbs , protein : $protein");
+
+    if (state is MealsLoaded) {
+      emit(MealState.loaded(meals: meals));
+    }
+
+    return calories;
+  }
   void toggleMealSelection(int mealId, double quantity) {
     final currentState = state;
 
@@ -137,23 +168,6 @@ class MealCubit extends Cubit<MealState> {
     }
   }
 
-  double calculateTotalCalories(List<DietMealModel> meals) {
-    double total = 0;
-    for (var meal in meals) {
-      if (meal.isSelected ?? false) {
-        final grams = meal.numOfGrams ?? 0;
-        final cals = (meal.numOfCalories ?? 0) * grams;
-        total += cals;
-      }
-    }
-    totalCalories = total;
-
-    if (state is MealsLoaded) {
-      emit(MealState.loaded(meals: meals));
-    }
-
-    return total;
-  }
 
   Future<void> assignDietMealForUser(String userId, {bool? isUpdate}) async {
     log("isUpdate Meal : $isUpdate");

@@ -31,7 +31,7 @@ class NotificationModel {
     this.customData,
   });
 
-  factory NotificationModel.fromJson(Map json) =>
+  factory NotificationModel.fromJson(Map<String, dynamic> json) =>
       _$NotificationModelFromJson(json);
 
   Map toJson() => _$NotificationModelToJson(this);

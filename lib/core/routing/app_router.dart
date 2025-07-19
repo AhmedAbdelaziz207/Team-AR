@@ -8,6 +8,7 @@ import 'package:team_ar/features/auth/register/logic/register_cubit.dart';
 import 'package:team_ar/features/auth/register/model/user_model.dart';
 import 'package:team_ar/features/auth/register/register_screen.dart';
 import 'package:team_ar/features/chat/logic/chat_cubit.dart';
+import 'package:team_ar/features/chat/model/chat_user_model.dart';
 import 'package:team_ar/features/chat/ui/message_screen.dart';
 import 'package:team_ar/features/confirm_subscription/confirm_subscription_screen.dart';
 import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_cubit.dart';
@@ -241,7 +242,8 @@ class AppRouter {
         );
 
       case Routes.chat:
-        final user =  settings?.arguments as UserModel;
+        final user =  settings?.arguments as ChatUserModel;
+
         return MaterialPageRoute(
           builder: (context) => BlocProvider(
             create: (context) => ChatCubit(),

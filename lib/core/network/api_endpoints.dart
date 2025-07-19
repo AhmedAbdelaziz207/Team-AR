@@ -22,4 +22,5 @@ class ApiEndPoints {
   static const chat = "api/Chat/GetChat";
   static const deleteChat = "api/Chat";
   static const sendMessage = "api/Chat/send";
+  static const updateUser = "api/Account/UpdateUser";
 }

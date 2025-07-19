@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
+import 'package:team_ar/features/auth/register/model/user_model.dart';
 import 'package:team_ar/features/home/admin/repos/trainees_repository.dart';
 import 'package:team_ar/features/home/user/logic/user_state.dart';
+import 'package:team_ar/features/user_info/model/trainee_model.dart';
 
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super(const UserState.initial());
@@ -48,6 +50,17 @@ class UserCubit extends Cubit<UserState> {
       success: (data) => emit(const UserState.updateImageSuccess()),
       failure: (error) => emit(
         UserState.updateImageFailure(error.getErrorsMessage() ?? ""),
+      ),
+    );
+  }
+
+  updateUser(TrainerModel user) async {
+    final result = await repo.updateUser(user.toJson());
+
+    result.when(
+      success: (data) => emit(const UserState.updateUserSuccess()),
+      failure: (error) => emit(
+        UserState.updateUserFailure(error.getErrorsMessage() ?? ""),
       ),
     );
   }

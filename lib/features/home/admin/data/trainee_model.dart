@@ -18,6 +18,7 @@ class TraineeModel {
   final int? duration;
   final int? oldPrice;
   final int? newPrice;
+  @JsonKey(name: "Role")
   final String? role;
   final int? exerciseId;
   final String? gender;
@@ -25,6 +26,8 @@ class TraineeModel {
   final String? image;
   @JsonKey(name: 'phoneNumber')
   final String? phone;
+  @JsonKey(name: 'PhoneNumber')
+  final String? phoneNumber;
   @JsonKey(name: 'reminderOfPackage')
   final int? remindDays;
   final String? password;
@@ -33,6 +36,7 @@ class TraineeModel {
   final int? packageId;
 
   TraineeModel({
+    this.phoneNumber,
     this.status,
     this.role,
     this.exerciseId,
@@ -74,7 +78,7 @@ class TraineeModel {
 
     log("totalDays : $totalDays");
 
-    double remainingRatio = remindDays!  / totalDays;
+    double remainingRatio = remindDays! / totalDays;
     return (remainingRatio * 10).clamp(0.0, 10.0);
   }
 }

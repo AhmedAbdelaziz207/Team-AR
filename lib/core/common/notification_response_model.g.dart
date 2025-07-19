@@ -7,7 +7,7 @@ part of 'notification_response_model.dart';
 // **************************************************************************
 
 NotificationResponseModel _$NotificationResponseModelFromJson(
-        Map<dynamic, dynamic> json) =>
+        Map<String, dynamic> json) =>
     NotificationResponseModel(
       notificationId: json['notificationId'] as String,
       actionType: json['actionType'] as String,

@@ -6,7 +6,7 @@ sealed class ChatState {}
 final class ChatInitial extends ChatState {}
 
 final class GetChatsSuccess extends ChatState {
-  final List<UserModel> chats;
+  final List<ChatUserModel> chats;
 
   GetChatsSuccess({required this.chats});
 }

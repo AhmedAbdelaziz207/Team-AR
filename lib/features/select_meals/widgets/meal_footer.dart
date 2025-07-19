@@ -41,27 +41,38 @@ class _MealSummaryFooterState extends State<MealSummaryFooter> {
           }
         },
         builder: (context, state) {
+          final cubit = context.read<MealCubit>();
+
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(
-                height: 8.h,
-              ),
+              SizedBox(height: 8.h),
               state.maybeMap(
-                loaded: (value) => Text(
-                  "Total:   ${context.read<MealCubit>().totalCalories} cal /Day",
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.black,
-                        fontSize: 14.sp,
-                        fontFamily: "Cairo",
+                loaded: (_) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildMacroText("Calories", "${cubit.totalCalories.toStringAsFixed(1)} cal"),
+                          _buildMacroText("Protein", "${cubit.totalProtein.toStringAsFixed(1)} g"),
+                        ],
                       ),
+                      SizedBox(height: 6.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildMacroText("Carbs", "${cubit.totalCarbs.toStringAsFixed(1)} g"),
+                          _buildMacroText("Fats", "${cubit.totalFats.toStringAsFixed(1)} g"),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 orElse: () => const SizedBox(),
               ),
-              SizedBox(
-                height: 12.h,
-              ),
+              SizedBox(height: 12.h),
               Row(
                 children: [
                   Expanded(
@@ -71,11 +82,11 @@ class _MealSummaryFooterState extends State<MealSummaryFooter> {
                         onPressed: mealCount == 5 || widget.isUpdate
                             ? null
                             : () {
-                                context.read<MealCubit>().assignDietMealForUser(
-                                      widget.userId,
-                                      isUpdate: widget.isUpdate,
-                                    );
-                              },
+                          context.read<MealCubit>().assignDietMealForUser(
+                            widget.userId,
+                            isUpdate: widget.isUpdate,
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryColor,
                           shape: RoundedRectangleBorder(
@@ -84,11 +95,9 @@ class _MealSummaryFooterState extends State<MealSummaryFooter> {
                         ),
                         child: state is MailAssignLoading
                             ? const CircularProgressIndicator(
-                                color: AppColors.white,
-                              )
-                            : Text(
-                                AppLocalKeys.next.tr(),
-                              ),
+                          color: AppColors.white,
+                        )
+                            : Text(AppLocalKeys.next.tr()),
                       ),
                     ),
                   ),
@@ -98,25 +107,23 @@ class _MealSummaryFooterState extends State<MealSummaryFooter> {
                         await context
                             .read<MealCubit>()
                             .assignDietMealForUser(
-                              widget.userId,
-                              isUpdate: widget.isUpdate,
-                            )
-                            .then(
-                          (value) {
-                            if(widget.isUpdate){
-                              Navigator.pop(context);
-                              return ;
-                            }
-                            Navigator.pushReplacementNamed(
-                              context,
-                              Routes.addWorkout,
-                              arguments: AddWorkoutParams(
-                                traineeId: widget.userId,
-                                exerciseId: null,
-                              ),
-                            );
-                          },
-                        );
+                          widget.userId,
+                          isUpdate: widget.isUpdate,
+                        )
+                            .then((value) {
+                          if (widget.isUpdate) {
+                            Navigator.pop(context);
+                            return;
+                          }
+                          Navigator.pushReplacementNamed(
+                            context,
+                            Routes.addWorkout,
+                            arguments: AddWorkoutParams(
+                              traineeId: widget.userId,
+                              exerciseId: null,
+                            ),
+                          );
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryColor,
@@ -135,4 +142,30 @@ class _MealSummaryFooterState extends State<MealSummaryFooter> {
       ),
     );
   }
+  Widget _buildMacroText(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontFamily: "Cairo",
+            fontWeight: FontWeight.bold,
+            color: AppColors.black,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontFamily: "Cairo",
+            fontWeight: FontWeight.w400,
+            color: AppColors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
 }

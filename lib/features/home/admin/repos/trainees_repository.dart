@@ -99,4 +99,15 @@ class TraineesRepository {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
   }
+
+  Future<ApiResult<void>> updateUser(Map<String, dynamic> body) async {
+    try {
+      log("Update User ");
+      final response = await apiService.updateUser(body);
+
+      return ApiResult.success(response);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
 }

@@ -9,8 +9,13 @@ class UserModel {
 
   @JsonKey(name: 'UserName')
   final String? userName;
+  final String? firstName;
+  final String? lastName;
 
   final int? age;
+  final String? whatsappNumber;
+
+  final String? phoneNumber;
 
   @JsonKey(name: 'Address')
   final String? address;
@@ -21,6 +26,8 @@ class UserModel {
   @JsonKey(name: 'Email')
   final String? email;
 
+  @JsonKey(name: 'numOfUnReadMessages')
+  final int? numOfUnreadMessages;
   @JsonKey(name: 'Password')
   final String? password;
 
@@ -80,6 +87,11 @@ class UserModel {
     this.id,
     this.imageUrl,
     this.userName,
+    this.firstName,
+    this.lastName,
+    this.phoneNumber,
+    this.whatsappNumber,
+    this.numOfUnreadMessages,
     this.age,
     this.address,
     this.phone,

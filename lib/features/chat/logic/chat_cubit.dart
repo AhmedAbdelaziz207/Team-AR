@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' show Cubit;
+import 'package:team_ar/features/chat/model/chat_user_model.dart';
 
 import '../../../core/di/dependency_injection.dart';
 import '../../../core/network/api_error_handler.dart';
@@ -16,23 +19,9 @@ class ChatCubit extends Cubit<ChatState> {
   void getAllChats() async {
     emit(GetChatsLoading());
     try {
-      List<UserModel> chats = await apiService.getAllChas();
-      chats = [
-        UserModel(
-          userName: "Ahmed Ali",
-          id: 1,
-          email: "ahmed@user.com",
-          age: 21,
-          phone: "01012121212",
-        ),
-        UserModel(
-          userName: "Omar Mostafa",
-          id: 1,
-          email: "omar@trainer.com",
-          age: 21,
-          phone: "01012121212",
-        ),
-      ];
+      final chats = await apiService.getAllChas();
+
+      log("chats: ${chats[0].userName}");
       emit(GetChatsSuccess(chats: chats));
     } catch (e) {
       final errorMessage = ApiErrorHandler.handle(e).getErrorsMessage();
