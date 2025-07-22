@@ -1,5 +1,5 @@
 class ApiEndPoints {
-  static const baseUrl = "http://gymapp.runasp.net/";
+  static const baseUrl = "https://gymapp.runasp.net/";
   static const imagesBaseUrl = "http://gymapp.runasp.net/Images/FoodImages/";
   static const usersImagesBaseUrl = "http://gymapp.runasp.net/Images/UserImages/";
   static const login = "api/Account/Login";
@@ -23,4 +23,5 @@ class ApiEndPoints {
   static const deleteChat = "api/Chat";
   static const sendMessage = "api/Chat/send";
   static const updateUser = "api/Account/UpdateUser";
+  static const fcmToken = "/api/UserDevice";
 }

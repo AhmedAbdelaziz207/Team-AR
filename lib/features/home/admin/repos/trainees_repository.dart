@@ -110,4 +110,15 @@ class TraineesRepository {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
   }
+
+  Future<ApiResult<void>> sendFcmToken(Map<String, dynamic> body) async {
+    try {
+      log("Send Fcm Token for User ");
+      final response = await apiService.sendFcmToken(body);
+
+      return ApiResult.success(response);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
 }

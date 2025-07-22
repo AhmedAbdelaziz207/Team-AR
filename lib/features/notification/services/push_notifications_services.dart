@@ -1,15 +1,21 @@
 import 'dart:developer';
+import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:team_ar/core/common/notification_model.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
+import 'package:team_ar/core/network/api_service.dart';
+import 'package:team_ar/features/home/admin/repos/trainees_repository.dart';
 import '../../../core/common/notification_type_enum.dart';
+import '../../../core/prefs/shared_pref_manager.dart';
+import '../../../core/utils/app_constants.dart';
 import '../../../firebase_options.dart';
 import 'local_notification_service.dart';
 
 class FirebaseNotificationsServices {
   static FirebaseMessaging messaging = FirebaseMessaging.instance;
   static LocalNotificationService localNotificationService =
-  LocalNotificationService();
+      LocalNotificationService();
 
   static String firebaseScope =
       "https://www.googleapis.com/auth/firebase.messaging";
@@ -43,7 +49,6 @@ class FirebaseNotificationsServices {
 
       // ملاحظة: background message handler يتم تسجيله في main.dart
       log("Firebase Messaging initialized successfully");
-
     } catch (e) {
       log("Error initializing Firebase Messaging: $e");
     }
@@ -112,7 +117,8 @@ class FirebaseNotificationsServices {
       // عرض الإشعار المحلي
       localNotificationService.showNotification(
         NotificationModel(
-          id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+          id: message.messageId ??
+              DateTime.now().millisecondsSinceEpoch.toString(),
           title: message.notification?.title ?? "إشعار جديد",
           body: message.notification?.body ?? "لديك إشعار جديد",
           type: NotificationType.system,
@@ -135,15 +141,22 @@ class FirebaseNotificationsServices {
     }
   }
 
-  static void sendFcmTokenToServer() async {
+  static void _sendFcmTokenToServer() async {
     try {
       final token = await FirebaseMessaging.instance.getToken();
+      final userId =
+          await SharedPreferencesHelper.getString(AppConstants.userId);
       if (token != null) {
         log("FCM token to send to server: $token");
 
-        // هنا يمكنك إضافة كود لإرسال التوكن للخادم
-        // Webservices webservices = Webservices();
-        // await webservices.sendFcmToken(token);
+        TraineesRepository traineesRepository =
+            TraineesRepository(getIt<ApiService>());
+
+        await traineesRepository.sendFcmToken({
+          "id": 0,
+          "userId": userId,
+          "deviceToken": token,
+        });
 
         log("FCM token ready to be sent to server");
       } else {
@@ -154,12 +167,11 @@ class FirebaseNotificationsServices {
     }
   }
 
-  // دالة لتحديث التوكن عند تغييره
   static void listenToTokenRefresh() {
+    _sendFcmTokenToServer();
     FirebaseMessaging.instance.onTokenRefresh.listen((String newToken) {
       log("FCM token refreshed: $newToken");
-      // إرسال التوكن الجديد للخادم
-      sendFcmTokenToServer();
+      _sendFcmTokenToServer();
     });
   }
 }

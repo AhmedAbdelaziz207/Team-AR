@@ -111,4 +111,6 @@ abstract class ApiService {
   @PUT(ApiEndPoints.updateUser)
   Future<void>  updateUser(@Body() Map<String, dynamic> body) ;
 
+  @POST(ApiEndPoints.fcmToken)
+  Future<void> sendFcmToken(@Body() Map<String, dynamic> body);
 }

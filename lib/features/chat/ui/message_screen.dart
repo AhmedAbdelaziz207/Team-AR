@@ -7,7 +7,6 @@ import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/features/chat/model/chat_user_model.dart';
 import '../../../core/network/signalr_service.dart';
-import '../../auth/register/model/user_model.dart';
 import '../logic/chat_cubit.dart';
 import '../model/chat_model.dart';
 
@@ -32,7 +31,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
   @override
   void initState() {
     super.initState();
-
     SharedPreferencesHelper.getString(AppConstants.userId).then(
       (value) {
         setState(() {
@@ -56,7 +54,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       },
     );
 
-    // context.read<ChatCubit>().getChatContent(widget.receiver.id!);
+    context.read<ChatCubit>().getChatContent(widget.receiver.id!);
 
   }
 

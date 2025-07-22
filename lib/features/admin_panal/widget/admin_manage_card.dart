@@ -20,7 +20,7 @@ class AdminManageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Container   (
       decoration: BoxDecoration(
         color: cardColor ?? AppColors.mediumLavender,
         borderRadius: BorderRadius.circular(16.sp),
@@ -28,16 +28,13 @@ class AdminManageCard extends StatelessWidget {
       padding: EdgeInsets.all(16.sp),
       child: Stack(
         children: [
-          const Align(
-            alignment:  AlignmentDirectional.bottomEnd,
-            child: Positioned(
-              right: -10,
-              bottom: 20,
-              child: Icon(
-                Icons.fitness_center, // Represents a dumbbell
-                size: 80,
-                color: AppColors.primaryColor,
-              ),
+          const Positioned(
+            right: -10,
+            bottom: 20,
+            child: Icon(
+              Icons.fitness_center, // Represents a dumbbell
+              size: 80,
+              color: AppColors.primaryColor,
             ),
           ),
           Column(
@@ -49,27 +46,39 @@ class AdminManageCard extends StatelessWidget {
                     backgroundColor: Colors.white,
                     child: Text(
                       "AR",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(
                           color: cardColor ?? AppColors.mediumLavender,
                           fontWeight: FontWeight.bold),
                     ),
                   ),
                   SizedBox(width: 8.h),
                   Text("${AppLocalKeys.appName.tr()} $title",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ))
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ))
                 ],
               ),
               SizedBox(height: 16.h),
               Text(
                 title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 21.sp,
-                    ),
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 21.sp,
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -83,7 +92,7 @@ class AdminManageCard extends StatelessWidget {
                 onPressed: onTap ?? () {},
                 child: Text(
                   AppLocalKeys.seeDetails.tr(),
-                  style:  TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: cardColor ?? AppColors.mediumLavender,
                   ),
@@ -92,7 +101,8 @@ class AdminManageCard extends StatelessWidget {
             ],
           ),
         ],
-      ),
+      )
+      ,
     );
   }
 }
