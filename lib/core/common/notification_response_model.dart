@@ -7,7 +7,7 @@ class NotificationResponseModel {
   final String notificationId;
   final String actionType;
   final DateTime responseTime;
-  final Map? payload;
+  final Map<String, dynamic>? payload;
 
   const NotificationResponseModel({
     required this.notificationId,
@@ -16,10 +16,11 @@ class NotificationResponseModel {
     this.payload,
   });
 
+
   factory NotificationResponseModel.fromJson(Map<String,dynamic> json) =>
       _$NotificationResponseModelFromJson(json);
 
-  Map toJson() => _$NotificationResponseModelToJson(this);
+  Map<String, dynamic> toJson() => _$NotificationResponseModelToJson(this);
 }
 
 enum NotificationAction {

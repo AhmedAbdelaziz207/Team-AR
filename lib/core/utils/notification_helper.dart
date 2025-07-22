@@ -77,7 +77,7 @@ class NotificationHelper {
     required String title,
     required String body,
     DateTime? scheduledAt,
-    Map? customData,
+    Map<String, dynamic>? customData,
   }) {
     return NotificationModel(
       id: generateId(),
@@ -93,7 +93,7 @@ class NotificationHelper {
   // Create motivational notification
   static NotificationModel createMotivationalNotification({
     String? customMessage,
-    Map? customData,
+    Map<String, dynamic>? customData,
   }) {
     final message = customMessage ??
         NotificationConstants.motivationalMessages[
@@ -113,7 +113,7 @@ class NotificationHelper {
   // Create subscription expiry notification
   static NotificationModel createSubscriptionExpiryNotification({
     required int daysLeft,
-    Map? customData,
+    Map<String, dynamic>? customData,
   }) {
     String title;
     String body;
@@ -144,7 +144,7 @@ class NotificationHelper {
     required String title,
     required String body,
     required NotificationType type,
-    Map? customData,
+    Map<String, dynamic>? customData,
   }) {
     return NotificationModel(
       id: generateId(),

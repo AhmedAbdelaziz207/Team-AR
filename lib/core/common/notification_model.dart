@@ -15,7 +15,7 @@ class NotificationModel {
   final bool isRead;
   final bool isLocal;
   final String? imageUrl;
-  final Map? customData;
+  final Map<String, dynamic>? customData;
 
   const NotificationModel({
     required this.id,
@@ -34,7 +34,8 @@ class NotificationModel {
   factory NotificationModel.fromJson(Map<String, dynamic> json) =>
       _$NotificationModelFromJson(json);
 
-  Map toJson() => _$NotificationModelToJson(this);
+
+  Map<String, dynamic> toJson() => _$NotificationModelToJson(this);
 
   NotificationModel copyWith({
     String? id,
@@ -47,7 +48,7 @@ class NotificationModel {
     bool? isRead,
     bool? isLocal,
     String? imageUrl,
-    Map? customData,
+    Map<String, dynamic>? customData, // ✅ تم التعديل هنا
   }) {
     return NotificationModel(
       id: id ?? this.id,
