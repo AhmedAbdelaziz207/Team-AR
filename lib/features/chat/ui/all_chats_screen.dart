@@ -1,11 +1,11 @@
-import 'dart:developer';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
-
-import '../../auth/register/model/user_model.dart';
+import 'package:team_ar/core/utils/app_local_keys.dart';
+import 'package:team_ar/core/widgets/custom_text_form_field.dart';
+import 'package:team_ar/features/chat/model/chat_user_model.dart';
 import '../logic/chat_cubit.dart';
 import '../widget/chats_list_item.dart';
 
@@ -19,9 +19,13 @@ class AllChatsScreen extends StatefulWidget {
 class _AllChatsScreenState extends State<AllChatsScreen> {
   @override
   void initState() {
-    context.read<ChatCubit>().getAllChats();
     super.initState();
+    Future.microtask(() {
+      context.read<ChatCubit>().getAllChats();
+    });
   }
+
+  String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -33,48 +37,55 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 12.h,
+              SizedBox(height: 12.h),
+              CustomTextFormField(
+                hintText: AppLocalKeys.searchByName.tr(),
+                suffixIcon: Icons.search,
+                isAdmin: true,
+                iconColor: AppColors.primaryColor,
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value.toLowerCase();
+                  });
+                },
               ),
+              SizedBox(height: 12.h),
               Text(
                 "Chats",
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.sp,
-                    color: AppColors.primaryColor),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.sp,
+                      color: AppColors.primaryColor,
+                    ),
               ),
-              SizedBox(
-                height: 20.h,
-              ),
-              BlocBuilder<ChatCubit, ChatState>(
-                builder: (context, state) {
-                  if (state is GetChatsLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (state is GetChatsFailure) {
-                    return Center(child: Text(state.message));
-                  }
-                  if (state is GetChatsSuccess && state.chats.isEmpty) {
-                    return const Center(
-                        child: Text(
-                      "لا يوجد محادثات 🙂",
-                      style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    ));
-                  }
+              SizedBox(height: 20.h),
+              Expanded(
+                child: BlocBuilder<ChatCubit, ChatState>(
+                  builder: (context, state) {
+                    if (state is GetChatsLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (state is GetChatsFailure) {
+                      return Center(child: Text(state.message));
+                    }
+                    final List<ChatUserModel> allChats =
+                        state is GetChatsSuccess ? state.chats : [];
 
-                  final List<UserModel> chats =
-                      state is GetChatsSuccess ? state.chats : [];
-                  return Expanded(
-                    child: ListView.builder(
-                        itemCount: chats.length,
-                        itemBuilder: (context, index) {
-                          return ChatsListItem(user: chats[index]);
-                        }),
-                  );
-                },
+                    final List<ChatUserModel> filteredChats = allChats
+                        .where((chat) =>
+                            chat.userName!.toLowerCase().contains(searchQuery))
+                        .toList();
+
+                    return ListView.builder(
+                      itemCount: filteredChats.length,
+                      itemBuilder: (context, index) {
+                        return ChatsListItem(
+                          user: filteredChats[index],
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),

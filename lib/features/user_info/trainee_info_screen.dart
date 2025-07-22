@@ -62,7 +62,23 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle(context, AppLocalKeys.plan.tr()),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildSectionTitle(context, AppLocalKeys.plan.tr()),
+                IconButton(
+                    onPressed: () {
+                      showUpdatePlanDialog(context, () {
+                        context.read<UserCubit>().updateUser(trainee);
+                      });
+                    },
+                    icon: Icon(
+                      Icons.replay_circle_filled,
+                      color: AppColors.primaryColor,
+                      size: 25.sp,
+                    ))
+              ],
+            ),
 
             BlocBuilder<UserPlansCubit, UserPlansState>(
               builder: (context, state) {
@@ -83,7 +99,31 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
             const SizedBox(height: 16),
 
             // Basic Info
-            BlocBuilder<UserCubit, UserState>(
+            BlocConsumer<UserCubit, UserState>(
+              buildWhen: (_, state) =>
+                  state is UserLoading ||
+                  state is UserFailure ||
+                  state is GetTrainee,
+              listener: (context, state) {
+                if (state is UpdateUserSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text(
+                      "تم تحديث البيانات بنجاح",
+                      style: TextStyle(color: AppColors.white),
+                    ),
+                    backgroundColor: AppColors.primaryColor,
+                  ));
+                }
+                if (state is UpdateUserFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text(
+                      "لم يتم تحديث البيانات بنجاح",
+                      style: TextStyle(color: AppColors.white),
+                    ),
+                    backgroundColor: AppColors.red,
+                  ));
+                }
+              },
               builder: (context, state) {
                 if (state is UserLoading) {
                   return const Center(child: CircularProgressIndicator());
@@ -248,15 +288,14 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
       ),
       floatingActionButton: BlocBuilder<UserCubit, UserState>(
         builder: (context, state) {
+          if (state is GetTrainee) {
+            final trainee = state.userData;
 
-         if (state is GetTrainee) {
-           final trainee = state.userData;
-
-           return FloatingMenu(
-             trainee: trainee,
-             exerciseId: widget.traineeModel?.exerciseId,
-           );
-         }
+            return FloatingMenu(
+              trainee: trainee,
+              exerciseId: widget.traineeModel?.exerciseId,
+            );
+          }
 
           return const SizedBox.shrink();
         },
@@ -310,6 +349,99 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void showUpdatePlanDialog(BuildContext context, Function onAccept) {
+    showDialog(
+      context: context,
+      barrierDismissible: true, // Optional: prevent closing without action
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.refresh_rounded,
+                  size: 48,
+                  color: AppColors.primaryColor,
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  "تجديد الاشتراك",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Cairo",
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "هل تريد تجديد الاشتراك؟",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Cairo",
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: Size(120.w, 50.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          side: const BorderSide(color: Colors.grey),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          AppLocalKeys.cancel.tr(),
+                          style: const TextStyle(
+                            fontFamily: "Cairo",
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          onAccept();
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          AppLocalKeys.ok.tr(),
+                          style: const TextStyle(
+                            fontFamily: "Cairo",
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

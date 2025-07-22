@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:team_ar/features/auth/login/model/login_response.dart';
 import 'package:team_ar/features/auth/register/model/user_model.dart';
+import 'package:team_ar/features/chat/model/chat_user_model.dart';
 import 'package:team_ar/features/diet/model/user_diet.dart';
 import '../../features/auth/register/model/register_response.dart';
 import '../../features/chat/model/chat_model.dart';
@@ -97,7 +98,7 @@ abstract class ApiService {
   );
 
   @GET(ApiEndPoints.allChats)
-  Future<List<UserModel>> getAllChas();
+  Future<List<ChatUserModel>> getAllChas();
 
   @GET(ApiEndPoints.chat)
   Future<List<ChatMessageModel>> getChat(@Query("receiverId") String id);
@@ -107,5 +108,9 @@ abstract class ApiService {
 
   @DELETE(ApiEndPoints.deleteChat)
   Future<void> deleteMessage({@Query("MessageID") required String id});
+  @PUT(ApiEndPoints.updateUser)
+  Future<void>  updateUser(@Body() Map<String, dynamic> body) ;
 
+  @POST(ApiEndPoints.fcmToken)
+  Future<void> sendFcmToken(@Body() Map<String, dynamic> body);
 }

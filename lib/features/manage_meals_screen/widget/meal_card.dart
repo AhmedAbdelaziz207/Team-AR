@@ -105,12 +105,12 @@ class MealCard extends StatelessWidget {
                         children: [
                           buildDetailsItem(
                             AppLocalKeys.calories.tr(),
-                            meal?.numOfCalories.toString() ?? "0",
+                            (meal!.numOfCalories!*100).toStringAsFixed(1),
                           ),
                           SizedBox(height: 12.h),
                           buildDetailsItem(
                             AppLocalKeys.proteins.tr(),
-                            meal?.numOfProtein.toString() ?? "0",
+                            (meal!.numOfProtein!*100).toStringAsFixed(1),
                           )
                         ],
                       ),
@@ -120,12 +120,12 @@ class MealCard extends StatelessWidget {
                             AppLocalKeys.carbs.tr(),
                             meal?.numOfCarbs == null
                                 ? "0"
-                                : meal!.numOfCarbs.toString(),
+                                : (meal!.numOfCarbs!*100).toStringAsFixed(1),
                           ),
                           SizedBox(height: 12.h),
                           buildDetailsItem(
                             AppLocalKeys.fats.tr(),
-                            meal?.numOfFats.toString() ?? "0",
+                            (meal!.numOfFats!*100).toStringAsFixed(1),
                           ),
                         ],
                       )

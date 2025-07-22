@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -7,7 +8,13 @@ import 'local_notification_service.dart';
 import 'notification_storage.dart';
 
 import '../../../core/common/notification_model.dart';
+import 'package:team_ar/core/common/notification_model.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
+import 'package:team_ar/core/network/api_service.dart';
+import 'package:team_ar/features/home/admin/repos/trainees_repository.dart';
 import '../../../core/common/notification_type_enum.dart';
+import '../../../core/prefs/shared_pref_manager.dart';
+import '../../../core/utils/app_constants.dart';
 import '../../../firebase_options.dart';
 
 class FirebaseNotificationsServices {
@@ -51,6 +58,7 @@ class FirebaseNotificationsServices {
 
       listenToTokenRefresh();
 
+      // ملاحظة: background message handler يتم تسجيله في main.dart
       log("Firebase Messaging initialized successfully");
     } catch (e) {
       log("Error initializing Firebase Messaging: $e");
@@ -180,7 +188,27 @@ class FirebaseNotificationsServices {
     }
   }
 
-  static Future getDeviceToken() async {
+  static void onMessaging(RemoteMessage message) {
+    try {
+      log("Received foreground message: ${message.notification?.title ?? "No title"}");
+
+      // عرض الإشعار المحلي
+      localNotificationService.showNotification(
+        NotificationModel(
+          id: message.messageId ??
+              DateTime.now().millisecondsSinceEpoch.toString(),
+          title: message.notification?.title ?? "إشعار جديد",
+          body: message.notification?.body ?? "لديك إشعار جديد",
+          type: NotificationType.system,
+          createdAt: message.sentTime ?? DateTime.now(),
+        ),
+      );
+    } catch (e) {
+      log("Error handling foreground message: $e");
+    }
+  }
+
+  static Future<String?> getDeviceToken() async {
     try {
       final token = await FirebaseMessaging.instance.getToken();
       log("Device token: $token");
@@ -191,12 +219,21 @@ class FirebaseNotificationsServices {
     }
   }
 
-  static Future sendFcmTokenToServer() async {
+  static void _sendFcmTokenToServer() async {
     try {
       final token = await FirebaseMessaging.instance.getToken();
+      final userId =
+          await SharedPreferencesHelper.getString(AppConstants.userId);
       if (token != null) {
         log("FCM token to send to server: $token");
-        // await ApiService.sendFcmToken(token);
+        TraineesRepository traineesRepository =
+            TraineesRepository(getIt<ApiService>());
+
+        await traineesRepository.sendFcmToken({
+          "id": 0,
+          "userId": userId,
+          "deviceToken": token,
+        });
         log("FCM token ready to be sent to server");
       } else {
         log("FCM token is null");
@@ -207,6 +244,7 @@ class FirebaseNotificationsServices {
   }
 
   static void listenToTokenRefresh() {
+    _sendFcmTokenToServer();
     FirebaseMessaging.instance.onTokenRefresh.listen((String newToken) {
       log("FCM token refreshed: $newToken");
       _saveTokenLocally(newToken);
@@ -232,5 +270,8 @@ class FirebaseNotificationsServices {
     } catch (e) {
       log("Error sending test notification: $e");
     }
+  }
+      _sendFcmTokenToServer();
+    });
   }
 }

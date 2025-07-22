@@ -28,7 +28,7 @@ class NotificationSettingsModel {
     this.reminderFrequency = 24,
   });
 
-  factory NotificationSettingsModel.fromJson(Map<String, dynamic> json) =>
+  factory NotificationSettingsModel.fromJson(Map<String,dynamic> json) =>
       _$NotificationSettingsModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$NotificationSettingsModelToJson(this);

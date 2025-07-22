@@ -12,6 +12,7 @@ import 'package:team_ar/features/home/user/widget/banner_carousel_slider.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../subscription/screens/subscription_expired_screen.dart';
+import '../../../notification/services/push_notifications_services.dart';
 import '../widget/file_list.dart';
 import '../widget/member_ship_card.dart';
 import '../logic/user_state.dart';
@@ -27,6 +28,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   @override
   void initState() {
     loadData();
+    FirebaseNotificationsServices.listenToTokenRefresh();
+
     super.initState();
   }
 

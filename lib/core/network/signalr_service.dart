@@ -14,6 +14,7 @@ class SignalRService {
       String userId,
       void Function(String senderId, String message, String data)
           onMessage) async {
+
     _connection = HubConnectionBuilder()
         .withUrl(
           '${ApiEndPoints.baseUrl}chathub?userId=$userId',
@@ -38,6 +39,7 @@ class SignalRService {
       print("✅ SignalR connected.");
     } catch (e) {
       print("❌ Failed to connect to SignalR: $e");
+      log( '${ApiEndPoints.baseUrl}chathub?userId=$userId');
     }
   }
 
