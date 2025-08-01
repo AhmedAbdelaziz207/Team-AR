@@ -54,8 +54,9 @@ class UserCubit extends Cubit<UserState> {
     );
   }
 
-  updateUser(TrainerModel user) async {
-    final result = await repo.updateUser(user.toJson());
+  updateUserPackage(userId, packageId) async {
+    final result = await repo
+        .updateUserPackage({"userId": userId, "packageId": packageId});
 
     result.when(
       success: (data) => emit(const UserState.updateUserSuccess()),
@@ -63,5 +64,11 @@ class UserCubit extends Cubit<UserState> {
         UserState.updateUserFailure(error.getErrorsMessage() ?? ""),
       ),
     );
+  }
+
+
+  void deleteUser(String id) async {
+    log("Delete User ");
+    final response = await repo.deleteUser(id);
   }
 }

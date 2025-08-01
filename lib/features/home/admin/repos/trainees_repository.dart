@@ -12,9 +12,7 @@ import '../../../../core/network/api_service.dart';
 class TraineesRepository {
   final ApiService apiService;
 
-  TraineesRepository(
-    this.apiService,
-  );
+  TraineesRepository(this.apiService,);
 
   Future<ApiResult<List<TraineeModel>>> getAllTrainees() async {
     try {
@@ -81,7 +79,9 @@ class TraineesRepository {
       final formData = FormData.fromMap({
         'Image': await MultipartFile.fromFile(
           userImage.path,
-          filename: userImage.path.split('/').last,
+          filename: userImage.path
+              .split('/')
+              .last,
         ),
       });
 
@@ -100,10 +100,10 @@ class TraineesRepository {
     }
   }
 
-  Future<ApiResult<void>> updateUser(Map<String, dynamic> body) async {
+  Future<ApiResult<void>> updateUserPackage(Map<String, dynamic> body) async {
     try {
       log("Update User ");
-      final response = await apiService.updateUser(body);
+      final response = await apiService.updateUserPackage(body);
 
       return ApiResult.success(response);
     } catch (e) {
@@ -121,4 +121,16 @@ class TraineesRepository {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
   }
-}
+
+
+  Future<ApiResult<void>> deleteUser(String id) async {
+    try {
+      log("Delete User ");
+      final response = await apiService.deleteUser(id);
+
+      return ApiResult.success(response);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
+  }

@@ -15,8 +15,11 @@ class NavigationCubit extends Cubit<NavigationState> {
         break;
       case NavBarItems.food:
         emit(const NavigationState(NavBarItems.food, 2));
+      case NavBarItems.chat:
+        emit(const NavigationState(NavBarItems.chat, 3));
+        break;
       case NavBarItems.profile:
-        emit(const NavigationState(NavBarItems.profile, 3));
+        emit(const NavigationState(NavBarItems.profile, 4));
     }
   }
 }

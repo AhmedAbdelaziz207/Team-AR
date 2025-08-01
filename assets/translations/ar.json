@@ -167,5 +167,7 @@
   "Workouts": "التمارين",
   "Manage User Meals": "إدارة وجبات المستخدم",
   "Replace": "استبدال",
-  "Must be alphanumeric": "يجب ان يكون حروف وارقام فقط"
+  "Must be alphanumeric": "يجب ان يكون حروف وارقام فقط",
+  "No meals found" : "لم يتم العثور على وجبات",
+  "Chats" : "الدردشات"
 }

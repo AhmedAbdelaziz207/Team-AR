@@ -167,5 +167,8 @@
   "Workouts": "Workouts",
   "Manage User Meals": "Manage User Meals",
   "Replace": "Replace",
-  "Must be alphanumeric" : "Must be letters and numbers only"
+  "Must be alphanumeric" : "Must be letters and numbers only",
+  "No meals found" : "No meals found.!",
+  "Chats" : "Chats"
+
 }

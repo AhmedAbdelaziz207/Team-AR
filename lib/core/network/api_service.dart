@@ -42,6 +42,9 @@ abstract class ApiService {
   @DELETE("${ApiEndPoints.plans}/{Id}")
   Future<UserPlan> deletePlan(@Path("Id") int id);
 
+  @DELETE(ApiEndPoints.deleteUser)
+  Future<void> deleteUser(@Query("id") String id);
+
   @POST(ApiEndPoints.trainerData)
   Future<RegisterResponse> addTrainer(@Body() FormData body);
 
@@ -108,8 +111,9 @@ abstract class ApiService {
 
   @DELETE(ApiEndPoints.deleteChat)
   Future<void> deleteMessage({@Query("MessageID") required String id});
-  @PUT(ApiEndPoints.updateUser)
-  Future<void>  updateUser(@Body() Map<String, dynamic> body) ;
+
+  @PUT(ApiEndPoints.updateUserPackage)
+  Future<void> updateUserPackage(@Body() Map<String, dynamic> body);
 
   @POST(ApiEndPoints.fcmToken)
   Future<void> sendFcmToken(@Body() Map<String, dynamic> body);

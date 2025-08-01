@@ -118,7 +118,16 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                             .where((meal) => meal.foodCategory == selectedTab)
                             .toList();
                         if (filteredMeals.isEmpty) {
-                          return const Center(child: Text("No meals found."));
+                          return Center(
+                              child: Text(
+                            AppLocalKeys.noMealsFound.tr(),
+                            style: TextStyle(
+                              color: AppColors.primaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "Cairo",
+                              fontSize: 21.sp,
+                            ),
+                          ));
                         }
 
                         return ListView.builder(

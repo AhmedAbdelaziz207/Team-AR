@@ -32,6 +32,7 @@ class _WorkoutSystemsScreenState extends State<WorkoutSystemsScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         centerTitle: true,
+        leading: const SizedBox.shrink(),
         title: Text(
           AppLocalKeys.workoutSystems.tr(),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(

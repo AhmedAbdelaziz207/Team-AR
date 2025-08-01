@@ -7,6 +7,7 @@ import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/features/chat/model/chat_user_model.dart';
 import '../../../core/network/signalr_service.dart';
+import '../../auth/login/model/user_role.dart';
 import '../logic/chat_cubit.dart';
 import '../model/chat_model.dart';
 
@@ -23,14 +24,18 @@ class _MessagesScreenState extends State<MessagesScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<ChatMessageModel> _historyMessages = [];
   final List<ChatMessageModel> _liveMessages = [];
+  // bool? isUser = false;
 
   String? currentUserId;
 
   final signalR = SignalRService();
+  final adminId = "8c5eda71-1ede-4394-80eb-de412d8f5ba3";
 
   @override
   void initState() {
     super.initState();
+
+
     SharedPreferencesHelper.getString(AppConstants.userId).then(
       (value) {
         setState(() {
@@ -38,10 +43,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
         });
 
         signalR.connect(currentUserId!, (senderId, messageId, message) {
-          log("senderId: $senderId, message: $message, messageId: $messageId");
+          log("Message Content: $senderId, message: $message, messageId: $messageId");
           final newMsg = ChatMessageModel(
             senderId: senderId,
-            receiverId: widget.receiver.id.toString(),
+            receiverId: widget.receiver.id,
             message: message,
             timestamp: DateTime.now().toIso8601String(),
           );
@@ -50,21 +55,19 @@ class _MessagesScreenState extends State<MessagesScreen> {
             _liveMessages.add(newMsg);
           });
         });
-
       },
     );
 
     context.read<ChatCubit>().getChatContent(widget.receiver.id!);
-
   }
 
   void _sendMessage(String text) {
-    final myId = currentUserId ;
+    final myId = currentUserId;
     final receiverId = widget.receiver.id;
 
     final msg = ChatMessageModel(
       senderId: myId!,
-      receiverId: receiverId.toString(),
+      receiverId: receiverId!,
       message: text,
       timestamp: DateTime.now().toIso8601String(),
     );
@@ -73,7 +76,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       _liveMessages.add(msg);
     });
 
-    signalR.sendMessage(myId, receiverId.toString(), text);
+    signalR.sendMessage(myId, receiverId, text);
     context.read<ChatCubit>().sendMessage(text, receiverId);
   }
 
@@ -84,10 +87,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(widget.receiver.userName ?? "",
+            Text( widget.receiver.userName ?? "",
                 style: TextStyle(color: Colors.white, fontSize: 20.sp)),
             Text(
-              'Trainer',
+               'Trainer',
               style: TextStyle(
                   color: Colors.white70,
                   fontSize: 12.sp,
@@ -125,7 +128,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
         child: Column(
           children: [
             BlocListener<ChatCubit, ChatState>(
-              listenWhen: (previous, current) => current is GetChatContentSuccess,
+              listenWhen: (previous, current) =>
+                  current is GetChatContentSuccess,
               listener: (context, state) {
                 if (state is GetChatContentSuccess) {
                   setState(() {

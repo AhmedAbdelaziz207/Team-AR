@@ -20,7 +20,7 @@ class MealCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible(
       key: UniqueKey(),
-      direction: DismissDirection.startToEnd,
+      direction: DismissDirection.horizontal,
       onDismissed: (direction) {
         context.read<MealCubit>().deleteMeal(meal!.id!);
       },
@@ -58,6 +58,7 @@ class MealCard extends StatelessWidget {
           ],
         ),
         child: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
@@ -66,6 +67,7 @@ class MealCard extends StatelessWidget {
                 child: Image.network(
                   ApiEndPoints.imagesBaseUrl + meal!.imageURL!,
                   width: 100.w,
+                  height: 100.h,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                         color: Colors.grey[200],
@@ -104,12 +106,12 @@ class MealCard extends StatelessWidget {
                       Column(
                         children: [
                           buildDetailsItem(
-                            AppLocalKeys.calories.tr(),
+                            AppLocalKeys.calories,
                             (meal!.numOfCalories!*100).toStringAsFixed(1),
                           ),
                           SizedBox(height: 12.h),
                           buildDetailsItem(
-                            AppLocalKeys.proteins.tr(),
+                            AppLocalKeys.proteins,
                             (meal!.numOfProtein!*100).toStringAsFixed(1),
                           )
                         ],
@@ -117,14 +119,14 @@ class MealCard extends StatelessWidget {
                       Column(
                         children: [
                           buildDetailsItem(
-                            AppLocalKeys.carbs.tr(),
+                            AppLocalKeys.carbs,
                             meal?.numOfCarbs == null
                                 ? "0"
                                 : (meal!.numOfCarbs!*100).toStringAsFixed(1),
                           ),
                           SizedBox(height: 12.h),
                           buildDetailsItem(
-                            AppLocalKeys.fats.tr(),
+                            AppLocalKeys.fats,
                             (meal!.numOfFats!*100).toStringAsFixed(1),
                           ),
                         ],

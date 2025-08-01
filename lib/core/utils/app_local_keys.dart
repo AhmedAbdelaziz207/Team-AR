@@ -262,4 +262,7 @@ class AppLocalKeys {
 
   static var mustBeAlphanumeric = "Must be alphanumeric";
 
+  static const noMealsFound = "No meals found";
+
+  static const chats = "Chats";
 }

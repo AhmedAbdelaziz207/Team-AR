@@ -25,6 +25,7 @@ class AdminPanel extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
+        leading: const SizedBox.shrink(),
         title: Text(
           AppLocalKeys.adminPanel.tr(),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(

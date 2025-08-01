@@ -44,7 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   File? image;
 
-  bool isNotificationEnabled = false;
+  bool isNotificationEnabled = true;
 
   @override
   void initState() {
@@ -63,32 +63,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: BlocBuilder<UserCubit, UserState>(
-              buildWhen: (context, state) =>
-                  state is UserLoading ||
-                  state is UserSuccess ||
-                  state is UserFailure,
-              builder: (context, state) {
-                if (state is UserLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state is UserFailure) {
-                  return Center(
-                      child: Text(
-                    state.errorMessage,
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      fontFamily: "Cairo",
-                    ),
-                  ));
-                }
-                if (state is UserSuccess) {
-                  final user = state.userData;
-
-                  return Column(
+          child: BlocBuilder<UserCubit, UserState>(
+            buildWhen: (context, state) =>
+                state is UserLoading ||
+                state is UserSuccess ||
+                state is UserFailure,
+            builder: (context, state) {
+              if (state is UserLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is UserFailure) {
+                return Center(
+                    child: Text(
+                  state.errorMessage,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontFamily: "Cairo",
+                  ),
+                ));
+              }
+              if (state is UserSuccess) {
+                final user = state.userData;
+          
+                return SingleChildScrollView(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
@@ -119,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                       SizedBox(height: 21.h),
-
+                            
                       BlocConsumer<UserCubit, UserState>(
                         listener: (context, state) {
                           if (state is UpdateUserImageSuccess) {
@@ -230,35 +230,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(
                         height: 16.h,
                       ),
-                      Text(
-                        AppLocalKeys.password.tr(),
-                        style: TextStyle(
-                            fontSize: 12.sp, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 8.h,
-                      ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.pushNamed(context, Routes.changePassword);
-                        },
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(
-                          Icons.lock,
-                          color: AppColors.newPrimaryColor,
-                        ),
-                        title: Text(
-                          AppLocalKeys.changePassword.tr(),
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios_rounded),
-                      ),
-                      SizedBox(
-                        height: 16.h,
-                      ),
+                      // Text(
+                      //   AppLocalKeys.password.tr(),
+                      //   style: TextStyle(
+                      //       fontSize: 12.sp, fontWeight: FontWeight.bold),
+                      // ),
+                      // SizedBox(
+                      //   height: 8.h,
+                      // ),
+                      // ListTile(
+                      //   onTap: () {
+                      //     Navigator.pushNamed(context, Routes.changePassword);
+                      //   },
+                      //   contentPadding: EdgeInsets.zero,
+                      //   leading: const Icon(
+                      //     Icons.lock,
+                      //     color: AppColors.newPrimaryColor,
+                      //   ),
+                      //   title: Text(
+                      //     AppLocalKeys.changePassword.tr(),
+                      //     style: TextStyle(
+                      //       fontSize: 16.sp,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      //   trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                      // ),
+                      // SizedBox(
+                      //   height: 16.h,
+                      // ),
                       Text(AppLocalKeys.general.tr(),
                           style: TextStyle(
                               fontSize: 21.sp, fontWeight: FontWeight.bold)),
@@ -269,9 +269,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(
                         height: 21.h,
                       ),
-
+                            
                       // Notification
-
+                            
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(
@@ -300,14 +300,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         alignment: Alignment.center,
                         child: LogoutButton(),
                       ),
-
+                            
                       SizedBox(height: 21.h),
                     ],
-                  );
-                }
-                return const SizedBox();
-              },
-            ),
+                  ),
+                );
+              }
+              return const SizedBox();
+            },
           ),
         ),
       ),

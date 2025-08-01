@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/services/subscription_service.dart';
 import 'package:team_ar/core/services/logger_service.dart';
@@ -172,50 +173,50 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
 
                         SizedBox(height: 40.h),
 
-                        // زر تجديد الاشتراك
-                        SizedBox(
-                          width: double.infinity,
-                          height: 60.h,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _logger.info('User clicked renew subscription');
-                              // Navigator.pushNamedAndRemoveUntil(
-                              //   context,
-                              //   Routes.PlansScreen,
-                              //       (route) => false,
-                              // );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.newPrimaryColor,
-                              foregroundColor: AppColors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                              elevation: 3,
-                              shadowColor: AppColors.newPrimaryColor.withOpacity(0.3),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.refresh,
-                                  size: 20.sp,
-                                ),
-                                SizedBox(width: 8.w),
-                                Text(
-                                  'تجديد الاشتراك',
-                                  style: TextStyle(
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: "Cairo",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        // // زر تجديد الاشتراك
+                        // SizedBox(
+                        //   width: double.infinity,
+                        //   height: 60.h,
+                        //   child: ElevatedButton(
+                        //     onPressed: () {
+                        //       _logger.info('User clicked renew subscription');
+                        //       // Navigator.pushNamedAndRemoveUntil(
+                        //       //   context,
+                        //       //   Routes.PlansScreen,
+                        //       //       (route) => false,
+                        //       // );
+                        //     },
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: AppColors.newPrimaryColor,
+                        //       foregroundColor: AppColors.white,
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(10.r),
+                        //       ),
+                        //       elevation: 3,
+                        //       shadowColor: AppColors.newPrimaryColor.withOpacity(0.3),
+                        //     ),
+                        //     child: Row(
+                        //       mainAxisAlignment: MainAxisAlignment.center,
+                        //       children: [
+                        //         Icon(
+                        //           Icons.refresh,
+                        //           size: 20.sp,
+                        //         ),
+                        //         SizedBox(width: 8.w),
+                        //         Text(
+                        //           'تجديد الاشتراك',
+                        //           style: TextStyle(
+                        //             fontSize: 18.sp,
+                        //             fontWeight: FontWeight.w600,
+                        //             fontFamily: "Cairo",
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
 
-                        SizedBox(height: 15.h),
+                        // SizedBox(height: 15.h),
 
                         // زر إغلاق التطبيق
                         SizedBox(
@@ -336,6 +337,7 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
           TextButton(
             onPressed: () {
               Navigator.pop(context);
+              SharedPreferencesHelper.removeAll();
               SubscriptionService.closeApp();
             },
             child: const Text(

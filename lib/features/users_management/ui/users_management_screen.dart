@@ -26,6 +26,7 @@ class UsersManagementScreen extends StatelessWidget {
                 fontSize: 21.sp,
               ),
         ),
+        leading: const SizedBox.shrink(),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(

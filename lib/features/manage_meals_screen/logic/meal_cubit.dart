@@ -81,6 +81,7 @@ class MealCubit extends Cubit<MealState> {
         numOfCarbs: double.parse(carbsController.text) / 100,
         numOfFats: double.parse(fatController.text) / 100,
         numOfProtein: double.parse(proteinController.text) / 100,
+        numOfGrams: 1,
         foodCategory: mealType,
       ),
       dietImage: image!,
@@ -105,6 +106,7 @@ class MealCubit extends Cubit<MealState> {
   double totalFats = 0;
   double totalCarbs = 0;
   double totalProtein = 0;
+
   double calculateTotalCalories(List<DietMealModel> meals) {
     double calories = 0;
     double fats = 0;
@@ -116,16 +118,16 @@ class MealCubit extends Cubit<MealState> {
         final grams = meal.numOfGrams ?? 0;
 
         calories += (meal.numOfCalories ?? 0) * grams;
-        fats     += (meal.numOfFats ?? 0) * grams;
-        carbs    += (meal.numOfCarbs ?? 0) * grams;
-        protein  += (meal.numOfProtein ?? 0) * grams;
+        fats += (meal.numOfFats ?? 0) * grams;
+        carbs += (meal.numOfCarbs ?? 0) * grams;
+        protein += (meal.numOfProtein ?? 0) * grams;
       }
     }
 
     totalCalories = calories;
-    totalFats     = fats;
-    totalCarbs    = carbs;
-    totalProtein  = protein;
+    totalFats = fats;
+    totalCarbs = carbs;
+    totalProtein = protein;
     log("fats : $fats , carbs : $carbs , protein : $protein");
 
     if (state is MealsLoaded) {
@@ -134,6 +136,7 @@ class MealCubit extends Cubit<MealState> {
 
     return calories;
   }
+
   void toggleMealSelection(int mealId, double quantity) {
     final currentState = state;
 
@@ -167,7 +170,6 @@ class MealCubit extends Cubit<MealState> {
       emit(MealState.loaded(meals: updatedMeals));
     }
   }
-
 
   Future<void> assignDietMealForUser(String userId, {bool? isUpdate}) async {
     log("isUpdate Meal : $isUpdate");

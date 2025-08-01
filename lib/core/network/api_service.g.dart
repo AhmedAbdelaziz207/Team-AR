@@ -219,6 +219,31 @@ class _ApiService implements ApiService {
   }
 
   @override
+  Future<void> deleteUser(String id) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'id': id};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<void>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          'api/Account/DeleteUser',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
   Future<RegisterResponse> addTrainer(FormData body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -852,7 +877,7 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<void> updateUser(Map<String, dynamic> body) async {
+  Future<void> updateUserPackage(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -865,7 +890,7 @@ class _ApiService implements ApiService {
     )
         .compose(
           _dio.options,
-          'api/Account/UpdateUser',
+          'api/Account/UpdateUserPackage',
           queryParameters: queryParameters,
           data: _data,
         )

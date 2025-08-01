@@ -20,7 +20,7 @@ import '../../../firebase_options.dart';
 class FirebaseNotificationsServices {
   static FirebaseMessaging messaging = FirebaseMessaging.instance;
   static LocalNotificationService localNotificationService =
-  LocalNotificationService();
+      LocalNotificationService();
   static NotificationStorage notificationStorage = NotificationStorage();
 
   static String firebaseScope =
@@ -81,22 +81,8 @@ class FirebaseNotificationsServices {
     }
   }
 
-  static Future onMessaging(RemoteMessage message) async {
-    try {
-      log("Received foreground message: ${message.notification?.title ?? "No title"}");
-
-      final notification = _createNotificationFromRemoteMessage(message);
-
-      await notificationStorage.saveNotification(notification);
-      await localNotificationService.showNotification(notification);
-
-      log("Notification saved and displayed: ${notification.id}");
-    } catch (e) {
-      log("Error handling foreground message: $e");
-    }
-  }
-
-  static NotificationModel _createNotificationFromRemoteMessage(RemoteMessage message) {
+  static NotificationModel _createNotificationFromRemoteMessage(
+      RemoteMessage message) {
     return NotificationModel(
       id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
       title: message.notification?.title ?? "إشعار جديد",
@@ -219,7 +205,7 @@ class FirebaseNotificationsServices {
     }
   }
 
-  static void _sendFcmTokenToServer() async {
+  static void sendFcmTokenToServer() async {
     try {
       final token = await FirebaseMessaging.instance.getToken();
       final userId =
@@ -244,7 +230,7 @@ class FirebaseNotificationsServices {
   }
 
   static void listenToTokenRefresh() {
-    _sendFcmTokenToServer();
+    sendFcmTokenToServer();
     FirebaseMessaging.instance.onTokenRefresh.listen((String newToken) {
       log("FCM token refreshed: $newToken");
       _saveTokenLocally(newToken);
@@ -270,8 +256,6 @@ class FirebaseNotificationsServices {
     } catch (e) {
       log("Error sending test notification: $e");
     }
-  }
-      _sendFcmTokenToServer();
-    });
+    sendFcmTokenToServer();
   }
 }

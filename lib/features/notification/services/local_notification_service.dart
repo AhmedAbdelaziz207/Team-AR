@@ -152,8 +152,6 @@ class LocalNotificationService {
         enableVibration: true,
         enableLights: true,
         ticker: notification.title,
-        largeIcon: const DrawableResourceAndroidBitmap('assets/icons/home.png'),
-
         styleInformation: notification.body.length > 50
             ? BigTextStyleInformation(
           notification.body,

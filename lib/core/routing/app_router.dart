@@ -142,7 +142,10 @@ class AppRouter {
             settings?.arguments as List<TraineeModel>;
 
         return MaterialPageRoute(
-          builder: (context) => TraineesScreen(trainees: trainees),
+          builder: (context) => BlocProvider(
+            create: (context) => UserCubit(),
+            child: TraineesScreen(trainees: trainees),
+          ),
         );
 
       case Routes.rootScreen:
@@ -244,7 +247,7 @@ class AppRouter {
         );
 
       case Routes.chat:
-        final user =  settings?.arguments as ChatUserModel;
+        final user = settings?.arguments as ChatUserModel;
 
         return MaterialPageRoute(
           builder: (context) => BlocProvider(

@@ -69,7 +69,9 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
                 IconButton(
                     onPressed: () {
                       showUpdatePlanDialog(context, () {
-                        context.read<UserCubit>().updateUser(trainee);
+                        context
+                            .read<UserCubit>()
+                            .updateUserPackage(trainee.id, trainee.packageId);
                       });
                     },
                     icon: Icon(

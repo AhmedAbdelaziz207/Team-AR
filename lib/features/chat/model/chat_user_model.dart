@@ -7,8 +7,9 @@ class ChatUserModel {
   final String? whatsappNumber;
   final String? phoneNumber;
   final int? numOfUnReadMessages;
+  final String ? lastMessageDateTime;
 
-  ChatUserModel({
+  ChatUserModel( {
     this.id,
     this.userName,
     this.firstName,
@@ -17,6 +18,7 @@ class ChatUserModel {
     this.whatsappNumber,
     this.phoneNumber,
     this.numOfUnReadMessages,
+    this.lastMessageDateTime,
   });
 
   factory ChatUserModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class ChatUserModel {
       whatsappNumber: json['whatsappNumber'] as String?,
       phoneNumber: json['phoneNumber'] as String?,
       numOfUnReadMessages: json['numOfUnReadMessages'] as int?,
+      lastMessageDateTime: json['lastMessageTime'] as String?,
     );
   }
 
@@ -42,6 +45,7 @@ class ChatUserModel {
       'whatsappNumber': whatsappNumber,
       'phoneNumber': phoneNumber,
       'numOfUnReadMessages': numOfUnReadMessages,
+      'lastMessageTime': lastMessageDateTime
     };
   }
 }

@@ -44,19 +44,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 color: AppColors.black,
               ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-
-            },
-
-            icon: Icon(
-              Icons.notifications_outlined,
-              size: 25.sp,
-              color: AppColors.grey,
-            ),
-          )
-        ],
+        leading: const SizedBox.shrink(),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -67,7 +55,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           child: BlocBuilder<TraineeCubit, TraineeState>(
             builder: (context, state) {
               isLoading = state is TraineeLoading;
-              totalTrainees = state is TraineeSuccess ? state.trainees.length : 0;
+              totalTrainees =
+                  state is TraineeSuccess ? state.trainees.length : 0;
               return Column(
                 children: [
                   SizedBox(height: 12.h),

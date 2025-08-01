@@ -51,7 +51,7 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
               ),
               SizedBox(height: 12.h),
               Text(
-                "Chats",
+                AppLocalKeys.chats.tr(),
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 18.sp,
@@ -73,16 +73,28 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
 
                     final List<ChatUserModel> filteredChats = allChats
                         .where((chat) =>
-                            chat.userName!.toLowerCase().contains(searchQuery))
+                    chat.userName?.toLowerCase().contains(searchQuery) ?? false)
                         .toList();
 
-                    return ListView.builder(
-                      itemCount: filteredChats.length,
-                      itemBuilder: (context, index) {
-                        return ChatsListItem(
-                          user: filteredChats[index],
-                        );
+// Sort by lastMessageDateTime descending (latest on top)
+                    filteredChats.sort((a, b) {
+                      final aTime = _parseDateTime(a.lastMessageDateTime);
+                      final bTime = _parseDateTime(b.lastMessageDateTime);
+                      return bTime.compareTo(aTime);
+                    });
+
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<ChatCubit>().getAllChats();
                       },
+                      child: ListView.builder(
+                        itemCount: filteredChats.length,
+                        itemBuilder: (context, index) {
+                          return ChatsListItem(
+                            user: filteredChats[index],
+                          );
+                        },
+                      ),
                     );
                   },
                 ),
@@ -93,4 +105,16 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
       ),
     );
   }
+
+  DateTime _parseDateTime(String? dateTimeString) {
+    if (dateTimeString == null || dateTimeString.trim().isEmpty) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+    try {
+      return DateTime.parse(dateTimeString);
+    } catch (_) {
+      return DateTime.fromMillisecondsSinceEpoch(0); // fallback if invalid
+    }
+  }
+
 }

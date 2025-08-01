@@ -63,6 +63,19 @@ class NavigationBuilder extends StatelessWidget {
             ),
             BottomNavigationBarItem(
               icon: Icon(
+                Icons.message_outlined,
+                color: AppColors.grey,
+                size: 28.sp,
+              ),
+              activeIcon: Icon(
+                Icons.message,
+                color: AppColors.newPrimaryColor,
+                size: 30.sp,
+              ),
+              label: 'Chat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
                 Icons.menu,
                 color: AppColors.grey,
                 size: 28.sp,
@@ -86,6 +99,9 @@ class NavigationBuilder extends StatelessWidget {
               getNavBarItem(NavBarItems.food, context);
             }
             if (index == 3) {
+              getNavBarItem(NavBarItems.chat, context);
+            }
+            if (index == 4) {
               getNavBarItem(NavBarItems.profile, context);
             }
           },
@@ -94,6 +110,7 @@ class NavigationBuilder extends StatelessWidget {
     );
   }
 }
+
 void getNavBarItem(NavBarItems navbarItem, BuildContext context) {
   context.read<NavigationCubit>().getNavBarItem(navbarItem);
 }

@@ -1,10 +1,11 @@
 import 'dart:developer';
+
 import 'package:signalr_netcore/http_connection_options.dart';
 import 'package:signalr_netcore/hub_connection.dart';
 import 'package:signalr_netcore/hub_connection_builder.dart';
-import 'package:team_ar/core/utils/app_constants.dart';
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 
-import '../prefs/shared_pref_manager.dart';
+import '../utils/app_constants.dart';
 import 'api_endpoints.dart';
 
 class SignalRService {
@@ -14,7 +15,6 @@ class SignalRService {
       String userId,
       void Function(String senderId, String message, String data)
           onMessage) async {
-
     _connection = HubConnectionBuilder()
         .withUrl(
           '${ApiEndPoints.baseUrl}chathub?userId=$userId',
@@ -39,7 +39,6 @@ class SignalRService {
       print("✅ SignalR connected.");
     } catch (e) {
       print("❌ Failed to connect to SignalR: $e");
-      log( '${ApiEndPoints.baseUrl}chathub?userId=$userId');
     }
   }
 

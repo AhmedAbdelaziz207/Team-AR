@@ -1,1 +1,1 @@
-enum NavBarItems { home, workouts,food, profile }
+enum NavBarItems { home, workouts,food, profile , chat}
