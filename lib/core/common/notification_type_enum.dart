@@ -10,6 +10,7 @@ enum NotificationType {
   paymentConfirmation('payment_confirmation', 'تأكيد الدفع', '💳'),
   newContent('new_content', 'محتوى جديد', '🆕'),
   promotion('promotion', 'عرض خاص', '🛍'),
+  chatMessage('chat_message', 'رسالة جديدة', '💬'),  // إضافة نوع إشعار للدردشة
 
   // Admin Notifications
   newMember('new_member', 'عضو جديد', '👤'),

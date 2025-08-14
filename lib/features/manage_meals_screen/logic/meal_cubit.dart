@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
@@ -33,10 +34,26 @@ class MealCubit extends Cubit<MealState> {
         await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedImage != null) {
-      image = File(pickedImage.path);
+      // ضغط الصورة قبل استخدامها
+      final compressedImage = await compressImage(File(pickedImage.path));
+      image = compressedImage;
+      emit(MealState.imagePicked(image!));
     }
+  }
 
-    emit(MealState.imagePicked(image!));
+  Future<File> compressImage(File file) async {
+    final dir = await Directory.systemTemp.createTemp();
+    final targetPath = "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+    
+    final result = await FlutterImageCompress.compressAndGetFile(
+      file.path,
+      targetPath,
+      quality: 70, // ضبط جودة الصورة
+      minWidth: 800, // الحد الأدنى للعرض
+      minHeight: 800, // الحد الأدنى للارتفاع
+    );
+    
+    return File(result!.path);
   }
 
   final DietMealRepository mealRepository =

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
@@ -17,26 +18,31 @@ class UserMealDetails extends StatelessWidget {
         children: [
           // Background Image (below sheet)
           Positioned.fill(
-            child: Image.network(
-                ApiEndPoints.imagesBaseUrl + meal!.imageURL!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-              return Container(
-                  color: Colors.grey[200],
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.broken_image,
-                          color: Colors.grey,
-                          size: 50,
-                        ),
-                        Text(
-                          AppLocalKeys.noImage.tr(),
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ]));
-            }),
+            child: CachedNetworkImage(
+              imageUrl: ApiEndPoints.imagesBaseUrl + meal!.imageURL!,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: Colors.grey[200],
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+              errorWidget: (context, error, stackTrace) => Container(
+                color: Colors.grey[200],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.broken_image,
+                      color: Colors.grey,
+                      size: 50,
+                    ),
+                    Text(
+                      AppLocalKeys.noImage.tr(),
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
 
           // Draggable Sheet (on top of image)

@@ -226,19 +226,19 @@ class AppLocalKeys {
 
   static var registerSuccessfully = "Register Successfully";
 
-  static var registerNewTrainer  = "Register New Trainer";
+  static var registerNewTrainer = "Register New Trainer";
 
-  static var readOnly  = "Read Only";
+  static var readOnly = "Read Only";
 
-  static var copiedToClipboard  = "Copied to clipboard";
+  static var copiedToClipboard = "Copied to clipboard";
 
-  static var shareToWhatsApp  = "Share to WhatsApp";
+  static var shareToWhatsApp = "Share to WhatsApp";
 
-  static var newUser  = "New";
+  static var newUser = "New";
 
-  static var pleaseSelectImage  = "Please Select Image";
+  static var pleaseSelectImage = "Please Select Image";
 
-  static var workoutSystems  = "Workout Systems";
+  static var workoutSystems = "Workout Systems";
 
   static var noResultsFounds = "No Results Founds";
 
@@ -265,4 +265,62 @@ class AppLocalKeys {
   static const noMealsFound = "No meals found";
 
   static const chats = "Chats";
+
+  // Notification keys
+  static const markAllAsRead = "markAllAsRead";
+  static const testNotifications = "testNotifications";
+  static const settings = "settings";
+  static const clearAll = "clearAll";
+  static const all = "all";
+  static const unread = "unread";
+  static const subscriptions = "subscriptions";
+  static const searchNotifications = "searchNotifications";
+  static const system = "system";
+  static const subscription = "subscription";
+  static const workout = "workout";
+  static const offers = "offers";
+  static const errorLoadingNotifications = "errorLoadingNotifications";
+  static const retry = "retry";
+  static const noNotifications = "noNotifications";
+  static const notificationsWillAppearHere = "notificationsWillAppearHere";
+  static const update = "update";
+  static const sendTestNotification = "sendTestNotification";
+  static const deleteNotification = "deleteNotification";
+  static const confirmDeleteNotification = "confirmDeleteNotification";
+  static const delete = "delete";
+  static const notificationDeleted = "notificationDeleted";
+  static const clearAllNotifications = "clearAllNotifications";
+  static const confirmClearAllNotifications = "confirmClearAllNotifications";
+  static const allNotificationsCleared = "allNotificationsCleared";
+  static const date = "date";
+  static const type = "type";
+  static const close = "close";
+  static const bookingConfirmation = "bookingConfirmation";
+  static const paymentConfirmation = "paymentConfirmation";
+  static const newContent = "newContent";
+  static const maintenance = "maintenance";
+  static const workoutPlan = "workoutPlan";
+  static const trainerEvaluation = "trainerEvaluation";
+  static const bookingCancellation = "bookingCancellation";
+  static const motivational = "motivational";
+  static const newMember = "newMember";
+  static const bookingRequest = "bookingRequest";
+  static const newReview = "newReview";
+  static const technicalIssue = "technicalIssue";
+
+  // مفاتيح للعضوية
+  static const joined = "joined";
+  static const daysLeft = "daysLeft";
+  static const dayLeft = "dayLeft";
+  static const subscriptionExpired = "subscriptionExpired";
+  static const daysRemaining = "daysRemaining";
+
+  // مفاتيح للوقت النسبي
+  static const justNow = "justNow";
+  static const minuteAgo = "minuteAgo";
+  static const minutesAgo = "minutesAgo";
+  static const hourAgo = "hourAgo";
+  static const hoursAgo = "hoursAgo";
+  static const dayAgo = "dayAgo";
+  static const daysAgo = "daysAgo";
 }

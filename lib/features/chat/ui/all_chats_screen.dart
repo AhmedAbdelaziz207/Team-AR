@@ -31,59 +31,71 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 12.h),
-              CustomTextFormField(
-                hintText: AppLocalKeys.searchByName.tr(),
-                suffixIcon: Icons.search,
-                isAdmin: true,
-                iconColor: AppColors.primaryColor,
-                onChanged: (value) {
-                  setState(() {
-                    searchQuery = value.toLowerCase();
-                  });
-                },
+      body: BlocConsumer<ChatCubit, ChatState>(
+        listener: (context, state) {
+          if (state is GetChatsSuccess && state.isFromCache) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                    'أنت تعرض بيانات محفوظة محلياً. قم بالاتصال بالإنترنت للحصول على أحدث المحادثات.'),
+                duration: Duration(seconds: 3),
               ),
-              SizedBox(height: 12.h),
-              Text(
-                AppLocalKeys.chats.tr(),
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.sp,
-                      color: AppColors.primaryColor,
-                    ),
-              ),
-              SizedBox(height: 20.h),
-              Expanded(
-                child: BlocBuilder<ChatCubit, ChatState>(
-                  builder: (context, state) {
-                    if (state is GetChatsLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (state is GetChatsFailure) {
-                      return Center(child: Text(state.message));
-                    }
-                    final List<ChatUserModel> allChats =
-                        state is GetChatsSuccess ? state.chats : [];
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is GetChatsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is GetChatsFailure) {
+            return Center(child: Text(state.message));
+          }
 
-                    final List<ChatUserModel> filteredChats = allChats
-                        .where((chat) =>
-                    chat.userName?.toLowerCase().contains(searchQuery) ?? false)
-                        .toList();
+          final List<ChatUserModel> allChats =
+              state is GetChatsSuccess ? state.chats : [];
 
-// Sort by lastMessageDateTime descending (latest on top)
-                    filteredChats.sort((a, b) {
-                      final aTime = _parseDateTime(a.lastMessageDateTime);
-                      final bTime = _parseDateTime(b.lastMessageDateTime);
-                      return bTime.compareTo(aTime);
-                    });
+          final List<ChatUserModel> filteredChats = allChats
+              .where((chat) =>
+                  chat.userName?.toLowerCase().contains(searchQuery) ?? false)
+              .toList();
 
-                    return RefreshIndicator(
+          // Sort by lastMessageDateTime descending (latest on top)
+          filteredChats.sort((a, b) {
+            final aTime = _parseDateTime(a.lastMessageDateTime);
+            final bTime = _parseDateTime(b.lastMessageDateTime);
+            return bTime.compareTo(aTime);
+          });
+
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 12.h),
+                  CustomTextFormField(
+                    hintText: AppLocalKeys.searchByName.tr(),
+                    suffixIcon: Icons.search,
+                    isAdmin: true,
+                    iconColor: AppColors.primaryColor,
+                    onChanged: (value) {
+                      setState(() {
+                        searchQuery = value.toLowerCase();
+                      });
+                    },
+                  ),
+                  SizedBox(height: 12.h),
+                  Text(
+                    AppLocalKeys.chats.tr(),
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.sp,
+                          color: AppColors.primaryColor,
+                        ),
+                  ),
+                  SizedBox(height: 20.h),
+                  Expanded(
+                    child: RefreshIndicator(
                       onRefresh: () async {
                         context.read<ChatCubit>().getAllChats();
                       },
@@ -95,13 +107,13 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
                           );
                         },
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -116,5 +128,4 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
       return DateTime.fromMillisecondsSinceEpoch(0); // fallback if invalid
     }
   }
-
 }
