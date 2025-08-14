@@ -115,8 +115,47 @@ class FirebaseNotificationsServices {
         return NotificationType.newContent;
       case 'maintenance':
         return NotificationType.maintenance;
+      case 'chat':
+      case 'chat_message':
+        return NotificationType.chatMessage;
       default:
         return NotificationType.system;
+    }
+  }
+
+  static void onMessaging(RemoteMessage message) {
+    try {
+      log("Received foreground message: ${message.notification?.title ?? "No title"}");
+
+      // التحقق من نوع الإشعار وهوية المستلم
+      final notificationType = _getNotificationTypeFromData(message.data);
+      final targetUserId = message.data['targetUserId'];
+      final currentUserId = SharedPreferencesHelper.getString(AppConstants.userId);
+      
+      // إذا كان الإشعار من نوع دردشة، تأكد من أنه موجه للمستخدم الحالي
+      if (notificationType == NotificationType.chatMessage && 
+          targetUserId != null && 
+          currentUserId != null && 
+          targetUserId != currentUserId) {
+        log("Skipping chat notification not intended for current user");
+        return;
+      }
+
+      // عرض الإشعار المحلي
+      localNotificationService.showNotification(
+        NotificationModel(
+          id: message.messageId ??
+              DateTime.now().millisecondsSinceEpoch.toString(),
+          title: message.notification?.title ?? "إشعار جديد",
+          body: message.notification?.body ?? "لديك إشعار جديد",
+          type: notificationType,
+          createdAt: message.sentTime ?? DateTime.now(),
+          payload: message.data.isNotEmpty ? jsonEncode(message.data) : null,
+          customData: message.data.isNotEmpty ? message.data : null,
+        ),
+      );
+    } catch (e) {
+      log("Error handling foreground message: $e");
     }
   }
 
@@ -171,26 +210,6 @@ class FirebaseNotificationsServices {
       }
     } catch (e) {
       log("Error unsubscribing from all topics: $e");
-    }
-  }
-
-  static void onMessaging(RemoteMessage message) {
-    try {
-      log("Received foreground message: ${message.notification?.title ?? "No title"}");
-
-      // عرض الإشعار المحلي
-      localNotificationService.showNotification(
-        NotificationModel(
-          id: message.messageId ??
-              DateTime.now().millisecondsSinceEpoch.toString(),
-          title: message.notification?.title ?? "إشعار جديد",
-          body: message.notification?.body ?? "لديك إشعار جديد",
-          type: NotificationType.system,
-          createdAt: message.sentTime ?? DateTime.now(),
-        ),
-      );
-    } catch (e) {
-      log("Error handling foreground message: $e");
     }
   }
 

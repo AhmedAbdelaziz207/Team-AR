@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/features/manage_meals_screen/logic/meal_cubit.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
@@ -64,28 +65,33 @@ class MealCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(4.r),
-                child: Image.network(
-                  ApiEndPoints.imagesBaseUrl + meal!.imageURL!,
+                child: CachedNetworkImage(
+                  imageUrl: ApiEndPoints.imagesBaseUrl + meal!.imageURL!,
                   width: 100.w,
                   height: 100.h,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                        color: Colors.grey[200],
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.broken_image,
-                              color: Colors.grey,
-                              size: 50,
-                            ),
-                            Text(
-                              AppLocalKeys.noImage.tr(),
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ));
-                  },
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[200],
+                    width: 100.w,
+                    height: 100.h,
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  errorWidget: (context, error, stackTrace) => Container(
+                    color: Colors.grey[200],
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.broken_image,
+                          color: Colors.grey,
+                          size: 50,
+                        ),
+                        Text(
+                          AppLocalKeys.noImage.tr(),
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               SizedBox(width: 8.w),

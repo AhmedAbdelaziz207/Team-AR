@@ -38,11 +38,17 @@ class DietMealRepository {
     required File dietImage,
   }) async {
     try {
-      final Dio dio = await DioFactory.getDio();
-
+      final Dio dio = DioFactory.getDio();
+  
+      // التحقق من حجم الصورة
+      final fileSize = await dietImage.length();
+      if (fileSize > 5 * 1024 * 1024) { // أكبر من 5 ميجابايت
+        return ApiResult.failure(ApiErrorModel(message: "حجم الصورة كبير جدًا، يجب أن يكون أقل من 5 ميجابايت"));
+      }
+  
       // Convert the diet model to a map
       Map<String, dynamic> dietData = diet.toJson();
-
+  
       // Create FormData for file upload
       FormData formData = FormData.fromMap({
         ...dietData, // Spread the JSON data from the model
@@ -51,18 +57,30 @@ class DietMealRepository {
           filename: dietImage.path.split('/').last,
         ),
       });
-
+  
       await dio.post(
         ApiEndPoints.baseUrl + ApiEndPoints.dietMeals,
         data: formData,
         options: Options(contentType: 'multipart/form-data'),
       );
       log("Success");
-
+  
       return const ApiResult.success(null);
     } catch (e) {
       log(e.toString());
       return ApiResult.failure(ApiErrorHandler.handle(e));
+    } finally {
+      // تنظيف الموارد
+      if (dietImage.existsSync()) {
+        // تنظيف الصورة المؤقتة إذا كانت في مجلد مؤقت
+        if (dietImage.path.contains('temp') || dietImage.path.contains('cache')) {
+          try {
+            await dietImage.delete();
+          } catch (e) {
+            log("Error deleting temporary image: $e");
+          }
+        }
+      }
     }
   }
 

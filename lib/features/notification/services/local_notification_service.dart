@@ -99,6 +99,14 @@ class LocalNotificationService {
           enableVibration: true,
           enableLights: true,
         ),
+        const AndroidNotificationChannel(
+          'gym_chat',
+          'إشعارات الدردشة',
+          description: 'إشعارات الرسائل الجديدة',
+          importance: Importance.high,
+          enableVibration: true,
+          enableLights: true,
+        ),
       ];
 
       for (final channel in channels) {
@@ -116,6 +124,8 @@ class LocalNotificationService {
       case NotificationType.system:
       case NotificationType.maintenance:
         return 'gym_system';
+      case NotificationType.chatMessage:
+        return 'gym_chat';
       default:
         return 'gym_general';
     }

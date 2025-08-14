@@ -1,11 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
-
 import '../../../core/common/notification_model.dart';
-import '../../../core/common/notification_settings_model.dart';
 import '../../../core/common/notification_type_enum.dart';
-import '../../../core/utils/notification_helper.dart';
-import '../../../core/utils/notification_validator.dart';
 import '../services/local_notification_service.dart';
 import '../services/notification_repository.dart';
 import '../../../core/services/notification_service.dart';
@@ -16,7 +12,6 @@ class NotificationCubit extends Cubit<NotificationState> {
   final NotificationService _notificationService;
   final NotificationRepository _repository;
   final LocalNotificationService _localNotificationService;
-  final NotificationStorage _storage;
 
   late StreamSubscription _notificationSubscription;
   Timer? _refreshTimer;
@@ -29,7 +24,6 @@ class NotificationCubit extends Cubit<NotificationState> {
   })  : _notificationService = notificationService,
         _repository = repository,
         _localNotificationService = localNotificationService,
-        _storage = storage,
         super(NotificationInitial()) {
     _initializeNotifications();
     _startPeriodicRefresh();
@@ -38,7 +32,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   /// تهيئة الإشعارات
   void _initializeNotifications() {
     _notificationSubscription = _notificationService.notificationStream.listen(
-          (notification) async {
+      (notification) async {
         try {
           await _repository.saveNotification(notification);
           await _localNotificationService.showNotification(notification);
@@ -46,7 +40,8 @@ class NotificationCubit extends Cubit<NotificationState> {
 
           emit(NotificationReceived(notification: notification));
         } catch (e) {
-          emit(NotificationError(message: 'فشل في استقبال الإشعار: ${e.toString()}'));
+          emit(NotificationError(
+              message: 'فشل في استقبال الإشعار: ${e.toString()}'));
         }
       },
       onError: (error) {
@@ -114,7 +109,8 @@ class NotificationCubit extends Cubit<NotificationState> {
         settings: settings,
       ));
     } catch (e) {
-      emit(NotificationError(message: 'فشل في تحميل الإشعارات: ${e.toString()}'));
+      emit(NotificationError(
+          message: 'فشل في تحميل الإشعارات: ${e.toString()}'));
     }
   }
 
@@ -146,7 +142,8 @@ class NotificationCubit extends Cubit<NotificationState> {
         throw Exception('لا يمكن جدولة إشعار في الماضي');
       }
 
-      final scheduledNotification = notification.copyWith(scheduledAt: scheduledTime);
+      final scheduledNotification =
+          notification.copyWith(scheduledAt: scheduledTime);
 
       await _repository.saveNotification(scheduledNotification);
       await _localNotificationService.scheduleNotification(
@@ -185,7 +182,8 @@ class NotificationCubit extends Cubit<NotificationState> {
         ));
       }
     } catch (e) {
-      emit(NotificationError(message: 'فشل في تحديث حالة الإشعار: ${e.toString()}'));
+      emit(NotificationError(
+          message: 'فشل في تحديث حالة الإشعار: ${e.toString()}'));
     }
   }
 
@@ -207,7 +205,8 @@ class NotificationCubit extends Cubit<NotificationState> {
         ));
       }
     } catch (e) {
-      emit(NotificationError(message: 'فشل في تحديث الإشعارات: ${e.toString()}'));
+      emit(NotificationError(
+          message: 'فشل في تحديث الإشعارات: ${e.toString()}'));
     }
   }
 
@@ -270,7 +269,8 @@ class NotificationCubit extends Cubit<NotificationState> {
         await _sendSubscriptionExpiringNotification(difference, userId);
       }
     } catch (e) {
-      emit(NotificationError(message: 'فشل في فحص حالة الاشتراك: ${e.toString()}'));
+      emit(NotificationError(
+          message: 'فشل في فحص حالة الاشتراك: ${e.toString()}'));
     }
   }
 
@@ -292,11 +292,13 @@ class NotificationCubit extends Cubit<NotificationState> {
     await addNotification(notification);
   }
 
-  Future _sendSubscriptionExpiringNotification(int daysLeft, String userId) async {
+  Future _sendSubscriptionExpiringNotification(
+      int daysLeft, String userId) async {
     final notification = NotificationModel(
       id: 'subscription_expiring_${daysLeft}_${DateTime.now().millisecondsSinceEpoch}',
       title: '⏰ تنتهي صلاحية اشتراكك قريباً',
-      body: 'سينتهي اشتراكك خلال $daysLeft ${daysLeft == 1 ? 'يوم' : 'أيام'}. جدد اشتراكك الآن!',
+      body:
+          'سينتهي اشتراكك خلال $daysLeft ${daysLeft == 1 ? 'يوم' : 'أيام'}. جدد اشتراكك الآن!',
       type: NotificationType.subscriptionExpiry,
       createdAt: DateTime.now(),
       isRead: false,
@@ -336,9 +338,11 @@ class NotificationCubit extends Cubit<NotificationState> {
 
       await addNotification(subscriptionNotification);
 
-      emit(NotificationSent(message: 'تم إرسال الإشعارات التجريبية بنجاح'));
+      emit(const NotificationSent(
+          message: 'تم إرسال الإشعارات التجريبية بنجاح'));
     } catch (e) {
-      emit(NotificationError(message: 'فشل في إرسال الإشعارات التجريبية: ${e.toString()}'));
+      emit(NotificationError(
+          message: 'فشل في إرسال الإشعارات التجريبية: ${e.toString()}'));
     }
   }
 
@@ -365,7 +369,10 @@ class NotificationCubit extends Cubit<NotificationState> {
     if (state is NotificationLoaded) {
       final currentState = state as NotificationLoaded;
 
-      final updatedNotifications = [notification, ...currentState.notifications];
+      final updatedNotifications = [
+        notification,
+        ...currentState.notifications
+      ];
       final unreadCount = updatedNotifications.where((n) => !n.isRead).length;
 
       emit(currentState.copyWith(
@@ -389,7 +396,7 @@ class NotificationCubit extends Cubit<NotificationState> {
       );
 
       // تحديث الحالة لإظهار أنه تم إرسال الإشعار
-      emit(NotificationSent(message: 'تم إرسال إشعار انتهاء الاشتراك'));
+      emit(const NotificationSent(message: 'تم إرسال إشعار انتهاء الاشتراك'));
 
       // تحميل الإشعارات المحدثة
       await loadNotifications();

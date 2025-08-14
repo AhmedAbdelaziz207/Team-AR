@@ -5,6 +5,7 @@ import 'package:team_ar/features/manage_meals_screen/logic/meal_state.dart';
 import '../../../core/network/api_endpoints.dart';
 import '../../manage_meals_screen/logic/meal_cubit.dart';
 import '../../manage_meals_screen/model/meal_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'meal_counter.dart';
 
 class SelectMealCard extends StatefulWidget {
@@ -22,9 +23,9 @@ class _SelectMealCardState extends State<SelectMealCard> {
     return BlocListener<MealCubit, MealState>(
       listener: (context, state) {
         if (state is MailAssigned) {
-            {
+          {
             context.read<MealCubit>().getMeals();
-            }
+          }
         }
       },
       child: Container(
@@ -46,22 +47,25 @@ class _SelectMealCardState extends State<SelectMealCard> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                ApiEndPoints.imagesBaseUrl + (widget.meal.imageURL ?? ""),
+              child: CachedNetworkImage(
+                imageUrl:
+                    ApiEndPoints.imagesBaseUrl + (widget.meal.imageURL ?? ""),
                 width: 80.w,
                 height: 80.h,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[200],
-                    padding: const EdgeInsets.all(12),
-                    child: Icon(
-                      Icons.broken_image,
-                      color: Colors.grey,
-                      size: 60.sp,
-                    ),
-                  );
-                },
+                placeholder: (context, url) => Container(
+                  color: Colors.grey[200],
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey[200],
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(
+                    Icons.broken_image,
+                    color: Colors.grey,
+                    size: 60.sp,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 12),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../core/common/notification_model.dart';
 import '../../../core/common/notification_type_enum.dart';
 import '../../../core/theme/app_colors.dart';
-import 'package:intl/intl.dart';
 
 class NotificationTile extends StatelessWidget {
   final NotificationModel notification;
@@ -45,26 +45,20 @@ class NotificationTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // أيقونة الإشعار
               _buildNotificationIcon(),
               const SizedBox(width: 12),
-              // محتوى الإشعار
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // عنوان الإشعار
                     _buildNotificationTitle(),
                     const SizedBox(height: 4),
-                    // محتوى الإشعار
                     _buildNotificationBody(),
                     const SizedBox(height: 8),
-                    // وقت الإشعار
-                    _buildNotificationTime(),
+                    _buildNotificationTime(context),
                   ],
                 ),
               ),
-              // أزرار الإجراءات
               _buildActionButtons(),
             ],
           ),
@@ -77,7 +71,6 @@ class NotificationTile extends StatelessWidget {
     IconData iconData;
     Color iconColor;
 
-    // تحديد الأيقونة واللون حسب نوع الإشعار
     switch (notification.type) {
       case NotificationType.workoutPlan:
         iconData = Icons.fitness_center;
@@ -153,8 +146,8 @@ class NotificationTile extends StatelessWidget {
     );
   }
 
-  Widget _buildNotificationTime() {
-    final timeAgo = _getTimeAgo(notification.createdAt);
+  Widget _buildNotificationTime(BuildContext context) {
+    final timeAgo = _getTimeAgo(context, notification.createdAt);
     return Text(
       timeAgo,
       style: TextStyle(
@@ -167,7 +160,6 @@ class NotificationTile extends StatelessWidget {
   Widget _buildActionButtons() {
     return Column(
       children: [
-        // نقطة تشير إلى عدم القراءة
         if (!notification.isRead)
           Container(
             width: 8,
@@ -178,7 +170,6 @@ class NotificationTile extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 8),
-        // زر الحذف
         InkWell(
           onTap: onDelete,
           child: Container(
@@ -198,32 +189,40 @@ class NotificationTile extends StatelessWidget {
     );
   }
 
-  String _getTimeAgo(DateTime createdAt) {
+  String _getTimeAgo(BuildContext context, DateTime createdAt) {
     final now = DateTime.now();
     final difference = now.difference(createdAt);
 
+    final isArabic = EasyLocalization.of(context)?.locale.languageCode == 'ar';
+
     if (difference.inDays > 0) {
       if (difference.inDays == 1) {
-        return 'منذ يوم واحد';
+        return isArabic ? 'منذ يوم واحد' : '1 day ago';
       } else if (difference.inDays < 30) {
-        return 'منذ ${difference.inDays} أيام';
+        return isArabic
+            ? 'منذ ${difference.inDays} أيام'
+            : '${difference.inDays} days ago';
       } else {
         return DateFormat('dd/MM/yyyy').format(createdAt);
       }
     } else if (difference.inHours > 0) {
       if (difference.inHours == 1) {
-        return 'منذ ساعة واحدة';
+        return isArabic ? 'منذ ساعة واحدة' : '1 hour ago';
       } else {
-        return 'منذ ${difference.inHours} ساعات';
+        return isArabic
+            ? 'منذ ${difference.inHours} ساعات'
+            : '${difference.inHours} hours ago';
       }
     } else if (difference.inMinutes > 0) {
       if (difference.inMinutes == 1) {
-        return 'منذ دقيقة واحدة';
+        return isArabic ? 'منذ دقيقة واحدة' : '1 minute ago';
       } else {
-        return 'منذ ${difference.inMinutes} دقائق';
+        return isArabic
+            ? 'منذ ${difference.inMinutes} دقائق'
+            : '${difference.inMinutes} minutes ago';
       }
     } else {
-      return 'منذ لحظات';
+      return isArabic ? 'منذ لحظات' : 'Just now';
     }
   }
 }

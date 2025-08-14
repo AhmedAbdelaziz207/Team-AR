@@ -15,6 +15,37 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
   );
   final nameController = TextEditingController();
   File? workoutPdf;
+  
+  // إضافة متغيرات لتخزين البيانات
+  List<WorkoutSystemModel>? _cachedWorkoutSystems;
+  bool _isDataLoaded = false;
+
+  void getWorkoutSystems() async {
+    // التحقق مما إذا كانت البيانات محملة مسبقًا
+    if (_isDataLoaded && _cachedWorkoutSystems != null) {
+      emit(WorkoutSystemState.success(_cachedWorkoutSystems!));
+      return;
+    }
+    
+    emit(const WorkoutSystemState.loading());
+    final result = await repo.getWorkoutSystems();
+
+    result.when(
+      success: (data) {
+        // تخزين البيانات في الذاكرة المؤقتة
+        _cachedWorkoutSystems = data;
+        _isDataLoaded = true;
+        emit(WorkoutSystemState.success(data));
+      },
+      failure: (error) => emit(WorkoutSystemState.failure(error)),
+    );
+  }
+  
+  // إضافة دالة لإعادة تحميل البيانات عند الحاجة
+  void refreshWorkoutSystems() async {
+    _isDataLoaded = false;
+    getWorkoutSystems();
+  }
 
   void uploadWorkoutSystem() async {
     emit(const WorkoutSystemState.loading());
@@ -30,16 +61,6 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
 
     result.when(
       success: (data) => emit(const WorkoutSystemState.uploadSuccess()),
-      failure: (error) => emit(WorkoutSystemState.failure(error)),
-    );
-  }
-
-  void getWorkoutSystems() async {
-    emit(const WorkoutSystemState.loading());
-    final result = await repo.getWorkoutSystems();
-
-    result.when(
-      success: (data) => emit(WorkoutSystemState.success(data)),
       failure: (error) => emit(WorkoutSystemState.failure(error)),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
@@ -35,12 +36,19 @@ class MealItem extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10.sp),
-                child: Image.network(
-                  ApiEndPoints.imagesBaseUrl + (mealModel?.imageURL ?? ""),
+                child: CachedNetworkImage(
+                  imageUrl:
+                      ApiEndPoints.imagesBaseUrl + (mealModel?.imageURL ?? ""),
                   height: 100.h,
                   width: 100.w,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[200],
+                    height: 100.h,
+                    width: 100.w,
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  errorWidget: (context, error, stackTrace) => Container(
                     color: Colors.grey[200],
                     height: 100.h,
                     width: 100.w,

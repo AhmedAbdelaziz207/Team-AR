@@ -44,7 +44,7 @@ class _WorkoutSystemsScreenState extends State<WorkoutSystemsScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async =>
-            context.read<WorkoutSystemCubit>().getWorkoutSystems(),
+            context.read<WorkoutSystemCubit>().refreshWorkoutSystems(), // استخدام دالة التحديث
         child: BlocBuilder<WorkoutSystemCubit, WorkoutSystemState>(
           builder: (context, state) {
             if (state is WorkoutSystemLoading) {

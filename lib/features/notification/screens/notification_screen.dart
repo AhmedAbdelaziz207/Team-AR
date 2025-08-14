@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../core/common/notification_model.dart';
 import '../../../core/common/notification_type_enum.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/app_local_keys.dart';
 import '../logic/notification_cubit.dart';
 import '../logic/notification_state.dart';
 import '../widgets/notification_tile.dart';
@@ -12,10 +14,10 @@ class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
 
   @override
-  State createState() => _NotificationScreenState();
+  State<NotificationScreen> createState() => _NotificationScreenState();
 }
 
-class _NotificationScreenState extends State
+class _NotificationScreenState extends State<NotificationScreen>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   NotificationCubit? _notificationCubit;
   late TabController _tabController;
@@ -84,45 +86,46 @@ class _NotificationScreenState extends State
 
     return Scaffold(
       appBar: _buildAppBar(),
-      body: SafeArea( // Add SafeArea to prevent overflow
+      body: SafeArea(
         child: Column(
           children: [
             _buildSearchAndFilter(),
             Expanded(
               child: _notificationCubit != null
                   ? BlocBuilder<NotificationCubit, NotificationState>(
-                bloc: _notificationCubit,
-                builder: (context, state) {
-                  if (state is NotificationLoading) {
-                    return _buildLoadingState();
-                  }
+                      bloc: _notificationCubit,
+                      builder: (context, state) {
+                        if (state is NotificationLoading) {
+                          return _buildLoadingState();
+                        }
 
-                  if (state is NotificationError) {
-                    return _buildErrorState(state.message);
-                  }
+                        if (state is NotificationError) {
+                          return _buildErrorState(state.message);
+                        }
 
-                  if (state is NotificationLoaded) {
-                    return _buildNotificationsContent(state.notifications);
-                  }
+                        if (state is NotificationLoaded) {
+                          return _buildNotificationsContent(
+                              state.notifications);
+                        }
 
-                  return _buildEmptyState();
-                },
-              )
-                  : _buildErrorState('فشل في تحميل نظام الإشعارات'),
+                        return _buildEmptyState();
+                      },
+                    )
+                  : _buildErrorState(
+                      AppLocalKeys.errorLoadingNotifications.tr()),
             ),
           ],
         ),
       ),
-      // floatingActionButton: _notificationCubit != null ? _buildFloatingActionButton() : null,
     );
   }
 
   Widget _buildErrorScaffold() {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'الإشعارات',
-          style: TextStyle(
+        title: Text(
+          AppLocalKeys.notifications.tr(),
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -133,9 +136,9 @@ class _NotificationScreenState extends State
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SafeArea( // Add SafeArea here too
+      body: SafeArea(
         child: Center(
-          child: SingleChildScrollView( // Wrap in SingleChildScrollView
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -147,7 +150,7 @@ class _NotificationScreenState extends State
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'خطأ في النظام',
+                  AppLocalKeys.errorLoadingNotifications.tr(),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -172,11 +175,12 @@ class _NotificationScreenState extends State
                     _initializeNotificationCubit();
                   },
                   icon: const Icon(Icons.refresh),
-                  label: const Text('إعادة المحاولة'),
+                  label: Text(AppLocalKeys.retry.tr()),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
                   ),
                 ),
               ],
@@ -189,9 +193,9 @@ class _NotificationScreenState extends State
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: const Text(
-        'الإشعارات',
-        style: TextStyle(
+      title: Text(
+        AppLocalKeys.notifications.tr(),
+        style: const TextStyle(
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
@@ -207,14 +211,16 @@ class _NotificationScreenState extends State
           BlocBuilder<NotificationCubit, NotificationState>(
             bloc: _notificationCubit,
             builder: (context, state) {
-              if (state is NotificationLoaded && state.notifications.isNotEmpty) {
+              if (state is NotificationLoaded &&
+                  state.notifications.isNotEmpty) {
                 return Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // عدد الإشعارات غير المقروءة
                     if (state.unreadCount > 0)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         margin: const EdgeInsets.only(left: 8),
                         decoration: BoxDecoration(
                           color: Colors.red,
@@ -248,43 +254,44 @@ class _NotificationScreenState extends State
                         }
                       },
                       itemBuilder: (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'mark_all_read',
                           child: Row(
                             children: [
-                              Icon(Icons.done_all, color: Colors.blue),
-                              SizedBox(width: 8),
-                              Text('تحديد الكل كمقروء'),
+                              const Icon(Icons.done_all, color: Colors.blue),
+                              const SizedBox(width: 8),
+                              Text(AppLocalKeys.markAllAsRead.tr()),
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'test_notifications',
                           child: Row(
                             children: [
-                              Icon(Icons.bug_report, color: Colors.orange),
-                              SizedBox(width: 8),
-                              Text('اختبار الإشعارات'),
+                              const Icon(Icons.bug_report,
+                                  color: Colors.orange),
+                              const SizedBox(width: 8),
+                              Text(AppLocalKeys.testNotifications.tr()),
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'settings',
                           child: Row(
                             children: [
-                              Icon(Icons.settings, color: Colors.grey),
-                              SizedBox(width: 8),
-                              Text('الإعدادات'),
+                              const Icon(Icons.settings, color: Colors.grey),
+                              const SizedBox(width: 8),
+                              Text(AppLocalKeys.settings.tr()),
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'clear_all',
                           child: Row(
                             children: [
-                              Icon(Icons.clear_all, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text('مسح الكل'),
+                              const Icon(Icons.clear_all, color: Colors.red),
+                              const SizedBox(width: 8),
+                              Text(AppLocalKeys.clearAll.tr()),
                             ],
                           ),
                         ),
@@ -307,11 +314,11 @@ class _NotificationScreenState extends State
       indicatorColor: Colors.white,
       labelColor: Colors.white,
       unselectedLabelColor: Colors.white70,
-      tabs: const [
-        Tab(text: 'الكل'),
-        Tab(text: 'غير مقروءة'),
-        Tab(text: 'اشتراكات'),
-        Tab(text: 'تمارين'),
+      tabs: [
+        Tab(text: AppLocalKeys.all.tr()),
+        Tab(text: AppLocalKeys.unread.tr()),
+        Tab(text: AppLocalKeys.subscriptions.tr()),
+        Tab(text: AppLocalKeys.workouts.tr()),
       ],
     );
   }
@@ -326,18 +333,18 @@ class _NotificationScreenState extends State
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'البحث في الإشعارات...',
+              hintText: AppLocalKeys.searchNotifications.tr(),
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  _searchController.clear();
-                  setState(() {
-                    _searchQuery = '';
-                  });
-                },
-              )
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {
+                          _searchQuery = '';
+                        });
+                      },
+                    )
                   : null,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -364,15 +371,19 @@ class _NotificationScreenState extends State
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildFilterChip('الكل', null),
+                _buildFilterChip(AppLocalKeys.all.tr(), null),
                 const SizedBox(width: 8),
-                _buildFilterChip('نظام', NotificationType.system),
+                _buildFilterChip(
+                    AppLocalKeys.system.tr(), NotificationType.system),
                 const SizedBox(width: 8),
-                _buildFilterChip('اشتراك', NotificationType.subscriptionExpiry),
+                _buildFilterChip(AppLocalKeys.subscription.tr(),
+                    NotificationType.subscriptionExpiry),
                 const SizedBox(width: 8),
-                _buildFilterChip('تمرين', NotificationType.workoutReminder),
+                _buildFilterChip(AppLocalKeys.workout.tr(),
+                    NotificationType.workoutReminder),
                 const SizedBox(width: 8),
-                _buildFilterChip('عروض', NotificationType.promotion),
+                _buildFilterChip(
+                    AppLocalKeys.offers.tr(), NotificationType.promotion),
               ],
             ),
           ),
@@ -406,7 +417,7 @@ class _NotificationScreenState extends State
 
   Widget _buildErrorState(String message) {
     return Center(
-      child: SingleChildScrollView( // Add scroll capability
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -418,7 +429,7 @@ class _NotificationScreenState extends State
             ),
             SizedBox(height: 16.h),
             Text(
-              'حدث خطأ في تحميل الإشعارات',
+              AppLocalKeys.errorLoadingNotifications.tr(),
               style: TextStyle(
                 fontSize: 18.sp,
                 color: Colors.grey.shade600,
@@ -441,11 +452,12 @@ class _NotificationScreenState extends State
             ElevatedButton.icon(
               onPressed: () => _notificationCubit?.loadNotifications(),
               icon: const Icon(Icons.refresh),
-              label: const Text('إعادة المحاولة'),
+              label: Text(AppLocalKeys.retry.tr()),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ],
@@ -465,14 +477,20 @@ class _NotificationScreenState extends State
       controller: _tabController,
       children: [
         _buildNotificationsList(filteredNotifications),
-        _buildNotificationsList(filteredNotifications.where((n) => !n.isRead).toList()),
-        _buildNotificationsList(filteredNotifications.where((n) => n.type == NotificationType.subscriptionExpiry).toList()),
-        _buildNotificationsList(filteredNotifications.where((n) => n.type == NotificationType.workoutReminder).toList()),
+        _buildNotificationsList(
+            filteredNotifications.where((n) => !n.isRead).toList()),
+        _buildNotificationsList(filteredNotifications
+            .where((n) => n.type == NotificationType.subscriptionExpiry)
+            .toList()),
+        _buildNotificationsList(filteredNotifications
+            .where((n) => n.type == NotificationType.workoutReminder)
+            .toList()),
       ],
     );
   }
 
-  List<NotificationModel> _filterNotifications(List<NotificationModel> notifications) {
+  List<NotificationModel> _filterNotifications(
+      List<NotificationModel> notifications) {
     var filtered = notifications;
 
     // تطبيق فلتر النوع
@@ -521,7 +539,7 @@ class _NotificationScreenState extends State
 
   Widget _buildEmptyState() {
     return Center(
-      child: SingleChildScrollView( // Add scroll capability
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -533,7 +551,7 @@ class _NotificationScreenState extends State
             ),
             const SizedBox(height: 24),
             Text(
-              'لا توجد إشعارات',
+              AppLocalKeys.noNotifications.tr(),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -542,7 +560,7 @@ class _NotificationScreenState extends State
             ),
             const SizedBox(height: 8),
             Text(
-              'سيتم عرض إشعاراتك هنا عند وصولها',
+              AppLocalKeys.notificationsWillAppearHere.tr(),
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey.shade500,
@@ -553,25 +571,17 @@ class _NotificationScreenState extends State
             ElevatedButton.icon(
               onPressed: () => _notificationCubit?.loadNotifications(),
               icon: const Icon(Icons.refresh),
-              label: const Text('تحديث'),
+              label: Text(AppLocalKeys.update.tr()),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget? _buildFloatingActionButton() {
-    return FloatingActionButton(
-      onPressed: () => _notificationCubit?.testNotifications(),
-      backgroundColor: AppColors.primaryColor,
-      tooltip: 'إرسال إشعار تجريبي',
-      child: const Icon(Icons.add, color: Colors.white),
     );
   }
 
@@ -602,24 +612,24 @@ class _NotificationScreenState extends State
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('حذف الإشعار'),
-        content: const Text('هل أنت متأكد من حذف هذا الإشعار؟'),
+        title: Text(AppLocalKeys.deleteNotification.tr()),
+        content: Text(AppLocalKeys.confirmDeleteNotification.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
+            child: Text(AppLocalKeys.cancel.tr()),
           ),
           TextButton(
             onPressed: () {
               _notificationCubit?.deleteNotification(notification.id);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('تم حذف الإشعار')),
+                SnackBar(content: Text(AppLocalKeys.notificationDeleted.tr())),
               );
             },
-            child: const Text(
-              'حذف',
-              style: TextStyle(color: Colors.red),
+            child: Text(
+              AppLocalKeys.delete.tr(),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -631,26 +641,25 @@ class _NotificationScreenState extends State
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('مسح جميع الإشعارات'),
-        content: const Text(
-          'هل أنت متأكد من مسح جميع الإشعارات؟ لا يمكن التراجع عن هذا الإجراء.',
-        ),
+        title: Text(AppLocalKeys.clearAllNotifications.tr()),
+        content: Text(AppLocalKeys.confirmClearAllNotifications.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
+            child: Text(AppLocalKeys.cancel.tr()),
           ),
           TextButton(
             onPressed: () {
               _notificationCubit?.clearAllNotifications();
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('تم مسح جميع الإشعارات')),
+                SnackBar(
+                    content: Text(AppLocalKeys.allNotificationsCleared.tr())),
               );
             },
-            child: const Text(
-              'مسح الكل',
-              style: TextStyle(color: Colors.red),
+            child: Text(
+              AppLocalKeys.clearAll.tr(),
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -671,14 +680,14 @@ class _NotificationScreenState extends State
               Text(notification.body),
               const SizedBox(height: 16),
               Text(
-                'التاريخ: ${notification.createdAt.toString().split('.')[0]}',
+                '${AppLocalKeys.date.tr()}: ${notification.createdAt.toString().split('.')[0]}',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey.shade600,
                 ),
               ),
               Text(
-                'النوع: ${_getTypeDisplayName(notification.type)}',
+                '${AppLocalKeys.type.tr()}: ${_getTypeDisplayName(notification.type)}',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey.shade600,
@@ -690,7 +699,7 @@ class _NotificationScreenState extends State
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('إغلاق'),
+            child: Text(AppLocalKeys.close.tr()),
           ),
         ],
       ),
@@ -700,37 +709,39 @@ class _NotificationScreenState extends State
   String _getTypeDisplayName(NotificationType type) {
     switch (type) {
       case NotificationType.system:
-        return 'نظام';
+        return AppLocalKeys.system.tr();
       case NotificationType.subscriptionExpiry:
-        return 'اشتراك';
+        return AppLocalKeys.subscription.tr();
       case NotificationType.workoutReminder:
-        return 'تذكير تمرين';
+        return AppLocalKeys.workout.tr();
       case NotificationType.promotion:
-        return 'عرض';
+        return AppLocalKeys.offers.tr();
       case NotificationType.bookingConfirmation:
-        return 'تأكيد حجز';
+        return AppLocalKeys.bookingConfirmation.tr();
       case NotificationType.paymentConfirmation:
-        return 'تأكيد دفع';
+        return AppLocalKeys.paymentConfirmation.tr();
       case NotificationType.newContent:
-        return 'محتوى جديد';
+        return AppLocalKeys.newContent.tr();
       case NotificationType.maintenance:
-        return 'صيانة';
+        return AppLocalKeys.maintenance.tr();
       case NotificationType.workoutPlan:
-        return 'خطة تمرين';
+        return AppLocalKeys.workoutPlan.tr();
       case NotificationType.trainerEvaluation:
-        return 'تقييم مدرب';
+        return AppLocalKeys.trainerEvaluation.tr();
       case NotificationType.bookingCancellation:
-        return 'إلغاء حجز';
+        return AppLocalKeys.bookingCancellation.tr();
       case NotificationType.motivational:
-        return 'تحفيزي';
+        return AppLocalKeys.motivational.tr();
       case NotificationType.newMember:
-        return 'عضو جديد';
+        return AppLocalKeys.newMember.tr();
       case NotificationType.bookingRequest:
-        return 'طلب حجز';
+        return AppLocalKeys.bookingRequest.tr();
       case NotificationType.newReview:
-        return 'مراجعة جديدة';
+        return AppLocalKeys.newReview.tr();
       case NotificationType.technicalIssue:
-        return 'مشكلة تقنية';
+        return AppLocalKeys.technicalIssue.tr();
+      default:
+        return AppLocalKeys.system.tr();
     }
   }
 
