@@ -1,6 +1,23 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user_model.g.dart';
+
+// إضافة دوال مساعدة لتحويل DateTime
+String? _dateTimeToJson(DateTime? dateTime) {
+  return dateTime?.toIso8601String();
+}
+
+DateTime? _dateTimeFromJson(String? dateString) {
+  if (dateString == null || dateString.isEmpty) return null;
+  try {
+    return DateTime.parse(dateString);
+  } catch (e) {
+    print('خطأ في تحويل التاريخ: $e');
+    return null;
+  }
+}
 
 @JsonSerializable()
 class UserModel {
@@ -73,10 +90,15 @@ class UserModel {
   @JsonKey(name: 'Gender')
   final String? gender;
 
-  @JsonKey(name: 'StartPackage')
+  // تعديل حقول DateTime لاستخدام دوال التحويل المخصصة
+  @JsonKey(
+      name: 'StartPackage',
+      toJson: _dateTimeToJson,
+      fromJson: _dateTimeFromJson)
   final DateTime? startPackage;
 
-  @JsonKey(name: 'EndPackage')
+  @JsonKey(
+      name: 'EndPackage', toJson: _dateTimeToJson, fromJson: _dateTimeFromJson)
   final DateTime? endPackage;
 
   final int? packageId;
@@ -120,4 +142,29 @@ class UserModel {
       _$UserModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
+
+  // إضافة طريقة مساعدة لتحويل النموذج إلى JSON قابل للتخزين في SharedPreferences
+  String toJsonString() {
+    final Map<String, dynamic> data = toJson();
+    // التأكد من تحويل التواريخ إلى سلاسل نصية
+    if (startPackage != null) {
+      data['StartPackage'] = startPackage!.toIso8601String();
+    }
+    if (endPackage != null) {
+      data['EndPackage'] = endPackage!.toIso8601String();
+    }
+    return jsonEncode(data);
+  }
+
+  // إضافة طريقة مساعدة لإنشاء نموذج من JSON مخزن في SharedPreferences
+  static UserModel? fromJsonString(String? jsonString) {
+    if (jsonString == null || jsonString.isEmpty) return null;
+    try {
+      final Map<String, dynamic> data = jsonDecode(jsonString);
+      return UserModel.fromJson(data);
+    } catch (e) {
+      print('خطأ في تحليل JSON: $e');
+      return null;
+    }
+  }
 }

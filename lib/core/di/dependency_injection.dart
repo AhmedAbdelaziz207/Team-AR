@@ -1,6 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:team_ar/features/payment/logic/payment_cubit.dart';
+import 'package:team_ar/features/payment/repository/payment_repository.dart';
+import 'package:team_ar/features/payment/service/fawaterk_service.dart';
+import 'package:team_ar/features/payment/service/payment_history_service.dart';
+import 'package:team_ar/features/payment/service/payment_retry_service.dart';
+import 'package:team_ar/features/payment/service/payment_security_service.dart';
 import '../../features/auth/login/logic/login_cubit.dart';
 import '../../features/auth/login/repos/login_repository.dart';
 import '../../features/auth/register/logic/register_cubit.dart';
@@ -22,7 +28,6 @@ import '../services/notification_service.dart';
 final getIt = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
-
   try {
     // Shared Preferences
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -32,10 +37,65 @@ Future<void> setupServiceLocator() async {
     Dio dio = DioFactory.getDio();
     getIt.registerLazySingleton<Dio>(() => dio);
     getIt.registerLazySingleton<ApiService>(() => ApiService(getIt<Dio>()));
+    print('✅ ApiService registered successfully');
+
+    // إضافة خدمة فواتيرك
+    getIt.registerLazySingleton<FawaterkService>(() => FawaterkService());
+
+    // إضافة مستودع الدفع
+    getIt.registerLazySingleton<PaymentRepository>(
+      () => PaymentRepository(getIt<FawaterkService>(), getIt<ApiService>()),
+    );
+
+
+    // // في ملف dependency_injection.dart
+    // void setupPaymentDependencies() {
+    //   // تسجيل خدمة فواتيرك
+    //   getIt.registerLazySingleton<FawaterkService>(
+    //         () => FawaterkService(),
+    //   );
+    //
+    //   // تسجيل مستودع الدفع
+    //   getIt.registerLazySingleton<PaymentRepository>(
+    //         () => PaymentRepository(
+    //       getIt<FawaterkService>(),
+    //       getIt<ApiService>(),
+    //     ),
+    //   );
+    // }
+
+
+
+
+
+
+
+
+
+
+
+    // // تسجيل خدمات الدفع الإضافية
+    // getIt.registerLazySingleton<PaymentHistoryService>(
+    //   () => PaymentHistoryService(
+    //       getIt<ApiService>(), getIt<SharedPreferences>()),
+    // );
+
+    // getIt.registerLazySingleton<PaymentRetryService>(
+    //   () => PaymentRetryService(getIt<PaymentRepository>()),
+    // );
+
+    getIt.registerLazySingleton<PaymentSecurityService>(
+      () => PaymentSecurityService(),
+    );
+
+    // تسجيل PaymentCubit
+    getIt.registerFactory<PaymentCubit>(
+      () => PaymentCubit(getIt<PaymentRepository>()),
+    );
 
     // Notification Repository
     getIt.registerLazySingleton<NotificationRepository>(
-          () => NotificationRepositoryImpl(
+      () => NotificationRepositoryImpl(
         getIt<ApiService>(),
         getIt<SharedPreferences>(),
       ),
@@ -43,12 +103,12 @@ Future<void> setupServiceLocator() async {
 
     // Local Notification Service
     getIt.registerLazySingleton<LocalNotificationService>(
-          () => LocalNotificationService(),
+      () => LocalNotificationService(),
     );
 
     // Notification Service
     getIt.registerLazySingleton<NotificationService>(
-          () => NotificationService(
+      () => NotificationService(
         localNotificationService: getIt<LocalNotificationService>(),
         repository: getIt<NotificationRepository>(),
       ),
@@ -56,25 +116,25 @@ Future<void> setupServiceLocator() async {
 
     // Login
     getIt.registerLazySingleton<LoginRepository>(
-            () => LoginRepository(getIt<ApiService>()));
+        () => LoginRepository(getIt<ApiService>()));
     getIt.registerFactory<LoginCubit>(
-            () => LoginCubit(getIt<LoginRepository>()));
+        () => LoginCubit(getIt<LoginRepository>()));
 
     // Register
     getIt.registerLazySingleton<RegisterRepository>(
-            () => RegisterRepository(getIt<ApiService>()));
+        () => RegisterRepository(getIt<ApiService>()));
     getIt.registerFactory<RegisterCubit>(
-            () => RegisterCubit(getIt<RegisterRepository>()));
+        () => RegisterCubit(getIt<RegisterRepository>()));
 
     // Confirm Subscription
     getIt.registerFactory<ConfirmSubscriptionCubit>(
-            () => ConfirmSubscriptionCubit());
+        () => ConfirmSubscriptionCubit());
 
     // Admin Home
     getIt.registerLazySingleton<TraineesRepository>(
-            () => TraineesRepository(getIt<ApiService>()));
+        () => TraineesRepository(getIt<ApiService>()));
     getIt.registerFactory<TraineeCubit>(
-            () => TraineeCubit(getIt<TraineesRepository>()));
+        () => TraineeCubit(getIt<TraineesRepository>()));
 
     // Navigation
     getIt.registerFactory<NavigationCubit>(() => NavigationCubit());
@@ -83,15 +143,16 @@ Future<void> setupServiceLocator() async {
     getIt.registerFactory<WorkoutCubit>(() => WorkoutCubit());
 
     // Notification Storage
-    getIt.registerLazySingleton<NotificationStorage>(() => NotificationStorage());
+    getIt.registerLazySingleton<NotificationStorage>(
+        () => NotificationStorage());
 
     // Notification Cubit
     getIt.registerFactory<NotificationCubit>(() => NotificationCubit(
-      notificationService: getIt<NotificationService>(),
-      repository: getIt<NotificationRepository>(),
-      localNotificationService: getIt<LocalNotificationService>(),
-      storage: getIt<NotificationStorage>(),
-    ));
+          notificationService: getIt<NotificationService>(),
+          repository: getIt<NotificationRepository>(),
+          localNotificationService: getIt<LocalNotificationService>(),
+          storage: getIt<NotificationStorage>(),
+        ));
 
     // Initialize Notification Service
     await getIt<NotificationService>().initialize();
@@ -132,4 +193,10 @@ void validateServiceRegistration() {
   }
 
   print('✅ تم تسجيل جميع الخدمات بنجاح');
+
+  // تم نقل تسجيل الخدمات التالية إلى setupServiceLocator()
+  // getIt.registerLazySingleton<FawaterkService>(() => FawaterkService());
+  // getIt.registerLazySingleton<PaymentRepository>(
+  //   () => PaymentRepository(getIt<FawaterkService>(), getIt<ApiService>()),
+  // );
 }

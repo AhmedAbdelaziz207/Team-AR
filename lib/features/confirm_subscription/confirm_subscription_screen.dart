@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_cubit.dart';
@@ -9,6 +13,7 @@ import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription
 import 'package:team_ar/features/confirm_subscription/widget/confirm_subscription_form.dart';
 import 'package:team_ar/core/widgets/plans_list_card.dart';
 import 'package:team_ar/features/confirm_subscription/widget/register_bloc_listener.dart';
+import 'package:team_ar/features/payment/screens/payment_screen.dart';
 import '../../core/prefs/shared_pref_manager.dart';
 import '../../core/utils/app_constants.dart';
 import '../../core/utils/app_local_keys.dart';
@@ -125,22 +130,61 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                               final role =
                                   await SharedPreferencesHelper.getString(
                                       AppConstants.userRole);
-
-                              if (role?.toLowerCase() != "admin") {
-                                showComingSoonDialog(context);
-                              }
-
+                              // التحقق من صحة البيانات - إزالة شرط إرسال الصور الإجباري
                               if (context
-                                      .read<ConfirmSubscriptionCubit>()
-                                      .formKey
-                                      .currentState!
-                                      .validate() &&
-                                  context
-                                      .read<ConfirmSubscriptionCubit>()
-                                      .isSendImages) {
-                                context
-                                    .read<ConfirmSubscriptionCubit>()
-                                    .subscribe();
+                                  .read<ConfirmSubscriptionCubit>()
+                                  .formKey
+                                  .currentState!
+                                  .validate()) {
+                                final cubit =
+                                    context.read<ConfirmSubscriptionCubit>();
+
+                                if (role?.toLowerCase() == "admin") {
+                                  // إذا كان المستخدم مسؤول، استخدم السلوك القديم
+                                  cubit.subscribe();
+                                } else {
+                                  // توجيه المستخدم إلى صفحة تسجيل الدخول أولاً
+                                  // حفظ بيانات المستخدم مؤقتاً
+                                  final userData = {
+                                    'name': cubit.nameController.text,
+                                    'email': cubit.emailController.text,
+                                    'phone': cubit.phoneController.text,
+                                    'plan': widget.userPlan.toJson(),
+                                  };
+
+                                  // حفظ البيانات في التخزين المؤقت
+                                  await SharedPreferencesHelper.setString(
+                                      'temp_subscription_data',
+                                      jsonEncode(userData));
+
+                                  // إضافة هذا الكود لحفظ بيانات المستخدم الكاملة في temp_user
+                                  final user = cubit.getUser();
+                                  final userJson = jsonEncode(user.toJson());
+                                  await SharedPreferencesHelper.setString(
+                                      'temp_user', userJson);
+                                  // حفظ نسخة احتياطية أيضًا
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  await prefs.setString('temp_user', userJson);
+                                  print('✅ تم حفظ temp_user بنجاح');
+
+                                  // التوجيه إلى صفحة الدفع بدلاً من تسجيل الدخول
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PaymentScreen(
+                                        plan: widget.userPlan,
+                                        customerName: cubit.nameController.text,
+                                        customerEmail:
+                                            cubit.emailController.text,
+                                        customerPhone:
+                                            cubit.phoneController.text,
+                                        isNewUser:
+                                            true, // مهم: تحديد أن هذا مستخدم جديد
+                                      ),
+                                    ),
+                                  );
+                                }
                               }
                             },
                             color: AppColors.newPrimaryColor,

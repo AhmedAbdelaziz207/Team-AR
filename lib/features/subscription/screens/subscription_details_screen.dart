@@ -231,11 +231,13 @@ class SubscriptionDetailsScreen extends StatelessWidget {
           // أزرار الإجراءات
           if (status == SubscriptionStatus.expiringSoon ||
               status == SubscriptionStatus.expired)
+            // تعديل زر تجديد الاشتراك
             SizedBox(
               width: double.infinity,
               height: 50.h,
               child: ElevatedButton(
                 onPressed: () {
+                  // توجيه المستخدم إلى شاشة الباقات
                   Navigator.pushNamed(context, Routes.subscriptionPlans);
                 },
                 style: ElevatedButton.styleFrom(

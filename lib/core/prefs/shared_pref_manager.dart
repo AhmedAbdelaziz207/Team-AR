@@ -24,13 +24,30 @@ class SharedPreferencesHelper {
   }
 
   static Future<void> setString(String key, String value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(key, value);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final result = await prefs.setString(key, value);
+      if (result) {
+        print('✅ تم حفظ $key بنجاح');
+      } else {
+        print('❌ فشل في حفظ $key');
+      }
+    } catch (e) {
+      print('خطأ في حفظ $key: $e');
+      rethrow;
+    }
   }
 
   static Future<String?> getString(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final value = prefs.getString(key);
+      print('قراءة $key: ${value != null ? "موجود" : "غير موجود"}');
+      return value;
+    } catch (e) {
+      print('خطأ في قراءة $key: $e');
+      return null;
+    }
   }
 
   static Future<int?> getInt(String key) async {
@@ -47,11 +64,11 @@ class SharedPreferencesHelper {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(key);
   }
+
   static Future<void> removeAll() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(AppConstants.token);
     await prefs.remove(AppConstants.userId);
     await prefs.remove(AppConstants.userRole);
   }
-
 }
