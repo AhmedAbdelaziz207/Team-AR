@@ -44,31 +44,6 @@ class LoginBlocListener extends StatelessWidget {
 
   void navigateToHomeScreen(
       BuildContext context, LoginResponse loginResponse) async {
-    // التحقق من وجود بيانات اشتراك مؤقتة
-    final tempSubscriptionData =
-        await SharedPreferencesHelper.getString('temp_subscription_data');
-
-    if (tempSubscriptionData != null && tempSubscriptionData.isNotEmpty) {
-      // إذا كانت هناك بيانات اشتراك مؤقتة، توجيه المستخدم إلى صفحة الدفع
-      final data = jsonDecode(tempSubscriptionData);
-      final plan = UserPlan.fromJson(data['plan']);
-
-      // حذف البيانات المؤقتة بعد استخدامها
-      await SharedPreferencesHelper.remove('temp_subscription_data');
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PaymentScreen(
-            plan: plan,
-            customerName: data['name'],
-            customerEmail: data['email'],
-            customerPhone: data['phone'],
-            isNewUser: false, // المستخدم مسجل بالفعل
-          ),
-        ),
-      );
-    } else {
       // إذا لم تكن هناك بيانات اشتراك مؤقتة، استخدم السلوك العادي
       if (loginResponse.role?.toLowerCase() ==
           UserRole.Admin.name.toLowerCase()) {
@@ -78,6 +53,5 @@ class LoginBlocListener extends StatelessWidget {
         Navigator.pushNamedAndRemoveUntil(
             context, Routes.rootScreen, (arguments) => false);
       }
-    }
   }
 }
