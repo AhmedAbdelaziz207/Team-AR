@@ -80,12 +80,19 @@ class RegisterScreen extends StatelessWidget {
                             color: AppColors.primaryColor,
                           )
                         : TextButton(
-                            onPressed: state is RegisterLoading ? null : () {
-                              if(context.read<RegisterCubit>().formKey.currentState!.validate()){
-                                context.read<RegisterCubit>().addTrainer();
-                              }
-
-                            },
+                            onPressed: state is RegisterLoading
+                                ? null
+                                : () {
+                                    if (context
+                                        .read<RegisterCubit>()
+                                        .formKey
+                                        .currentState!
+                                        .validate()) {
+                                      context
+                                          .read<RegisterCubit>()
+                                          .addTrainer();
+                                    }
+                                  },
                             style: ElevatedButton.styleFrom(
                               minimumSize: Size(250.w, 30.h),
                               backgroundColor:

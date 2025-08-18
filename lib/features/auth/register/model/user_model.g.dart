@@ -34,12 +34,8 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       abilityOfSystemMoney: json['AbilityOfSystemMoney'] as String?,
       numberOfDays: (json['NumberOfDayes'] as num?)?.toInt(),
       gender: json['Gender'] as String?,
-      startPackage: json['StartPackage'] == null
-          ? null
-          : DateTime.parse(json['StartPackage'] as String),
-      endPackage: json['EndPackage'] == null
-          ? null
-          : DateTime.parse(json['EndPackage'] as String),
+      startPackage: _dateTimeFromJson(json['StartPackage'] as String?),
+      endPackage: _dateTimeFromJson(json['EndPackage'] as String?),
       packageId: (json['packageId'] as num?)?.toInt(),
     );
 
@@ -70,8 +66,8 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'AbilityOfSystemMoney': instance.abilityOfSystemMoney,
       'NumberOfDayes': instance.numberOfDays,
       'Gender': instance.gender,
-      'StartPackage': instance.startPackage?.toIso8601String(),
-      'EndPackage': instance.endPackage?.toIso8601String(),
+      'StartPackage': _dateTimeToJson(instance.startPackage),
+      'EndPackage': _dateTimeToJson(instance.endPackage),
       'packageId': instance.packageId,
       'imageUrl': instance.imageUrl,
     };
