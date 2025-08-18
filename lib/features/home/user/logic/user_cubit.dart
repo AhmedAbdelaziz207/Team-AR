@@ -1,50 +1,71 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
-import 'package:team_ar/features/auth/register/model/user_model.dart';
+import 'package:team_ar/features/home/admin/data/trainee_model.dart';
 import 'package:team_ar/features/home/admin/repos/trainees_repository.dart';
 import 'package:team_ar/features/home/user/logic/user_state.dart';
-import 'package:team_ar/features/user_info/model/trainee_model.dart';
 
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super(const UserState.initial());
   final TraineesRepository repo = TraineesRepository(getIt<ApiService>());
+  
+  // إضافة متغير لتخزين بيانات المستخدم
+  TraineeModel? _cachedUserData;
+  bool _isDataLoaded = false;
 
   void getUser(String id) async {
+    // التحقق مما إذا كانت البيانات محملة مسبقًا
+    if (_isDataLoaded && _cachedUserData != null) {
+      emit(UserState.success(_cachedUserData!));
+      return;
+    }
+    
     emit(const UserState.loading());
 
     final result = await repo.getLoggedUser(id);
 
     result.when(
-      success: (data) => emit(UserState.success(data)),
+      success: (data) {
+        // تخزين البيانات في الذاكرة المؤقتة
+        _cachedUserData = data;
+        _isDataLoaded = true;
+        emit(UserState.success(data));
+      },
       failure: (error) =>
           emit(UserState.failure(error.getErrorsMessage() ?? "")),
     );
   }
+  
+  // إضافة دالة لإعادة تحميل البيانات عند الحاجة
+  void refreshUserData(String id) async {
+    _isDataLoaded = false;
+    getUser(id);
+  }
 
   void getTrainee(String id) async {
-    log("Get Trainee");
     emit(const UserState.loading());
 
-    log("UserId : $id");
     final result = await repo.getTrainer(id);
 
     result.when(
       success: (data) {
-        log("Trainee : ${data.userName}");
-        emit(UserState.getTrainee(data));
+        if (!isClosed) {
+          emit(UserState.getTrainee(data));
+        }
       },
-      failure: (error) => emit(
-        UserState.failure(error.getErrorsMessage() ?? ""),
-      ),
+      failure: (error) {
+        if (!isClosed) {
+          emit(UserState.failure(error.getErrorsMessage() ?? ""));
+        }
+      },
     );
   }
 
   void updateImage(String userId, File userImage) async {
     final result = await repo.updateUserImage(userImage, userId);
+
+    if (isClosed) return;
 
     result.when(
       success: (data) => emit(const UserState.updateImageSuccess()),
@@ -58,6 +79,8 @@ class UserCubit extends Cubit<UserState> {
     final result = await repo
         .updateUserPackage({"userId": userId, "packageId": packageId});
 
+    if (isClosed) return;
+
     result.when(
       success: (data) => emit(const UserState.updateUserSuccess()),
       failure: (error) => emit(
@@ -66,9 +89,7 @@ class UserCubit extends Cubit<UserState> {
     );
   }
 
-
   void deleteUser(String id) async {
-    log("Delete User ");
     final response = await repo.deleteUser(id);
   }
 }

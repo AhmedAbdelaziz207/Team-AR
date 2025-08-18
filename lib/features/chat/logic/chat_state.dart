@@ -7,8 +7,9 @@ final class ChatInitial extends ChatState {}
 
 final class GetChatsSuccess extends ChatState {
   final List<ChatUserModel> chats;
+  final bool isFromCache;
 
-  GetChatsSuccess({required this.chats});
+  GetChatsSuccess({required this.chats, this.isFromCache = false});
 }
 
 final class GetChatsFailure extends ChatState {
@@ -29,8 +30,9 @@ final class GetChatContentFailed extends ChatState {
 
 final class GetChatContentSuccess extends ChatState {
   final List<ChatMessageModel> chatContent;
+  final bool isFromCache;
 
-  GetChatContentSuccess({required this.chatContent});
+  GetChatContentSuccess({required this.chatContent, this.isFromCache = false});
 }
 
 final class SendMessageLoading extends ChatState {}
