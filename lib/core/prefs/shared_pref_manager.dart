@@ -28,12 +28,9 @@ class SharedPreferencesHelper {
       final prefs = await SharedPreferences.getInstance();
       final result = await prefs.setString(key, value);
       if (result) {
-        print('✅ تم حفظ $key بنجاح');
       } else {
-        print('❌ فشل في حفظ $key');
       }
     } catch (e) {
-      print('خطأ في حفظ $key: $e');
       rethrow;
     }
   }
@@ -42,10 +39,8 @@ class SharedPreferencesHelper {
     try {
       final prefs = await SharedPreferences.getInstance();
       final value = prefs.getString(key);
-      print('قراءة $key: ${value != null ? "موجود" : "غير موجود"}');
       return value;
     } catch (e) {
-      print('خطأ في قراءة $key: $e');
       return null;
     }
   }
