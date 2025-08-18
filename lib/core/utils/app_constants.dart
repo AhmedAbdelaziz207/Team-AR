@@ -9,6 +9,12 @@ class AppConstants {
   static const userRole = 'userRole';
   static const userId = 'userId';
 
+  // إضافة مفاتيح جديدة لبيانات المستخدم
+  static const userName = 'userName';
+  static const userEmail = 'userEmail';
+  static const userImage = 'userImage';
+  static const userDiet = 'userDiet';
+
   static String avatarUrl =
       "https://cdn-icons-png.flaticon.com/128/7127/7127308.png";
   static String avatarUrl2 =

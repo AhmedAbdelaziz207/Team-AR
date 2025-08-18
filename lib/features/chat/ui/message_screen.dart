@@ -1,13 +1,12 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/features/chat/model/chat_user_model.dart';
+import 'package:team_ar/features/notification/services/push_notifications_services.dart';
 import '../../../core/network/signalr_service.dart';
-import '../../auth/login/model/user_role.dart';
 import '../logic/chat_cubit.dart';
 import '../model/chat_model.dart';
 
@@ -35,12 +34,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
   void initState() {
     super.initState();
 
-
     SharedPreferencesHelper.getString(AppConstants.userId).then(
       (value) {
         setState(() {
           currentUserId = value;
         });
+
+        // تسجيل المستخدم في موضوع إشعارات الدردشة
+        FirebaseNotificationsServices.subscribeToTopic("chat_$value");
 
         signalR.connect(currentUserId!, (senderId, messageId, message) {
           log("Message Content: $senderId, message: $message, messageId: $messageId");
@@ -61,6 +62,15 @@ class _MessagesScreenState extends State<MessagesScreen> {
     context.read<ChatCubit>().getChatContent(widget.receiver.id!);
   }
 
+  @override
+  void dispose() {
+    // إلغاء تسجيل المستخدم من موضوع إشعارات الدردشة عند إغلاق الشاشة
+    if (currentUserId != null) {
+      FirebaseNotificationsServices.unSubscribeFromTopic("chat_$currentUserId");
+    }
+    super.dispose();
+  }
+
   void _sendMessage(String text) {
     final myId = currentUserId;
     final receiverId = widget.receiver.id;
@@ -76,6 +86,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
       _liveMessages.add(msg);
     });
 
+    // حفظ الرسالة محلياً
+    context.read<ChatCubit>().saveMessageLocally(msg);
+
     signalR.sendMessage(myId, receiverId, text);
     context.read<ChatCubit>().sendMessage(text, receiverId);
   }
@@ -87,10 +100,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text( widget.receiver.userName ?? "",
+            Text(widget.receiver.userName ?? "",
                 style: TextStyle(color: Colors.white, fontSize: 20.sp)),
             Text(
-               'Trainer',
+              'Trainer',
               style: TextStyle(
                   color: Colors.white70,
                   fontSize: 12.sp,
@@ -136,6 +149,17 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     _historyMessages.clear();
                     _historyMessages.addAll(state.chatContent);
                   });
+
+                  // إظهار إشعار إذا كانت البيانات من التخزين المؤقت
+                  if (state.isFromCache) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                            'أنت تعرض بيانات محفوظة محلياً. قم بالاتصال بالإنترنت للحصول على أحدث الرسائل.'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  }
                 }
               },
               child: Expanded(

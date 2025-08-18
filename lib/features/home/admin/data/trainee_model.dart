@@ -76,8 +76,6 @@ class TraineeModel {
       return 0;
     }
 
-    log("totalDays : $totalDays");
-
     double remainingRatio = remindDays! / totalDays;
     return (remainingRatio * 10).clamp(0.0, 10.0);
   }
