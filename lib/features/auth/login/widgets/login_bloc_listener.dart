@@ -44,51 +44,14 @@ class LoginBlocListener extends StatelessWidget {
 
   void navigateToHomeScreen(
       BuildContext context, LoginResponse loginResponse) async {
-    // التحقق من وجود بيانات اشتراك مؤقتة
-    final tempSubscriptionData =
-        await SharedPreferencesHelper.getString('temp_subscription_data');
-
-    if (tempSubscriptionData != null && tempSubscriptionData.isNotEmpty) {
-      // إذا كانت هناك بيانات اشتراك مؤقتة، توجيه المستخدم إلى صفحة الدفع
-      final data = jsonDecode(tempSubscriptionData);
-      final plan = UserPlan.fromJson(data['plan']);
-
-      // حذف البيانات المؤقتة بعد استخدامها
-      await SharedPreferencesHelper.remove('temp_subscription_data');
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PaymentScreen(
-            plan: plan,
-            customerName: data['name'],
-            customerEmail: data['email'],
-            customerPhone: data['phone'],
-            isNewUser: false, // المستخدم مسجل بالفعل
-          ),
-        ),
-      );
-    } else {
       // إذا لم تكن هناك بيانات اشتراك مؤقتة، استخدم السلوك العادي
-      final isAdmin =
-          loginResponse.role?.toLowerCase() == UserRole.Admin.name.toLowerCase();
-
-      if (isAdmin) {
+      if (loginResponse.role?.toLowerCase() ==
+          UserRole.Admin.name.toLowerCase()) {
         Navigator.pushNamedAndRemoveUntil(
             context, Routes.adminLanding, (arguments) => false);
-        return;
-      }
-
-      // Non-admin: if user data not completed, go to complete data screen
-      if (loginResponse.isDataCompleted == false) {
+      } else {
         Navigator.pushNamedAndRemoveUntil(
-            context, Routes.completeData, (arguments) => false);
-        return;
+            context, Routes.rootScreen, (arguments) => false);
       }
-
-      // Otherwise proceed to home
-      Navigator.pushNamedAndRemoveUntil(
-          context, Routes.rootScreen, (arguments) => false);
-    }
   }
 }
