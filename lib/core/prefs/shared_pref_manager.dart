@@ -70,5 +70,7 @@ class SharedPreferencesHelper {
     await prefs.remove(AppConstants.token);
     await prefs.remove(AppConstants.userId);
     await prefs.remove(AppConstants.userRole);
+    await prefs.remove(AppConstants.userDiet);
+    await prefs.remove(AppConstants.dataCompleted);
   }
 }

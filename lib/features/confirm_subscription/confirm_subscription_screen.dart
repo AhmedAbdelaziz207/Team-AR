@@ -34,8 +34,8 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
 
   @override
   void initState() {
-    context.read<ConfirmSubscriptionCubit>().userPlan = widget.userPlan;
-
+    final cubit = context.read<ConfirmSubscriptionCubit>();
+    cubit.userPlan = widget.userPlan;
     super.initState();
   }
 
@@ -91,31 +91,33 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
               SizedBox(
                 height: 21.h,
               ),
-              Row(
-                children: [
-                  Checkbox(
-                    value: isSendImages,
-                    onChanged: (value) {
-                      isSendImages = value!;
-                      context.read<ConfirmSubscriptionCubit>().isSendImages =
-                          isSendImages;
-                      setState(() {});
-                    },
-                  ),
-                  SizedBox(
-                    width: 8.w,
-                  ),
-                  Expanded(
-                    child: Text(
-                      AppLocalKeys.sendBodyImages.tr(),
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontSize: 14.sp,
-                          color: AppColors.lightGrey,
-                          fontWeight: FontWeight.w500),
+              if (!context.read<ConfirmSubscriptionCubit>().isAdmin)
+                Row(
+                  children: [
+                    Checkbox(
+                      value: isSendImages,
+                      onChanged: (value) {
+                        isSendImages = value!;
+                        context
+                            .read<ConfirmSubscriptionCubit>()
+                            .isSendImages = isSendImages;
+                        setState(() {});
+                      },
                     ),
-                  )
-                ],
-              ),
+                    SizedBox(
+                      width: 8.w,
+                    ),
+                    Expanded(
+                      child: Text(
+                        AppLocalKeys.sendBodyImages.tr(),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontSize: 14.sp,
+                            color: AppColors.lightGrey,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    )
+                  ],
+                ),
               SizedBox(
                 height: 21.h,
               ),

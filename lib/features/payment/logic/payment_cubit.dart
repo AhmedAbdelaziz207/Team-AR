@@ -47,7 +47,14 @@ class PaymentCubit extends Cubit<PaymentState> {
           response.data!.isNotEmpty) {
         debugPrint('تم تحميل ${response.data!.length} طريقة دفع مدعومة');
 
-        final sortedMethods = _sortPaymentMethods(response.data!);
+        // Filter to MasterCard only
+        final masterOnly = _filterToMastercard(response.data!);
+        if (masterOnly.isEmpty) {
+          emit(PaymentMethodsError('طريقة الدفع MasterCard غير متاحة حالياً'));
+          return;
+        }
+
+        final sortedMethods = _sortPaymentMethods(masterOnly);
         emit(PaymentMethodsLoaded(sortedMethods));
       } else {
         final errorMessage = response.message.isNotEmpty
@@ -77,6 +84,16 @@ class PaymentCubit extends Cubit<PaymentState> {
     });
 
     return methods;
+  }
+
+  // إظهار MasterCard فقط
+  List<PaymentMethod> _filterToMastercard(List<PaymentMethod> methods) {
+    return methods.where((m) {
+      if (m.type == PaymentMethodType.mastercard) return true;
+      final nEn = m.nameEn.toLowerCase();
+      final nAr = m.nameAr.toLowerCase();
+      return nEn.contains('mastercard') || nEn.contains('master') || nAr.contains('ماستر');
+    }).toList();
   }
 
   Future<void> createPayment({

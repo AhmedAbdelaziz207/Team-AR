@@ -37,4 +37,10 @@ class Routes {
 
   static const String subscriptionExpired = '/subscriptionExpired';
   static const String subscriptionPlans = '/subscriptionPlans';
+
+  // Admin: Add new user
+  static const String adminAddUser = '/adminAddUser';
+
+  // Complete user data after login
+  static const String completeData = '/completeData';
 }

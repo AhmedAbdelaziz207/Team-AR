@@ -14,6 +14,7 @@ class ConfirmSubscriptionForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<ConfirmSubscriptionCubit>();
+    final isAdmin = context.watch<ConfirmSubscriptionCubit>().isAdmin;
 
     return Form(
       key: cubit.formKey,
@@ -33,6 +34,22 @@ class ConfirmSubscriptionForm extends StatelessWidget {
             },
           ),
           SizedBox(height: 8.h),
+          // If admin: only keep email and password after username
+          if (isAdmin) ...[
+            CustomTextFormField(
+              controller: cubit.emailController,
+              suffixIcon: Icons.email_outlined,
+              hintText: AppLocalKeys.email.tr(),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            SizedBox(height: 16.h),
+            CustomTextFormField(
+              controller: cubit.passwordController,
+              suffixIcon: Icons.password,
+              hintText: AppLocalKeys.password.tr(),
+              obscureText: true,
+            ),
+          ] else ...[
           CustomTextFormField(
             controller: cubit.ageController,
             suffixIcon: Icons.event_note,
@@ -147,6 +164,7 @@ class ConfirmSubscriptionForm extends StatelessWidget {
             hintText: AppLocalKeys.haveInfection.tr(),
             isMultiline: true,
           ),
+          ]
         ],
       ),
     );

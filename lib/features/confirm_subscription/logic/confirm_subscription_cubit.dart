@@ -4,19 +4,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
 
 import '../../auth/register/model/user_model.dart';
+import '../../auth/register/model/register_admin_request.dart';
 import '../../auth/register/repos/register_repository.dart';
 import 'confirm_subscription_state.dart';
 
 class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
-  ConfirmSubscriptionCubit() : super(const ConfirmSubscriptionState.initial());
+  ConfirmSubscriptionCubit() : super(const ConfirmSubscriptionState.initial()) {
+    final role = getIt<SharedPreferences>().getString(AppConstants.userRole);
+    isAdmin = (role?.toLowerCase() == 'admin');
+  }
   final RegisterRepository repo = RegisterRepository(getIt<ApiService>());
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool isSendImages = false;
   late final UserPlan userPlan;
   final now = DateTime.now();
+  bool isAdmin = false;
 
   final nameController = TextEditingController();
   final ageController = TextEditingController();
@@ -80,14 +87,39 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
     );
   }
 
+  // initializeRole() no longer needed since we set isAdmin in constructor
+
   void subscribe() async {
     emit(const ConfirmSubscriptionState.loading());
-    final result = await repo.addTrainer(getUser());
 
-    result.when(
-      success: (data) => emit(ConfirmSubscriptionState.success(data)),
-      failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
-    );
+    if (isAdmin) {
+      // Build request like subscribe() timing: now and now + duration
+      final start = now;
+      final end = now
+          .add(Duration(days: userPlan.duration!))
+;
+
+      final req = RegisterAdminRequest(
+        userName: nameController.text.trim(),
+        email: emailController.text.trim(),
+        password: passwordController.text,
+        startPackage: start,
+        endPackage: end,
+        packageId: userPlan.id!,
+      );
+
+      final result = await repo.addTrainerByAdmin(req);
+      result.when(
+        success: (data) => emit(ConfirmSubscriptionState.success(data)),
+        failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
+      );
+    } else {
+      final result = await repo.addTrainer(getUser());
+      result.when(
+        success: (data) => emit(ConfirmSubscriptionState.success(data)),
+        failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
+      );
+    }
   }
 
   @override

@@ -47,6 +47,13 @@ class LoginCubit extends Cubit<LoginState> {
       AppConstants.userRole,
       loginResponse.role,
     );
+    // persist dataCompleted flag
+    if (loginResponse.isDataCompleted != null) {
+      await SharedPreferencesHelper.setData(
+        AppConstants.dataCompleted,
+        loginResponse.isDataCompleted!,
+      );
+    }
 
     DioFactory.setTokenIntoHeaderAfterLogin(loginResponse.token!);
   }

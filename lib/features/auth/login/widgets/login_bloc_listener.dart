@@ -70,14 +70,25 @@ class LoginBlocListener extends StatelessWidget {
       );
     } else {
       // إذا لم تكن هناك بيانات اشتراك مؤقتة، استخدم السلوك العادي
-      if (loginResponse.role?.toLowerCase() ==
-          UserRole.Admin.name.toLowerCase()) {
+      final isAdmin =
+          loginResponse.role?.toLowerCase() == UserRole.Admin.name.toLowerCase();
+
+      if (isAdmin) {
         Navigator.pushNamedAndRemoveUntil(
             context, Routes.adminLanding, (arguments) => false);
-      } else {
-        Navigator.pushNamedAndRemoveUntil(
-            context, Routes.rootScreen, (arguments) => false);
+        return;
       }
+
+      // Non-admin: if user data not completed, go to complete data screen
+      if (loginResponse.isDataCompleted == false) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.completeData, (arguments) => false);
+        return;
+      }
+
+      // Otherwise proceed to home
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.rootScreen, (arguments) => false);
     }
   }
 }

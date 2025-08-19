@@ -45,6 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final token = await SharedPreferencesHelper.getString(AppConstants.token);
     final userRole = await SharedPreferencesHelper.getString(AppConstants.userRole);
     final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
+    final isDataCompleted = await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
 
     if (token != null && userRole != null && context.mounted) {
       if (userRole.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
@@ -54,6 +55,17 @@ class _SplashScreenState extends State<SplashScreen> {
               (route) => false,
         );
       } else {
+        // Non-admin: if data not completed, force complete data first
+        if (!isDataCompleted) {
+          if (context.mounted) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.completeData,
+                  (route) => false,
+            );
+          }
+          return;
+        }
         // فحص حالة الاشتراك للمستخدم العادي
         await _checkUserSubscription(userId);
       }

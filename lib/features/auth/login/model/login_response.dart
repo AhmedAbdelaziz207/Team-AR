@@ -7,8 +7,10 @@ class LoginResponse{
   final String? role ;
   final String ? id;
   final bool? isPaid;
+  @JsonKey(name: "dataCompleted")
+  final bool? isDataCompleted; 
 
-  LoginResponse({this.token, this.userName, this.role, this.id,this.isPaid});
+  LoginResponse({this.token, this.userName, this.role, this.id,this.isPaid,this.isDataCompleted});
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) => _$LoginResponseFromJson(json);
 

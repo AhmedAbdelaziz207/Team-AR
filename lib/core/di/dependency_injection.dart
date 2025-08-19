@@ -4,12 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:team_ar/features/payment/logic/payment_cubit.dart';
 import 'package:team_ar/features/payment/repository/payment_repository.dart';
 import 'package:team_ar/features/payment/service/fawaterk_service.dart';
-import 'package:team_ar/features/payment/service/payment_history_service.dart';
-import 'package:team_ar/features/payment/service/payment_retry_service.dart';
 import 'package:team_ar/features/payment/service/payment_security_service.dart';
 import '../../features/auth/login/logic/login_cubit.dart';
 import '../../features/auth/login/repos/login_repository.dart';
 import '../../features/auth/register/logic/register_cubit.dart';
+import '../../features/auth/register/logic/admin_register_cubit.dart';
 import '../../features/auth/register/repos/register_repository.dart';
 import '../../features/confirm_subscription/logic/confirm_subscription_cubit.dart';
 import '../../features/home/admin/logic/trainees_cubit.dart';
@@ -125,6 +124,10 @@ Future<void> setupServiceLocator() async {
         () => RegisterRepository(getIt<ApiService>()));
     getIt.registerFactory<RegisterCubit>(
         () => RegisterCubit(getIt<RegisterRepository>()));
+
+    // Admin Register
+    getIt.registerFactory<AdminRegisterCubit>(
+        () => AdminRegisterCubit(getIt<RegisterRepository>()));
 
     // Confirm Subscription
     getIt.registerFactory<ConfirmSubscriptionCubit>(

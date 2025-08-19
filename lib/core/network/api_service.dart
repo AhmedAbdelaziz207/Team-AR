@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:team_ar/features/auth/login/model/login_response.dart';
 import 'package:team_ar/features/auth/register/model/user_model.dart';
@@ -48,6 +49,12 @@ abstract class ApiService {
   @POST(ApiEndPoints.trainerData)
   Future<RegisterResponse> addTrainer(@Body() FormData body);
 
+  @POST(ApiEndPoints.trainerDataByAdmin)
+  Future<RegisterResponse> addTrainerByAdmin(@Body() Map<String, dynamic> body);
+
+  @PUT(ApiEndPoints.completeUserData)
+  Future<void> completeUserData(@Body() FormData body);
+
   @GET(ApiEndPoints.trainerDataById)
   Future<TrainerModel> getTrainer(@Query("Id") String id);
 
@@ -90,6 +97,7 @@ abstract class ApiService {
 
   @GET("${ApiEndPoints.exercise}/{Id}")
   Future<WorkoutSystemModel> getWorkout(@Path("Id") int id);
+
 
   @DELETE(ApiEndPoints.exercise)
   Future<void> deleteWorkoutSystem(@Query("Id") int id);

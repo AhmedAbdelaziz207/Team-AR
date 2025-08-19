@@ -5,8 +5,10 @@ import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/features/add_workout/model/add_workout_params.dart';
 import 'package:team_ar/features/auth/login/ui/login_screen.dart';
 import 'package:team_ar/features/auth/register/logic/register_cubit.dart';
+import 'package:team_ar/features/auth/register/logic/admin_register_cubit.dart';
 import 'package:team_ar/features/auth/register/model/user_model.dart';
 import 'package:team_ar/features/auth/register/register_screen.dart';
+import 'package:team_ar/features/auth/register/ui/admin_register_screen.dart';
 import 'package:team_ar/features/chat/logic/chat_cubit.dart';
 import 'package:team_ar/features/chat/model/chat_user_model.dart';
 import 'package:team_ar/features/chat/ui/message_screen.dart';
@@ -49,6 +51,8 @@ import '../../features/notification/logic/notification_cubit.dart';
 import '../../features/trainer_register_success/model/register_success_model.dart';
 import '../../features/user_info/trainee_info_screen.dart';
 import '../../features/work_out/ui/exercise_screen.dart';
+import 'package:team_ar/features/complete_data/logic/complete_data_cubit.dart';
+import 'package:team_ar/features/complete_data/ui/complete_data_screen.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings? settings) {
@@ -235,6 +239,13 @@ class AppRouter {
             child: ChangePasswordScreen(),
           ),
         );
+      case Routes.completeData:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => CompleteDataCubit(),
+            child: const CompleteDataScreen(),
+          ),
+        );
       case Routes.adminUserMeals:
         final userId = settings?.arguments as String;
         return MaterialPageRoute(
@@ -262,6 +273,14 @@ class AppRouter {
           builder: (context) => BlocProvider(
             create: (context) => getIt<NotificationCubit>(),
             child: const NotificationScreen(),
+          ),
+        );
+
+      case Routes.adminAddUser:
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => getIt<AdminRegisterCubit>(),
+            child: const AdminRegisterScreen(),
           ),
         );
 
