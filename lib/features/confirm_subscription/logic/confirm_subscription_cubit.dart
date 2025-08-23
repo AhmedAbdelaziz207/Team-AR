@@ -91,32 +91,38 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
 
   void subscribe() async {
     emit(const ConfirmSubscriptionState.loading());
-
-    if (isAdmin) {
+    log("Subscribe new user");
       // Build request like subscribe() timing: now and now + duration
       final start = now;
       final end = now
           .add(Duration(days: userPlan.duration!))
 ;
 
-      final req = RegisterAdminRequest(
-        userName: nameController.text.trim(),
-        email: emailController.text.trim(),
-        password: passwordController.text,
-        startPackage: start,
-        endPackage: end,
-        packageId: userPlan.id!,
-      );
+    final req = RegisterAdminRequest(
+      userName: nameController.text.trim(),
+      email: emailController.text.trim(),
+      password: passwordController.text,
+      startPackage: start,
+      endPackage: end,
+      packageId: userPlan.id!,
+    );
+    if (isAdmin) {
 
       final result = await repo.addTrainerByAdmin(req);
       result.when(
-        success: (data) => emit(ConfirmSubscriptionState.success(data)),
+        success: (data) async {
+          emit(ConfirmSubscriptionState.success(data));
+          await updateUserPayment(data.id!);
+        },
         failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
       );
     } else {
-      final result = await repo.addTrainer(getUser());
+
+      final result = await repo.addTrainerByAdmin(req);
       result.when(
-        success: (data) => emit(ConfirmSubscriptionState.success(data)),
+        success: (data) async {
+          emit(ConfirmSubscriptionState.success(data));
+        },
         failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
       );
     }
@@ -139,5 +145,11 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
     infectionController.dispose();
     genderController.dispose();
     return super.close();
+  }
+  
+  updateUserPayment(String userId) async {
+  log("Update user payment");
+    emit(const ConfirmSubscriptionState.loading());
+    await repo.updateUserPayment(userId);
   }
 }

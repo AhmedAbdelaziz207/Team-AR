@@ -99,7 +99,6 @@ class PaymentCubit extends Cubit<PaymentState> {
   Future<void> createPayment({
     required String customerName,
     required String customerEmail,
-    required String customerPhone,
     required UserPlan plan,
     required String userId,
     required int paymentMethodId,
@@ -110,18 +109,12 @@ class PaymentCubit extends Cubit<PaymentState> {
     final validationResult = PaymentValidator.validatePaymentData(
       customerName: customerName,
       customerEmail: customerEmail,
-      customerPhone: customerPhone,
     );
 
     if (!validationResult.isValid) {
       emit(PaymentError(validationResult.errors.join('\n')));
       return;
     }
-
-    debugPrint('=== بداية إنشاء دفعة جديدة ===');
-    debugPrint('معرف المستخدم: $userId');
-    debugPrint('طريقة الدفع: $paymentMethodId');
-    debugPrint('الباقة: ${plan.name} - ${plan.newPrice} جنيه');
 
     emit(PaymentLoading());
 
@@ -132,7 +125,6 @@ class PaymentCubit extends Cubit<PaymentState> {
       final response = await _repository.createPayment(
         customerName: customerName.trim(),
         customerEmail: customerEmail.trim(),
-        customerPhone: customerPhone.trim(),
         plan: plan,
         userId: userId,
         paymentMethodId: paymentMethodId,

@@ -22,19 +22,27 @@ class LoginBlocListener extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<LoginCubit, LoginState>(
       listenWhen: (previous, current) =>
-          current is LoginFailure || current is LoginSuccess,
+          current is LoginFailure || current is LoginSuccess || current is NavigateToCompleteData,
       listener: (BuildContext context, LoginState state) {
-        state.whenOrNull(loginFailure: (apiErrorModel) {
-          {
+        state.whenOrNull(
+          loginFailure: (apiErrorModel) {
             showCustomDialog(
               context,
               title: AppLocalKeys.loginError.tr(),
               message: apiErrorModel.getErrorsMessage() ?? '',
             );
-          }
-        }, loginSuccess: (loginResponse) {
-          navigateToHomeScreen(context, loginResponse);
-        });
+          }, 
+          loginSuccess: (loginResponse) {
+            navigateToHomeScreen(context, loginResponse);
+          },
+          navigateToCompleteData: (loginResponse) {
+            Navigator.pushNamedAndRemoveUntil(
+              context, 
+              Routes.completeData, 
+              (route) => false
+            );
+          },
+        );
       },
       child: SizedBox(
         height: 20.h,

@@ -9,7 +9,7 @@ import 'package:team_ar/features/home/user/logic/user_state.dart';
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super(const UserState.initial());
   final TraineesRepository repo = TraineesRepository(getIt<ApiService>());
-  
+
   // إضافة متغير لتخزين بيانات المستخدم
   TraineeModel? _cachedUserData;
   bool _isDataLoaded = false;
@@ -20,7 +20,7 @@ class UserCubit extends Cubit<UserState> {
       emit(UserState.success(_cachedUserData!));
       return;
     }
-    
+
     emit(const UserState.loading());
 
     final result = await repo.getLoggedUser(id);
@@ -36,7 +36,7 @@ class UserCubit extends Cubit<UserState> {
           emit(UserState.failure(error.getErrorsMessage() ?? "")),
     );
   }
-  
+
   // إضافة دالة لإعادة تحميل البيانات عند الحاجة
   void refreshUserData(String id) async {
     _isDataLoaded = false;
@@ -76,8 +76,10 @@ class UserCubit extends Cubit<UserState> {
   }
 
   updateUserPackage(userId, packageId) async {
-    final result = await repo
-        .updateUserPackage({"userId": userId, "packageId": packageId});
+    final result = await repo.updateUserPackage({
+      "userId": userId,
+      "packageId": packageId,
+    });
 
     if (isClosed) return;
 

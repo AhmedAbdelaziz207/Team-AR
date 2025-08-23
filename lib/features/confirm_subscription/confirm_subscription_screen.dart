@@ -98,9 +98,8 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                       value: isSendImages,
                       onChanged: (value) {
                         isSendImages = value!;
-                        context
-                            .read<ConfirmSubscriptionCubit>()
-                            .isSendImages = isSendImages;
+                        context.read<ConfirmSubscriptionCubit>().isSendImages =
+                            isSendImages;
                         setState(() {});
                       },
                     ),
@@ -147,6 +146,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                                 } else {
                                   // توجيه المستخدم إلى صفحة تسجيل الدخول أولاً
                                   // حفظ بيانات المستخدم مؤقتاً
+                                //   cubit.subscribe();
                                   final userData = {
                                     'name': cubit.nameController.text,
                                     'email': cubit.emailController.text,
@@ -172,7 +172,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
 
                                   // التوجيه إلى صفحة الدفع بدلاً من تسجيل الدخول
                                   Navigator.push(
-                                    context,
+                                    context,  
                                     MaterialPageRoute(
                                       builder: (context) => PaymentScreen(
                                         plan: widget.userPlan,

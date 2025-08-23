@@ -32,7 +32,8 @@ class ChatCubit extends Cubit<ChatState> {
       final cachedChats = await _chatStorage.getUsers();
 
       if (cachedChats.isNotEmpty) {
-        emit(GetChatsSuccess(chats: cachedChats, isFromCache: true));
+        if (!isClosed)
+          emit(GetChatsSuccess(chats: cachedChats, isFromCache: true));
       } else {
         final errorMessage = ApiErrorHandler.handle(e).getErrorsMessage();
         emit(GetChatsFailure(message: errorMessage.toString()));
@@ -50,14 +51,15 @@ class ChatCubit extends Cubit<ChatState> {
       // حفظ البيانات في التخزين المؤقت
       await _chatStorage.saveMessages(id, chats);
 
-      emit(GetChatContentSuccess(chatContent: chats));
+      if (!isClosed) emit(GetChatContentSuccess(chatContent: chats));
     } catch (e) {
       // في حالة فشل الاتصال، استرجاع البيانات من التخزين المؤقت
       final cachedMessages = await _chatStorage.getMessages(id);
 
       if (cachedMessages.isNotEmpty) {
-        emit(GetChatContentSuccess(
-            chatContent: cachedMessages, isFromCache: true));
+        if (!isClosed)
+          emit(GetChatContentSuccess(
+              chatContent: cachedMessages, isFromCache: true));
       } else {
         final errorMessage = ApiErrorHandler.handle(e).getErrorsMessage();
         emit(GetChatContentFailed(message: errorMessage.toString()));
@@ -73,15 +75,16 @@ class ChatCubit extends Cubit<ChatState> {
         "message": message,
         "receiverId": receiverId,
       });
-      emit(SendMessageSuccess());
+      if (!isClosed) emit(SendMessageSuccess());
     } catch (e) {
       final errorMessage = ApiErrorHandler.handle(e).getErrorsMessage();
-      emit(SendMessageFailed(message: errorMessage.toString()));
+      if (!isClosed) emit(SendMessageFailed(message: errorMessage.toString()));
     }
   }
 
   // حفظ رسالة محلياً (تستخدم عند إرسال رسالة جديدة)
   Future<void> saveMessageLocally(ChatMessageModel message) async {
     await _chatStorage.addMessage(message.receiverId!, message);
+    if (!isClosed) emit(SendMessageSuccess());
   }
 }

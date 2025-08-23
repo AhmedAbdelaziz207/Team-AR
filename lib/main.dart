@@ -109,15 +109,20 @@ void main() async {
     await setupServiceLocator();
 
     final token = await SharedPreferencesHelper.getString(AppConstants.token);
-    final userRole =
-    await SharedPreferencesHelper.getString(AppConstants.userRole);
+    final userRole = await SharedPreferencesHelper.getString(AppConstants.userRole);
+    final isDataCompleted = await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
 
     String initialRoute;
     if (token != null && userRole != null) {
       if (userRole.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
         initialRoute = Routes.adminLanding;
       } else {
-        initialRoute = Routes.rootScreen;
+        // Check if trainer user needs to complete data
+        if (userRole.toLowerCase() == 'trainer' && !isDataCompleted) {
+          initialRoute = Routes.completeData;
+        } else {
+          initialRoute = Routes.rootScreen;
+        }
       }
     } else if (await SharedPreferencesHelper.getString(AppConstants.language) != null) {
       initialRoute = Routes.login;

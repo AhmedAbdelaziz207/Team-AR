@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:team_ar/core/network/api_result.dart';
 import 'package:team_ar/core/network/api_service.dart';
@@ -17,7 +19,6 @@ class RegisterRepository {
     try {
       final response = await apiService.addTrainer(data);
       return ApiResult.success(response);
-
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
@@ -34,4 +35,13 @@ class RegisterRepository {
     }
   }
 
+  Future<ApiResult<void>> updateUserPayment(String userId) async {
+    try {
+      final response = await apiService.updateUserPayment(userId);
+      return ApiResult.success(response);
+    } catch (e) {
+      log("Upadte user payment failed");
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
 }

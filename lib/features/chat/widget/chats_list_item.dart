@@ -4,8 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/features/chat/model/chat_user_model.dart';
-
-import '../../auth/register/model/user_model.dart';
 import '../logic/chat_cubit.dart';
 
 class ChatsListItem extends StatelessWidget {

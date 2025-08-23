@@ -27,4 +27,5 @@ class ApiEndPoints {
   static const deleteUser = "api/Account/DeleteUser";
   static const trainerDataByAdmin = "api/Account/AdminRegistration";
   static const completeUserData = "api/Account/CompleteRegistration";
+  static const updateUserPayment = "/api/Account/UpdateUserPayemnt";
 }

@@ -33,9 +33,17 @@ class AdminRegisterCubit extends Cubit<RegisterState> {
     final result = await _repo.addTrainerByAdmin(req);
     if (isClosed) return;
     result.when(
-      success: (data) => emit(RegisterState.success(data)),
+      success: (data) async {
+        emit(RegisterState.success(data));
+       await updateUserPayment(data.id!);
+      },
       failure: (error) => emit(RegisterState.failure(error)),
     );
+  }
+
+  Future<void> updateUserPayment(String userId) async {
+    emit(const RegisterState.loading());
+    await _repo.updateUserPayment(userId);
   }
 
   @override

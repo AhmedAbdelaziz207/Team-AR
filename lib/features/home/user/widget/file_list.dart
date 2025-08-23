@@ -32,6 +32,13 @@ class FilesList extends StatelessWidget {
         "description": "كتيب بدائل الطعام ",
         "icon": "assets/images/dish.png",
         "url":
+            "https://drive.google.com/file/d/1HuFY2yZ_hcHPyaw5zNst1xG6WF7tBkH-/view?usp=sharing"
+      },
+      {
+        "title": AppLocalKeys.diet.tr(),
+        "description": "2 كتيب بدائل الطعام ",
+        "icon": "assets/images/dish.png",
+        "url":
             "https://drive.google.com/file/d/1HdJndGM9nn_1uEkrKLFg0Ln-uLhr-BUU/view?usp=drive_link"
       },
       {
@@ -40,6 +47,13 @@ class FilesList extends StatelessWidget {
         "icon": "assets/images/dish.png",
         "url":
             "https://drive.google.com/file/d/1ZvU20xVbAdlgwO4bsEjdXXmQgNxYmZny/view?usp=sharing",
+      },
+      {
+        "title": AppLocalKeys.training.tr(),
+        "description": "2 كتيب الاحماء",
+        "icon": "assets/images/dish.png",
+        "url":
+            "https://drive.google.com/file/d/1YXhpJKpHMgoXMgqPfzUBBsAU0B2-O9Z1/view?usp=sharing",
       },
       {
         "title": AppLocalKeys.tipsAndGuides.tr(),

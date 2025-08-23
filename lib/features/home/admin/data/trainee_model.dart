@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:json_annotation/json_annotation.dart';
 
@@ -18,7 +17,6 @@ class TraineeModel {
   final int? duration;
   final int? oldPrice;
   final int? newPrice;
-  @JsonKey(name: "Role")
   final String? role;
   final int? exerciseId;
   final String? gender;
@@ -34,6 +32,19 @@ class TraineeModel {
   final String? address;
   final String? status;
   final int? packageId;
+  final String? dailyWork;
+  @JsonKey(name: 'areYouSomker')
+  final String? areYouSmoker;
+  final String? aimOfJoin;
+  final String? anyPains;
+  final String? allergyOfFood;
+  final String? foodSystem;
+  final int? numberOfMeals;
+  final String? lastExercise;
+  final String? anyInfection;
+  final String? abilityOfSystemMoney;
+  @JsonKey(name: 'numberOfDayes')
+  final int? numberOfDays;
 
   TraineeModel({
     this.phoneNumber,
@@ -46,6 +57,17 @@ class TraineeModel {
     this.remindDays,
     this.image,
     this.phone,
+    this.dailyWork,
+    this.areYouSmoker,
+    this.aimOfJoin,
+    this.anyPains,
+    this.allergyOfFood,
+    this.foodSystem,
+    this.numberOfMeals,
+    this.lastExercise,
+    this.anyInfection,
+    this.abilityOfSystemMoney,
+    this.numberOfDays,
     required this.id,
     required this.userName,
     required this.email,
