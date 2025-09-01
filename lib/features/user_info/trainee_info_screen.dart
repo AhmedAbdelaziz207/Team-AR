@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,7 +7,6 @@ import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/core/widgets/plans_list_card.dart';
-import 'package:team_ar/features/auth/register/model/user_model.dart';
 import 'package:team_ar/features/home/admin/data/trainee_model.dart';
 import 'package:team_ar/features/home/user/logic/user_cubit.dart';
 import 'package:team_ar/features/home/user/logic/user_state.dart';
@@ -30,7 +28,7 @@ class TraineeInfoScreen extends StatefulWidget {
 class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
   @override
   void initState() {
-    context.read<UserCubit>().getTrainee(
+    context.read<UserCubit>().getUser(
           widget.traineeModel?.id ?? "",
         );
     context.read<UserPlansCubit>().getUserPlan(
@@ -68,11 +66,7 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
                 _buildSectionTitle(context, AppLocalKeys.plan.tr()),
                 IconButton(
                     onPressed: () {
-                      showUpdatePlanDialog(context, () {
-                        context
-                            .read<UserCubit>()
-                            .updateUserPackage(trainee.id, trainee.packageId);
-                      });
+                      _showPlanSelectionBottomSheet(context);
                     },
                     icon: Icon(
                       Icons.replay_circle_filled,
@@ -105,7 +99,7 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
               buildWhen: (_, state) =>
                   state is UserLoading ||
                   state is UserFailure ||
-                  state is GetTrainee,
+                  state is UserSuccess,
               listener: (context, state) {
                 if (state is UpdateUserSuccess) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -134,8 +128,39 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
                   return Center(child: Text(state.errorMessage));
                 }
 
-                if (state is GetTrainee) {
-                  trainee = state.userData;
+                if (state is UserSuccess) {
+                  // Map TraineeModel (basic user data) to TrainerModel used by UI
+                  final user = state.userData;
+                  trainee = TrainerModel(
+                    id: user.id,
+                    userName: user.userName,
+                    age: user.age,
+                    image: user.image,
+                    address: user.address,
+                    phone: user.phone,
+                    email: user.email,
+                    password: user.password,
+                    long: user.long,
+                    weight: user.weight,
+                    dailyWork: user.dailyWork,
+                    areYouSmoker: user.areYouSmoker,
+                    aimOfJoin: user.aimOfJoin,
+                    anyPains: user.anyPains,
+                    allergyOfFood: user.allergyOfFood,
+                    foodSystem: user.foodSystem,
+                    numberOfMeals: user.numberOfMeals,
+                    lastExercise: user.lastExercise,
+                    anyInfection: user.anyInfection,
+                    abilityOfSystemMoney: user.abilityOfSystemMoney,
+                    numberOfDays: user.numberOfDays,
+                    gender: user.gender,
+                    startPackage: user.startPackage,
+                    endPackage: user.endPackage,
+                    packageId: user.packageId,
+                    exerciseId: user.exerciseId?.toString(),
+                    role: user.role,
+                    imageURL: user.image,
+                  );
 
                   log("Trainee: ${trainee.userName.toString()}");
 
@@ -155,7 +180,7 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
                           children: [
                             _buildInfoText(
                               AppLocalKeys.name.tr(),
-                              state.userData.userName ?? "",
+                              trainee.userName ?? "",
                               context,
                             ),
                             _buildInfoText(AppLocalKeys.gender.tr(),
@@ -290,11 +315,32 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
       ),
       floatingActionButton: BlocBuilder<UserCubit, UserState>(
         builder: (context, state) {
-          if (state is GetTrainee) {
-            final trainee = state.userData;
+          if (state is UserSuccess) {
+            // Use the mapped trainee instance created in the main builder if available
+            // Fallback to mapping here as well in case of rebuild differences
+            final user = state.userData;
+            final mappedTrainee = TrainerModel(
+              id: user.id,
+              userName: user.userName,
+              age: user.age,
+              image: user.image,
+              address: user.address,
+              phone: user.phone,
+              email: user.email,
+              password: user.password,
+              long: user.long,
+              weight: user.weight,
+              gender: user.gender,
+              startPackage: user.startPackage,
+              endPackage: user.endPackage,
+              packageId: user.packageId,
+              exerciseId: user.exerciseId?.toString(),
+              role: user.role,
+              imageURL: user.image,
+            );
 
             return FloatingMenu(
-              trainee: trainee,
+              trainee: mappedTrainee,
               exerciseId: widget.traineeModel?.exerciseId,
             );
           }
@@ -347,6 +393,218 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
                     color: AppColors.black,
                     fontSize: 16.sp,
                   ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPlanSelectionBottomSheet(BuildContext context) {
+    final userCubit = context.read<UserCubit>();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => BlocProvider(
+        create: (context) => UserPlansCubit()..getUserPlans(),
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      "اختر خطة جديدة",
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Cairo",
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: BlocBuilder<UserPlansCubit, UserPlansState>(
+                  builder: (context, state) {
+                    return state.when(
+                      initial: () =>
+                          const Center(child: Text("ابدأ بتحميل الخطط")),
+                      plansLoading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      plansLoaded: (plans) => ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: plans.length,
+                        itemBuilder: (context, index) {
+                          final plan = plans[index];
+                          return _buildPlanCard(context, plan, userCubit);
+                        },
+                      ),
+                      plansFailure: (error) => Center(
+                        child: Text(
+                          "خطأ في تحميل الخطط: ${error.message}",
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      addingPlan: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      planAdded: () =>
+                          const Center(child: Text("تم إضافة الخطة")),
+                      planDeleted: () =>
+                          const Center(child: Text("تم حذف الخطة")),
+                      planEdited: () =>
+                          const Center(child: Text("تم تعديل الخطة")),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlanCard(BuildContext context, UserPlan plan, UserCubit userCubit) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15),
+        onTap: () => _selectPlan(context, plan, userCubit),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    plan.name ?? "خطة غير محددة",
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Cairo",
+                    ),
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      "${plan.duration ?? 0} يوم",
+                      style: TextStyle(
+                        color: AppColors.primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  if (plan.oldPrice != null && plan.oldPrice! > 0) ...[
+                    Text(
+                      "${plan.oldPrice} جنيه",
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.grey,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                  ],
+                  Text(
+                    "${plan.newPrice ?? 0} جنيه",
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _selectPlan(BuildContext context, UserPlan plan, UserCubit userCubit) {
+    Navigator.pop(context);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        title: const Text(
+          "تأكيد اختيار الخطة",
+          style: TextStyle(fontFamily: "Cairo"),
+        ),
+        content: Text(
+          "هل تريد تحديث اشتراك ${trainee.userName} إلى خطة ${plan.name}؟",
+          style: const TextStyle(fontFamily: "Cairo"),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              AppLocalKeys.cancel.tr(),
+              style: const TextStyle(fontFamily: "Cairo"),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              userCubit.updateUserPackage(trainee.id, plan.id);
+            },
+            child: Text(
+              AppLocalKeys.ok.tr(),
+              style:
+                  const TextStyle(color: Colors.white, fontFamily: "Cairo"),
             ),
           ),
         ],

@@ -15,7 +15,7 @@ class TraineeCubit extends Cubit<TraineeState> {
 
     final response = await traineesRepository.getNewTrainees();
     log("trainees Response: $response");
-
+    if (isClosed) return;
     response.whenOrNull(
       success: (trainees) => emit(
         TraineeState.success(trainees),
@@ -33,7 +33,7 @@ class TraineeCubit extends Cubit<TraineeState> {
 
     final response = await traineesRepository.getAllTrainees();
     log("trainees Response: $response");
-
+    if (isClosed) return;
     response.whenOrNull(
       success: (trainees) {
         final normalUsers = trainees
@@ -56,7 +56,7 @@ class TraineeCubit extends Cubit<TraineeState> {
 
     final response = await traineesRepository.getUsersAboutToExpired();
     log("trainees Response: $response");
-
+    if (isClosed) return;
     response.whenOrNull(
       success: (trainees) => emit(
         TraineeState.success(trainees),

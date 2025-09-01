@@ -64,7 +64,6 @@ class FawaterkService {
           'first_name': request.customer.firstName,
           'last_name': request.customer.lastName,
           'email': request.customer.email,
-          'phone': request.customer.phone,
           'address': request.customer.address,
         },
         'redirectionUrls': {

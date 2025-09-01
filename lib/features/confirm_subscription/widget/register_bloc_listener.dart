@@ -37,6 +37,7 @@ class RegisterBlocListener extends StatelessWidget {
           showCustomDialog(
             context,
             onConfirm: () async {
+            
               final role = await SharedPreferencesHelper.getString(
                   AppConstants.userRole);
 

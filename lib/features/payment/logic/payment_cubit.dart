@@ -49,7 +49,14 @@ class PaymentCubit extends Cubit<PaymentState> {
           response.data!.isNotEmpty) {
         debugPrint('تم تحميل ${response.data!.length} طريقة دفع مدعومة');
 
-        final sortedMethods = _sortPaymentMethods(response.data!);
+        // Filter to MasterCard only
+        final masterOnly = _filterToMastercard(response.data!);
+        if (masterOnly.isEmpty) {
+          emit(PaymentMethodsError('طريقة الدفع MasterCard غير متاحة حالياً'));
+          return;
+        }
+
+        final sortedMethods = _sortPaymentMethods(masterOnly);
         emit(PaymentMethodsLoaded(sortedMethods));
       } else {
         final errorMessage = response.message.isNotEmpty
@@ -81,10 +88,19 @@ class PaymentCubit extends Cubit<PaymentState> {
     return methods;
   }
 
+  // إظهار MasterCard فقط
+  List<PaymentMethod> _filterToMastercard(List<PaymentMethod> methods) {
+    return methods.where((m) {
+      if (m.type == PaymentMethodType.mastercard) return true;
+      final nEn = m.nameEn.toLowerCase();
+      final nAr = m.nameAr.toLowerCase();
+      return nEn.contains('mastercard') || nEn.contains('master') || nAr.contains('ماستر');
+    }).toList();
+  }
+
   Future<void> createPayment({
     required String customerName,
     required String customerEmail,
-    required String customerPhone,
     required UserPlan plan,
     required String userId,
     required int paymentMethodId,
@@ -96,18 +112,12 @@ class PaymentCubit extends Cubit<PaymentState> {
     final validationResult = PaymentValidator.validatePaymentData(
       customerName: customerName,
       customerEmail: customerEmail,
-      customerPhone: customerPhone,
     );
 
     if (!validationResult.isValid) {
       emit(PaymentError(validationResult.errors.join('\n')));
       return;
     }
-
-    debugPrint('=== بداية إنشاء دفعة جديدة ===');
-    debugPrint('معرف المستخدم: $userId');
-    debugPrint('طريقة الدفع: $paymentMethodId');
-    debugPrint('الباقة: ${plan.name} - ${plan.newPrice} جنيه');
 
     emit(PaymentLoading());
 
@@ -118,7 +128,6 @@ class PaymentCubit extends Cubit<PaymentState> {
       final response = await _repository.createPayment(
         customerName: customerName.trim(),
         customerEmail: customerEmail.trim(),
-        customerPhone: customerPhone.trim(),
         plan: plan,
         userId: userId,
         paymentMethodId: paymentMethodId,

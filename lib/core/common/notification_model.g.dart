@@ -49,6 +49,7 @@ const _$NotificationTypeEnumMap = {
   NotificationType.paymentConfirmation: 'paymentConfirmation',
   NotificationType.newContent: 'newContent',
   NotificationType.promotion: 'promotion',
+  NotificationType.chatMessage: 'chatMessage',
   NotificationType.newMember: 'newMember',
   NotificationType.bookingRequest: 'bookingRequest',
   NotificationType.newReview: 'newReview',

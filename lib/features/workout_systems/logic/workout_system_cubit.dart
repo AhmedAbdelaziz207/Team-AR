@@ -35,6 +35,7 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
         // تخزين البيانات في الذاكرة المؤقتة
         _cachedWorkoutSystems = data;
         _isDataLoaded = true;
+        if (isClosed) return;
         emit(WorkoutSystemState.success(data));
       },
       failure: (error) => emit(WorkoutSystemState.failure(error)),

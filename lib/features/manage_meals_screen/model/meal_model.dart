@@ -12,6 +12,7 @@ class DietMealModel extends Equatable {
   final double? numOfGrams;
   final double? numOfCalories;
   final double? numOfProtein;
+  @JsonKey(name: "numOfCarps")
   final double? numOfCarbs;
   final double? numOfFats;
   final int? foodCategory;

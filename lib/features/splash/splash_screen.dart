@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/routing/routes.dart';
@@ -45,6 +47,9 @@ class _SplashScreenState extends State<SplashScreen> {
     final token = await SharedPreferencesHelper.getString(AppConstants.token);
     final userRole = await SharedPreferencesHelper.getString(AppConstants.userRole);
     final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
+    final isDataCompleted = await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
+
+log("HandleNavigation: dataCompleted, $isDataCompleted");
 
     if (token != null && userRole != null && context.mounted) {
       if (userRole.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
@@ -54,8 +59,22 @@ class _SplashScreenState extends State<SplashScreen> {
               (route) => false,
         );
       } else {
-        // فحص حالة الاشتراك للمستخدم العادي
-        await _checkUserSubscription(userId);
+        // Non-admin: if trainer and data not completed, force complete data first
+        if (userRole.toLowerCase() == 'trainer'.toLowerCase()) {
+          if (isDataCompleted == false || isDataCompleted == null) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.completeData,
+              (route) => false,
+            );
+            return;
+          } else {
+            await _checkUserSubscription(userId);
+          }
+        } else {
+          // For non-trainer users, proceed with subscription check
+          await _checkUserSubscription(userId);
+        }
       }
     } else {
       if (context.mounted) {

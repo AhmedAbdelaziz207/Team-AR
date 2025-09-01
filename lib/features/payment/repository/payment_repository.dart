@@ -45,7 +45,6 @@ class PaymentRepository {
   Future<PaymentResponse> createPayment({
     required String customerName,
     required String customerEmail,
-    required String customerPhone,
     required UserPlan plan,
     required String userId,
     required int paymentMethodId,
@@ -65,7 +64,6 @@ class PaymentRepository {
           firstName: firstName,
           lastName: lastName.isNotEmpty ? lastName : firstName,
           email: customerEmail,
-          phone: customerPhone,
           address: 'العنوان غير محدد',
         ),
         redirectionUrls: RedirectionUrls(
@@ -167,7 +165,6 @@ class PaymentValidator {
   static ValidationResult validatePaymentData({
     required String customerName,
     required String customerEmail,
-    required String customerPhone,
   }) {
     final errors = <String>[];
 
@@ -184,15 +181,6 @@ class PaymentValidator {
       errors.add('الرجاء إدخال البريد الإلكتروني');
     } else if (!emailRegex.hasMatch(customerEmail.trim())) {
       errors.add('البريد الإلكتروني غير صالح');
-    }
-
-    // التحقق من رقم الهاتف المصري
-    final phoneRegex = RegExp(r'^01[0125]\d{8}$');
-    final cleanPhone = customerPhone.replaceAll(RegExp(r'[^\d]'), '');
-    if (customerPhone.trim().isEmpty) {
-      errors.add('الرجاء إدخال رقم الهاتف');
-    } else if (!phoneRegex.hasMatch(cleanPhone)) {
-      errors.add('رقم الهاتف غير صالح (يجب أن يكون رقم مصري صحيح)');
     }
 
     return ValidationResult(

@@ -17,6 +17,7 @@ class WorkoutCubit extends Cubit<WorkoutState> {
     final result = await repo.getWorkout(workoutId);
 
     log("result: $result");
+    if (isClosed) return;
     result.when(
       success: (data) => emit(WorkoutState.workoutSuccess(data.url)),
       failure: (error) => emit(

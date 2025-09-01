@@ -22,6 +22,7 @@ mixin _$LoginState<T> {
     required TResult Function() loginLoading,
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
+    required TResult Function(LoginResponse data) navigateToCompleteData,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -30,6 +31,7 @@ mixin _$LoginState<T> {
     TResult? Function()? loginLoading,
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
+    TResult? Function(LoginResponse data)? navigateToCompleteData,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -38,6 +40,7 @@ mixin _$LoginState<T> {
     TResult Function()? loginLoading,
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
+    TResult Function(LoginResponse data)? navigateToCompleteData,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -47,6 +50,8 @@ mixin _$LoginState<T> {
     required TResult Function(LoginLoading<T> value) loginLoading,
     required TResult Function(LoginSuccess<T> value) loginSuccess,
     required TResult Function(LoginFailure<T> value) loginFailure,
+    required TResult Function(NavigateToCompleteData<T> value)
+        navigateToCompleteData,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -55,6 +60,7 @@ mixin _$LoginState<T> {
     TResult? Function(LoginLoading<T> value)? loginLoading,
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
+    TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -63,6 +69,7 @@ mixin _$LoginState<T> {
     TResult Function(LoginLoading<T> value)? loginLoading,
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
+    TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -134,6 +141,7 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     required TResult Function() loginLoading,
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
+    required TResult Function(LoginResponse data) navigateToCompleteData,
   }) {
     return loginInitial();
   }
@@ -145,6 +153,7 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     TResult? Function()? loginLoading,
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
+    TResult? Function(LoginResponse data)? navigateToCompleteData,
   }) {
     return loginInitial?.call();
   }
@@ -156,6 +165,7 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     TResult Function()? loginLoading,
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
+    TResult Function(LoginResponse data)? navigateToCompleteData,
     required TResult orElse(),
   }) {
     if (loginInitial != null) {
@@ -171,6 +181,8 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     required TResult Function(LoginLoading<T> value) loginLoading,
     required TResult Function(LoginSuccess<T> value) loginSuccess,
     required TResult Function(LoginFailure<T> value) loginFailure,
+    required TResult Function(NavigateToCompleteData<T> value)
+        navigateToCompleteData,
   }) {
     return loginInitial(this);
   }
@@ -182,6 +194,7 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     TResult? Function(LoginLoading<T> value)? loginLoading,
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
+    TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
   }) {
     return loginInitial?.call(this);
   }
@@ -193,6 +206,7 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     TResult Function(LoginLoading<T> value)? loginLoading,
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
+    TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
     required TResult orElse(),
   }) {
     if (loginInitial != null) {
@@ -251,6 +265,7 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     required TResult Function() loginLoading,
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
+    required TResult Function(LoginResponse data) navigateToCompleteData,
   }) {
     return loginLoading();
   }
@@ -262,6 +277,7 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     TResult? Function()? loginLoading,
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
+    TResult? Function(LoginResponse data)? navigateToCompleteData,
   }) {
     return loginLoading?.call();
   }
@@ -273,6 +289,7 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     TResult Function()? loginLoading,
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
+    TResult Function(LoginResponse data)? navigateToCompleteData,
     required TResult orElse(),
   }) {
     if (loginLoading != null) {
@@ -288,6 +305,8 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     required TResult Function(LoginLoading<T> value) loginLoading,
     required TResult Function(LoginSuccess<T> value) loginSuccess,
     required TResult Function(LoginFailure<T> value) loginFailure,
+    required TResult Function(NavigateToCompleteData<T> value)
+        navigateToCompleteData,
   }) {
     return loginLoading(this);
   }
@@ -299,6 +318,7 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     TResult? Function(LoginLoading<T> value)? loginLoading,
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
+    TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
   }) {
     return loginLoading?.call(this);
   }
@@ -310,6 +330,7 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     TResult Function(LoginLoading<T> value)? loginLoading,
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
+    TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
     required TResult orElse(),
   }) {
     if (loginLoading != null) {
@@ -396,6 +417,7 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     required TResult Function() loginLoading,
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
+    required TResult Function(LoginResponse data) navigateToCompleteData,
   }) {
     return loginSuccess(data);
   }
@@ -407,6 +429,7 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     TResult? Function()? loginLoading,
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
+    TResult? Function(LoginResponse data)? navigateToCompleteData,
   }) {
     return loginSuccess?.call(data);
   }
@@ -418,6 +441,7 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     TResult Function()? loginLoading,
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
+    TResult Function(LoginResponse data)? navigateToCompleteData,
     required TResult orElse(),
   }) {
     if (loginSuccess != null) {
@@ -433,6 +457,8 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     required TResult Function(LoginLoading<T> value) loginLoading,
     required TResult Function(LoginSuccess<T> value) loginSuccess,
     required TResult Function(LoginFailure<T> value) loginFailure,
+    required TResult Function(NavigateToCompleteData<T> value)
+        navigateToCompleteData,
   }) {
     return loginSuccess(this);
   }
@@ -444,6 +470,7 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     TResult? Function(LoginLoading<T> value)? loginLoading,
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
+    TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
   }) {
     return loginSuccess?.call(this);
   }
@@ -455,6 +482,7 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     TResult Function(LoginLoading<T> value)? loginLoading,
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
+    TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
     required TResult orElse(),
   }) {
     if (loginSuccess != null) {
@@ -549,6 +577,7 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     required TResult Function() loginLoading,
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
+    required TResult Function(LoginResponse data) navigateToCompleteData,
   }) {
     return loginFailure(message);
   }
@@ -560,6 +589,7 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     TResult? Function()? loginLoading,
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
+    TResult? Function(LoginResponse data)? navigateToCompleteData,
   }) {
     return loginFailure?.call(message);
   }
@@ -571,6 +601,7 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     TResult Function()? loginLoading,
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
+    TResult Function(LoginResponse data)? navigateToCompleteData,
     required TResult orElse(),
   }) {
     if (loginFailure != null) {
@@ -586,6 +617,8 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     required TResult Function(LoginLoading<T> value) loginLoading,
     required TResult Function(LoginSuccess<T> value) loginSuccess,
     required TResult Function(LoginFailure<T> value) loginFailure,
+    required TResult Function(NavigateToCompleteData<T> value)
+        navigateToCompleteData,
   }) {
     return loginFailure(this);
   }
@@ -597,6 +630,7 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     TResult? Function(LoginLoading<T> value)? loginLoading,
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
+    TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
   }) {
     return loginFailure?.call(this);
   }
@@ -608,6 +642,7 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     TResult Function(LoginLoading<T> value)? loginLoading,
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
+    TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
     required TResult orElse(),
   }) {
     if (loginFailure != null) {
@@ -628,4 +663,167 @@ abstract class LoginFailure<T> implements LoginState<T> {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$LoginFailureImplCopyWith<T, _$LoginFailureImpl<T>> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$NavigateToCompleteDataImplCopyWith<T, $Res> {
+  factory _$$NavigateToCompleteDataImplCopyWith(
+          _$NavigateToCompleteDataImpl<T> value,
+          $Res Function(_$NavigateToCompleteDataImpl<T>) then) =
+      __$$NavigateToCompleteDataImplCopyWithImpl<T, $Res>;
+  @useResult
+  $Res call({LoginResponse data});
+}
+
+/// @nodoc
+class __$$NavigateToCompleteDataImplCopyWithImpl<T, $Res>
+    extends _$LoginStateCopyWithImpl<T, $Res, _$NavigateToCompleteDataImpl<T>>
+    implements _$$NavigateToCompleteDataImplCopyWith<T, $Res> {
+  __$$NavigateToCompleteDataImplCopyWithImpl(
+      _$NavigateToCompleteDataImpl<T> _value,
+      $Res Function(_$NavigateToCompleteDataImpl<T>) _then)
+      : super(_value, _then);
+
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? data = null,
+  }) {
+    return _then(_$NavigateToCompleteDataImpl<T>(
+      null == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
+              as LoginResponse,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$NavigateToCompleteDataImpl<T> implements NavigateToCompleteData<T> {
+  const _$NavigateToCompleteDataImpl(this.data);
+
+  @override
+  final LoginResponse data;
+
+  @override
+  String toString() {
+    return 'LoginState<$T>.navigateToCompleteData(data: $data)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$NavigateToCompleteDataImpl<T> &&
+            (identical(other.data, data) || other.data == data));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, data);
+
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$NavigateToCompleteDataImplCopyWith<T, _$NavigateToCompleteDataImpl<T>>
+      get copyWith => __$$NavigateToCompleteDataImplCopyWithImpl<T,
+          _$NavigateToCompleteDataImpl<T>>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() loginInitial,
+    required TResult Function() loginLoading,
+    required TResult Function(LoginResponse data) loginSuccess,
+    required TResult Function(ApiErrorModel message) loginFailure,
+    required TResult Function(LoginResponse data) navigateToCompleteData,
+  }) {
+    return navigateToCompleteData(data);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? loginInitial,
+    TResult? Function()? loginLoading,
+    TResult? Function(LoginResponse data)? loginSuccess,
+    TResult? Function(ApiErrorModel message)? loginFailure,
+    TResult? Function(LoginResponse data)? navigateToCompleteData,
+  }) {
+    return navigateToCompleteData?.call(data);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? loginInitial,
+    TResult Function()? loginLoading,
+    TResult Function(LoginResponse data)? loginSuccess,
+    TResult Function(ApiErrorModel message)? loginFailure,
+    TResult Function(LoginResponse data)? navigateToCompleteData,
+    required TResult orElse(),
+  }) {
+    if (navigateToCompleteData != null) {
+      return navigateToCompleteData(data);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_LoginInitial<T> value) loginInitial,
+    required TResult Function(LoginLoading<T> value) loginLoading,
+    required TResult Function(LoginSuccess<T> value) loginSuccess,
+    required TResult Function(LoginFailure<T> value) loginFailure,
+    required TResult Function(NavigateToCompleteData<T> value)
+        navigateToCompleteData,
+  }) {
+    return navigateToCompleteData(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_LoginInitial<T> value)? loginInitial,
+    TResult? Function(LoginLoading<T> value)? loginLoading,
+    TResult? Function(LoginSuccess<T> value)? loginSuccess,
+    TResult? Function(LoginFailure<T> value)? loginFailure,
+    TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+  }) {
+    return navigateToCompleteData?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_LoginInitial<T> value)? loginInitial,
+    TResult Function(LoginLoading<T> value)? loginLoading,
+    TResult Function(LoginSuccess<T> value)? loginSuccess,
+    TResult Function(LoginFailure<T> value)? loginFailure,
+    TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    required TResult orElse(),
+  }) {
+    if (navigateToCompleteData != null) {
+      return navigateToCompleteData(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class NavigateToCompleteData<T> implements LoginState<T> {
+  const factory NavigateToCompleteData(final LoginResponse data) =
+      _$NavigateToCompleteDataImpl<T>;
+
+  LoginResponse get data;
+
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$NavigateToCompleteDataImplCopyWith<T, _$NavigateToCompleteDataImpl<T>>
+      get copyWith => throw _privateConstructorUsedError;
 }

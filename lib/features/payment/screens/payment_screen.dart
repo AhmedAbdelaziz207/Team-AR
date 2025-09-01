@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -154,6 +155,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    log("Open Payment Screen");
+
     return BlocProvider(
       create: (context) => _paymentCubit,
       child: Scaffold(
@@ -175,7 +178,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ),
     );
   }
-
 
   void _handlePaymentStateChanges(BuildContext context, PaymentState state) {
     if (state is PaymentError) {
@@ -282,7 +284,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
     _paymentCubit.createPayment(
       customerName: widget.customerName,
       customerEmail: widget.customerEmail,
-      customerPhone: widget.customerPhone,
       plan: widget.plan,
       userId: userId,
       paymentMethodId: paymentMethodId,
@@ -383,7 +384,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
             SizedBox(height: 16.h),
             _buildInfoRow('الاسم:', widget.customerName),
             _buildInfoRow('البريد الإلكتروني:', widget.customerEmail),
-            _buildInfoRow('رقم الهاتف:', widget.customerPhone),
           ],
         ),
       ),
@@ -558,7 +558,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   customerPassword: _tempUserData?['Password'] ?? '',
                 );
               });
-            } else if (lowerUrl.contains('fail') || lowerUrl.contains('error')) {
+            } else if (lowerUrl.contains('fail') ||
+                lowerUrl.contains('error')) {
               debugPrint('تم اكتشاف فشل الدفع: $url');
               _navigateToPaymentResult(
                 isSuccess: false,
@@ -600,7 +601,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     // تحميل الرابط
     controller.loadRequest(Uri.parse(paymentData.redirectTo!));
-return WebViewWidget(controller: controller);
+    return WebViewWidget(controller: controller);
   }
 
   Widget _buildPaymentInstructions(PaymentData paymentData) {
@@ -634,8 +635,10 @@ return WebViewWidget(controller: controller);
             ),
             child: Column(
               children: [
-                _buildInfoRow('رقم الفاتورة:', paymentData.invoiceId.toString()),
-                _buildInfoRow('المبلغ:', '${paymentData.amount} ${paymentData.currency}'),
+                _buildInfoRow(
+                    'رقم الفاتورة:', paymentData.invoiceId.toString()),
+                _buildInfoRow(
+                    'المبلغ:', '${paymentData.amount} ${paymentData.currency}'),
                 if (paymentData.expireDate != null)
                   _buildInfoRow('تنتهي في:', paymentData.expireDate!),
               ],
@@ -645,7 +648,8 @@ return WebViewWidget(controller: controller);
           SizedBox(height: 16.h),
 
           // تعليمات خاصة بكل طريقة دفع
-          if (paymentData.fawryCode != null) _buildFawryInstructions(paymentData),
+          if (paymentData.fawryCode != null)
+            _buildFawryInstructions(paymentData),
 
           SizedBox(height: 32.h),
 

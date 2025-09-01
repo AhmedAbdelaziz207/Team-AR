@@ -13,4 +13,6 @@ class LoginState<T> with _$LoginState<T> {
   const factory LoginState.loginSuccess(LoginResponse data) = LoginSuccess;
 
   const factory LoginState.loginFailure(ApiErrorModel message) = LoginFailure;
+
+  const factory LoginState.navigateToCompleteData(LoginResponse data) = NavigateToCompleteData;
 }

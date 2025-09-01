@@ -28,7 +28,13 @@ class LoginCubit extends Cubit<LoginState> {
 
         await saveUserData(loginResponse);
 
-        emit(LoginState.loginSuccess(data));
+        // Check if user data is completed and user role is 'user'
+        if (loginResponse.role?.toLowerCase() == 'trainer'.toLowerCase() && 
+            (loginResponse.isDataCompleted == null || loginResponse.isDataCompleted == false)) {
+          emit(LoginState.navigateToCompleteData(data));
+        } else {
+          emit(LoginState.loginSuccess(data));
+        }
       },
       failure: (apiErrorModel) => emit(LoginState.loginFailure(apiErrorModel)),
     );
@@ -47,7 +53,32 @@ class LoginCubit extends Cubit<LoginState> {
       AppConstants.userRole,
       loginResponse.role,
     );
+    // persist dataCompleted flag
+      await SharedPreferencesHelper.setData(
+        AppConstants.dataCompleted,
+        loginResponse.isDataCompleted!,
+      );
+    
 
     DioFactory.setTokenIntoHeaderAfterLogin(loginResponse.token!);
+  }
+
+  /// Check data completion status on app startup
+  void checkDataCompletionOnStartup() async {
+    final token = await SharedPreferencesHelper.getString(AppConstants.token);
+    final userRole = await SharedPreferencesHelper.getString(AppConstants.userRole);
+    final dataCompleted = await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
+    final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
+
+    if (token != null && userRole?.toLowerCase() == 'trainer'.toLowerCase() && !dataCompleted) {
+      // Create a mock LoginResponse for navigation
+      final mockLoginResponse = LoginResponse(
+        token: token,
+        role: userRole,
+        id: userId,
+        isDataCompleted: dataCompleted,
+      );
+      emit(LoginState.navigateToCompleteData(mockLoginResponse));
+    }
   }
 }

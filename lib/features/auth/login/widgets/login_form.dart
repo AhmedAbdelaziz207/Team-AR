@@ -23,18 +23,18 @@ class LoginForm extends StatelessWidget {
         children: [
           const EmailAndPasswordWidget(),
           SizedBox(height: 12.h),
-          // Forgot Password
-          InkWell(
-            onTap: () {},
-            child: Text(
-              AppLocalKeys.forgotPassword.tr(),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.grey,
-                    decoration: TextDecoration.underline,
-                  ),
-            ),
-          ),
+        //   // Forgot Password
+        //   InkWell(
+        //     onTap: () {},
+        //     child: Text(
+        //       AppLocalKeys.forgotPassword.tr(),
+        //       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        //             fontWeight: FontWeight.w500,
+        //             color: AppColors.grey,
+        //             decoration: TextDecoration.underline,
+        //           ),
+        //     ),
+        //   ),
 
           SizedBox(height: 32.h),
 

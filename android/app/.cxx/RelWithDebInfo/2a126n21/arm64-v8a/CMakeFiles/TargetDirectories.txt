@@ -1,0 +1,2 @@
+C:/Users/ahmed/AndroidStudioProjects/Team-AR v2/android/app/.cxx/RelWithDebInfo/2a126n21/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/ahmed/AndroidStudioProjects/Team-AR v2/android/app/.cxx/RelWithDebInfo/2a126n21/arm64-v8a/CMakeFiles/rebuild_cache.dir
