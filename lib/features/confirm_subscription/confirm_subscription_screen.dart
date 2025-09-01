@@ -127,69 +127,96 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                     child: state is SubscriptionLoading
                         ? const CircularProgressIndicator()
                         : MaterialButton(
-                            onPressed: () async {
-                              final role =
-                                  await SharedPreferencesHelper.getString(
-                                      AppConstants.userRole);
-                              // التحقق من صحة البيانات - إزالة شرط إرسال الصور الإجباري
-                              if (context
-                                  .read<ConfirmSubscriptionCubit>()
-                                  .formKey
-                                  .currentState!
-                                  .validate()) {
-                                final cubit =
-                                    context.read<ConfirmSubscriptionCubit>();
+                          onPressed: () async {
+                            final role = await SharedPreferencesHelper.getString(AppConstants.userRole);
 
-                                if (role?.toLowerCase() == "admin") {
-                                  // إذا كان المستخدم مسؤول، استخدم السلوك القديم
-                                  cubit.subscribe();
-                                } else {
-                                  // توجيه المستخدم إلى صفحة تسجيل الدخول أولاً
-                                  // حفظ بيانات المستخدم مؤقتاً
-                                //   cubit.subscribe();
-                                  final userData = {
-                                    'name': cubit.nameController.text,
-                                    'email': cubit.emailController.text,
-                                    'phone': cubit.phoneController.text,
-                                    'plan': widget.userPlan.toJson(),
-                                  };
+                            // التحقق من صحة البيانات
+                            if (context.read<ConfirmSubscriptionCubit>().formKey.currentState!.validate()) {
+                              final cubit = context.read<ConfirmSubscriptionCubit>();
 
-                                  // حفظ البيانات في التخزين المؤقت
-                                  await SharedPreferencesHelper.setString(
-                                      'temp_subscription_data',
-                                      jsonEncode(userData));
+                              if (role?.toLowerCase() == "admin") {
+                                // للأدمن - السلوك القديم
+                                cubit.subscribe();
+                              } else {
+                                // للمستخدمين العاديين - إنشاء الحساب أولاً
+                                setState(() {
+                                  // إظهار مؤشر التحميل
+                                });
 
-                                  // إضافة هذا الكود لحفظ بيانات المستخدم الكاملة في temp_user
-                                  final user = cubit.getUser();
-                                  final userJson = jsonEncode(user.toJson());
-                                  await SharedPreferencesHelper.setString(
-                                      'temp_user', userJson);
-                                  // حفظ نسخة احتياطية أيضًا
-                                  final prefs =
-                                      await SharedPreferences.getInstance();
-                                  await prefs.setString('temp_user', userJson);
-                                  print('✅ تم حفظ temp_user بنجاح');
+                                // إنشاء حساب المستخدم مع التحقق الكامل
+                                final user = cubit.getUser();
+                                final result = await cubit.repo.addTrainer(user);
 
-                                  // التوجيه إلى صفحة الدفع بدلاً من تسجيل الدخول
-                                  Navigator.push(
-                                    context,  
-                                    MaterialPageRoute(
-                                      builder: (context) => PaymentScreen(
-                                        plan: widget.userPlan,
-                                        customerName: cubit.nameController.text,
-                                        customerEmail:
-                                            cubit.emailController.text,
-                                        customerPhone:
-                                            cubit.phoneController.text,
-                                        isNewUser:
-                                            true, // مهم: تحديد أن هذا مستخدم جديد
+                                result.when(
+                                  success: (data) async {
+                                    // تم إنشاء الحساب بنجاح - الآن ننتقل للدفع
+                                    print('✅ تم إنشاء الحساب بنجاح قبل الدفع');
+                                    print('معرف المستخدم: ${data.id}');
+
+                                    // حفظ بيانات المستخدم للاسترجاع في حالة فشل الدفع
+                                    final userData = {
+                                      'user_id': data.id,
+                                      'name': cubit.nameController.text,
+                                      'email': cubit.emailController.text,
+                                      'phone': cubit.phoneController.text,
+                                      'plan': widget.userPlan.toJson(),
+                                    };
+
+                                    await SharedPreferencesHelper.setString(
+                                        'pending_payment_user_data',
+                                        jsonEncode(userData)
+                                    );
+
+                                    // التوجيه إلى صفحة الدفع مع معرف المستخدم الجديد
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => PaymentScreen(
+                                          plan: widget.userPlan,
+                                          customerName: cubit.nameController.text,
+                                          customerEmail: cubit.emailController.text,
+                                          customerPhone: cubit.phoneController.text,
+                                          userId: data.id.toString(), // إرسال المعرف الحقيقي
+                                          isNewUser: true,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }
+                                    );
+
+                                    setState(() {
+                                      // إخفاء مؤشر التحميل
+                                    });
+                                  },
+                                  failure: (error) {
+                                    // عرض رسالة الخطأ التفصيلية من الباك اند
+                                    String errorMessage = 'فشل في إنشاء الحساب';
+
+                                    if (error.toString().contains('username')) {
+                                      errorMessage = 'اسم المستخدم غير صالح أو مستخدم بالفعل';
+                                    } else if (error.toString().contains('password')) {
+                                      errorMessage = 'كلمة المرور ضعيفة أو غير مطابقة للمتطلبات';
+                                    } else if (error.toString().contains('email')) {
+                                      errorMessage = 'البريد الإلكتروني غير صالح أو مستخدم بالفعل';
+                                    } else if (error.toString().contains('phone')) {
+                                      errorMessage = 'رقم الهاتف غير صالح أو مستخدم بالفعل';
+                                    }
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('$errorMessage\n$error'),
+                                        backgroundColor: Colors.red,
+                                        duration: const Duration(seconds: 5),
+                                      ),
+                                    );
+
+                                    setState(() {
+                                      // إخفاء مؤشر التحميل
+                                    });
+                                  },
+                                );
                               }
-                            },
-                            color: AppColors.newPrimaryColor,
+                            }
+                          },
+                        color: AppColors.newPrimaryColor,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 60.w, vertical: 4.h),
                             shape: RoundedRectangleBorder(
