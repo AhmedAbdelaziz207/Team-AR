@@ -25,6 +25,7 @@ class PaymentScreen extends StatefulWidget {
   final String customerEmail;
   final String customerPhone;
   final bool isNewUser;
+  final String? userId;
 
   const PaymentScreen({
     super.key,
@@ -32,6 +33,7 @@ class PaymentScreen extends StatefulWidget {
     required this.customerName,
     required this.customerEmail,
     required this.customerPhone,
+    this.userId,
     this.isNewUser = false,
   });
 

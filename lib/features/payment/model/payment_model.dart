@@ -35,18 +35,24 @@ class PaymentMethod {
     );
   }
 
-  static PaymentMethodType _determinePaymentType(int id, String nameEn, String nameAr) {
+  static PaymentMethodType _determinePaymentType(
+      int id, String nameEn, String nameAr) {
     final name = nameEn.toLowerCase();
     final nameArabic = nameAr.toLowerCase();
 
     if (name.contains('visa') || nameArabic.contains('فيزا')) {
       return PaymentMethodType.visa;
-    } else if (name.contains('mastercard') || name.contains('master') || nameArabic.contains('ماستر')) {
+    } else if (name.contains('mastercard') ||
+        name.contains('master') ||
+        nameArabic.contains('ماستر')) {
       return PaymentMethodType.mastercard;
     } else if (name.contains('fawry') || nameArabic.contains('فوري')) {
       return PaymentMethodType.fawry;
-    } else if (name.contains('wallet') || nameArabic.contains('محفظة') ||
-        name.contains('vodafone') || name.contains('etisalat') || name.contains('orange')) {
+    } else if (name.contains('wallet') ||
+        nameArabic.contains('محفظة') ||
+        name.contains('vodafone') ||
+        name.contains('etisalat') ||
+        name.contains('orange')) {
       return PaymentMethodType.wallet;
     }
     return PaymentMethodType.unknown;
@@ -70,13 +76,7 @@ class PaymentMethod {
   }
 }
 
-enum PaymentMethodType {
-  visa,
-  mastercard,
-  fawry,
-  wallet,
-  unknown
-}
+enum PaymentMethodType { visa, mastercard, fawry, wallet, unknown }
 
 class PaymentData {
   final int invoiceId;
@@ -109,11 +109,25 @@ class PaymentData {
     // تحديد نوع طريقة الدفع
     PaymentMethodType methodType = PaymentMethodType.unknown;
     if (paymentData?['redirectTo'] != null) {
-      methodType = PaymentMethodType.visa; // أو mastercard حسب السياق
+      methodType = PaymentMethodType.visa;
     } else if (paymentData?['fawryCode'] != null) {
       methodType = PaymentMethodType.fawry;
     } else if (paymentData?['walletReference'] != null) {
       methodType = PaymentMethodType.wallet;
+    }
+
+    // محاولة الحصول على المبلغ من مصادر متعددة
+    double amount = 0.0;
+
+    // جرب الحصول على المبلغ من المواقع المختلفة في الاستجابة
+    if (json['amount'] != null) {
+      amount = double.tryParse(json['amount'].toString()) ?? 0.0;
+    } else if (json['cartTotal'] != null) {
+      amount = double.tryParse(json['cartTotal'].toString()) ?? 0.0;
+    } else if (paymentData?['amount'] != null) {
+      amount = double.tryParse(paymentData!['amount'].toString()) ?? 0.0;
+    } else if (json['total'] != null) {
+      amount = double.tryParse(json['total'].toString()) ?? 0.0;
     }
 
     return PaymentData(
@@ -124,20 +138,14 @@ class PaymentData {
       fawryCode: paymentData?['fawryCode'] as String?,
       expireDate: paymentData?['expireDate'] as String?,
       walletReference: paymentData?['walletReference'] as String?,
-      amount: (json['amount'] ?? 0.0).toDouble(),
+      amount: amount,
       currency: json['currency'] ?? 'EGP',
       methodType: methodType,
     );
   }
 }
 
-enum PaymentStatus {
-  pending,
-  paid,
-  failed,
-  expired,
-  cancelled
-}
+enum PaymentStatus { pending, paid, failed, expired, cancelled }
 
 class PaymentStatusData {
   final String status;
@@ -156,7 +164,8 @@ class PaymentStatusData {
     return PaymentStatusData(
       status: json['status'] as String,
       transactionId: json['transaction_id'] as String?,
-      paidAt: json['paid_at'] != null ? DateTime.tryParse(json['paid_at']) : null,
+      paidAt:
+          json['paid_at'] != null ? DateTime.tryParse(json['paid_at']) : null,
       metadata: json['metadata'] as Map<String, dynamic>?,
     );
   }
@@ -197,8 +206,8 @@ class PaymentMethodsResponse {
       message: json['message'] ?? '',
       data: json['data'] != null
           ? (json['data'] as List)
-          .map((item) => PaymentMethod.fromJson(item))
-          .toList()
+              .map((item) => PaymentMethod.fromJson(item))
+              .toList()
           : null,
     );
   }
@@ -334,7 +343,9 @@ class PaymentStatusResponse {
     return PaymentStatusResponse(
       isSuccess: json['status'] == 'success',
       message: json['message'] ?? '',
-      data: json['data'] != null ? PaymentStatusData.fromJson(json['data']) : null,
+      data: json['data'] != null
+          ? PaymentStatusData.fromJson(json['data'])
+          : null,
     );
   }
 }

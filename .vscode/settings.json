@@ -1,13 +1,14 @@
 {
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/.DS_Store": true,
-        "**/Thumbs.db": true,
-        "": true,
-        "\"files.exclude\": {   \"/*.g.dart\": false }": true,
-        "*.g.dart.false ": true,
-        ".yoyo": true
-    }
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "": true,
+    "\"files.exclude\": {   \"/*.g.dart\": false }": true,
+    "*.g.dart.false ": true,
+    ".yoyo": true
+  },
+  "Codegeex.RepoIndex": true
 }
