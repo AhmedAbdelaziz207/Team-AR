@@ -30,7 +30,9 @@ class UserCubit extends Cubit<UserState> {
         // تخزين البيانات في الذاكرة المؤقتة
         _cachedUserData = data;
         _isDataLoaded = true;
-        emit(UserState.success(data));
+        if (!isClosed) {
+          emit(UserState.success(data));
+        }
       },
       failure: (error) =>
           emit(UserState.failure(error.getErrorsMessage() ?? "")),

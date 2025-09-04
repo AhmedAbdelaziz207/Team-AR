@@ -73,68 +73,57 @@ class _MealSummaryFooterState extends State<MealSummaryFooter> {
                 orElse: () => const SizedBox(),
               ),
               SizedBox(height: 12.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                        onPressed: mealCount == 5 || widget.isUpdate
-                            ? null
-                            : () {
-                          context.read<MealCubit>().assignDietMealForUser(
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      // Assign the meal first.
+                      await context.read<MealCubit>().assignDietMealForUser(
                             widget.userId,
                             isUpdate: widget.isUpdate,
                           );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+
+                      if (!mounted) return;
+
+                      // Handle navigation after the meal is assigned.
+                      if (widget.isUpdate) {
+                        // If updating, just pop the screen.
+                        Navigator.pop(context);
+                        return;
+                      }
+
+                      // If adding a new meal plan, check if all meals are added.
+                      if (context.read<MealCubit>().mealNum > 5) {
+                        // If all 5 meals are added, navigate to the next step.
+                        Navigator.pushReplacementNamed(
+                          context,
+                          Routes.addWorkout,
+                          arguments: AddWorkoutParams(
+                            traineeId: widget.userId,
                           ),
-                        ),
-                        child: state is MailAssignLoading
-                            ? const CircularProgressIndicator(
-                          color: AppColors.white,
-                        )
-                            : Text(AppLocalKeys.next.tr()),
+                        );
+                      }
+                      // If not all meals are added, the cubit will automatically
+                      // update the state for the next meal selection. No navigation needed.
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: Text(
+                      widget.isUpdate
+                          ? AppLocalKeys.save.tr()
+                          : (context.watch<MealCubit>().mealNum < 5
+                              ? AppLocalKeys.next.tr()
+                              : AppLocalKeys.save.tr()),
                     ),
                   ),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await context
-                            .read<MealCubit>()
-                            .assignDietMealForUser(
-                          widget.userId,
-                          isUpdate: widget.isUpdate,
-                        )
-                            .then((value) {
-                          if (widget.isUpdate) {
-                            Navigator.pop(context);
-                            return;
-                          }
-                          Navigator.pushReplacementNamed(
-                            context,
-                            Routes.addWorkout,
-                            arguments: AddWorkoutParams(
-                              traineeId: widget.userId,
-                              exerciseId: null,
-                            ),
-                          );
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Text(AppLocalKeys.save.tr()),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           );

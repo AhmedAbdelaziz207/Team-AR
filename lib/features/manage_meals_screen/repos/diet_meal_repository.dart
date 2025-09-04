@@ -46,19 +46,82 @@ class DietMealRepository {
         return ApiResult.failure(ApiErrorModel(message: "حجم الصورة كبير جدًا، يجب أن يكون أقل من 5 ميجابايت"));
       }
   
-      // Convert the diet model to a map
-      Map<String, dynamic> dietData = diet.toJson();
-  
-      // Create FormData for file upload
-      FormData formData = FormData.fromMap({
-        ...dietData, // Spread the JSON data from the model
-        "image": await MultipartFile.fromFile(
+      // Build FormData with PascalCase keys expected by backend
+      final formMap = <String, dynamic>{
+        "Name": diet.name,
+        "NumOfCalories": diet.numOfCalories,
+        "NumOfCarps": diet.numOfCarbs, // note: server key uses 'Carps'
+        "NumOfFats": diet.numOfFats,
+        "NumOfProtein": diet.numOfProtein,
+        "NumOfGrams": diet.numOfGrams,
+        "FoodCategory": diet.foodCategory,
+        "Image": await MultipartFile.fromFile(
           dietImage.path,
           filename: dietImage.path.split('/').last,
         ),
-      });
+      };
+
+      // Create FormData for file upload
+      FormData formData = FormData.fromMap(formMap);
   
       await dio.post(
+        ApiEndPoints.baseUrl + ApiEndPoints.dietMeals,
+        data: formData,
+        options: Options(contentType: 'multipart/form-data'),
+      );
+      log("Success");
+  
+      return const ApiResult.success(null);
+    } catch (e) {
+      log(e.toString());
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    } finally {
+      // تنظيف الموارد
+      if (dietImage.existsSync()) {
+        // تنظيف الصورة المؤقتة إذا كانت في مجلد مؤقت
+        if (dietImage.path.contains('temp') || dietImage.path.contains('cache')) {
+          try {
+            await dietImage.delete();
+          } catch (e) {
+            log("Error deleting temporary image: $e");
+          }
+        }
+      }
+    }
+  }
+
+ Future<ApiResult<void>> updateDietMeal({
+    required DietMealModel diet,
+    required File dietImage,
+  }) async {
+    try {
+      final Dio dio = DioFactory.getDio();
+  
+    //   // التحقق من حجم الصورة
+    //   final fileSize = await dietImage.length();
+    //   if (fileSize > 5 * 1024 * 1024) { // أكبر من 5 ميجابايت
+    //     return ApiResult.failure(ApiErrorModel(message: "حجم الصورة كبير جدًا، يجب أن يكون أقل من 5 ميجابايت"));
+    //   }
+  
+      // Build FormData with PascalCase keys expected by backend
+      final formMap = <String, dynamic>{
+        "Name": diet.name,
+        "NumOfCalories": diet.numOfCalories,
+        "NumOfCarps": diet.numOfCarbs, // note: server key uses 'Carps'
+        "NumOfFats": diet.numOfFats,
+        "NumOfProtein": diet.numOfProtein,
+        "NumOfGrams": diet.numOfGrams,
+        "FoodCategory": diet.foodCategory,
+        // "Image": await MultipartFile.fromFile(
+        //   dietImage.path,
+        //   filename: dietImage.path.split('/').last,
+        // ),
+      };
+
+      // Create FormData for file upload
+      FormData formData = FormData.fromMap(formMap);
+  
+      await dio.put(
         ApiEndPoints.baseUrl + ApiEndPoints.dietMeals,
         data: formData,
         options: Options(contentType: 'multipart/form-data'),
@@ -90,6 +153,8 @@ class DietMealRepository {
   }) async {
     try {
       if (isUpdate) {
+log("Update Diet ${userMeal.foods[0].foodId} ${userMeal.applicationUserId}");
+
         await _apiService.updateDietMealForUser(userMeal.toJson());
       } else {
         await _apiService.assignDietMealForUser(userMeal.toJson());
@@ -101,20 +166,18 @@ class DietMealRepository {
     }
   }
 
-  Future<ApiResult<DietMealModel>> updateDietMeal(DietMealModel meal) async {
+  Future<ApiResult<void>> deleteMeal(int id) async {
     try {
-      final DietMealModel dietMeals =
-          await _apiService.updateDietMeal(meal.toJson());
-
-      return ApiResult.success(dietMeals);
+      await _apiService.deleteDietMeal(id);
+      return const ApiResult.success(true);
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
   }
 
-  Future<ApiResult<void>> deleteMeal(int id) async {
+  Future<ApiResult<void>> removeAllUserFoods(String userId) async {
     try {
-      await _apiService.deleteDietMeal(id);
+      await _apiService.removeAllUserFoods(userId);
       return const ApiResult.success(true);
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));

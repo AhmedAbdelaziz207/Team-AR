@@ -14,6 +14,7 @@ UserMealRequestModel _$UserMealRequestModelFromJson(
       foods: (json['foods'] as List<dynamic>)
           .map((e) => FoodItem.fromJson(e as Map<String, dynamic>))
           .toList(),
+      Note: json['Note'] as String,
     );
 
 Map<String, dynamic> _$UserMealRequestModelToJson(
@@ -22,6 +23,7 @@ Map<String, dynamic> _$UserMealRequestModelToJson(
       'applicationUserId': instance.applicationUserId,
       'foodType': instance.foodType,
       'foods': instance.foods,
+      'Note': instance.Note,
     };
 
 FoodItem _$FoodItemFromJson(Map<String, dynamic> json) => FoodItem(

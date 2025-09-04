@@ -38,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           await SharedPreferencesHelper.getString(AppConstants.userId);
 
       log("userId : $userId");
+      if (!mounted) return;
       context.read<UserCubit>().updateImage(userId!, File(pickedImage.path));
     }
   }
@@ -77,13 +78,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // تحميل البيانات المخزنة محليًا أولاً
     loadCachedUserData().then((_) {
       // ثم جلب البيانات المحدثة من الخادم
-      SharedPreferencesHelper.getString(AppConstants.userId).then(
-        (value) {
-          if (value != null) {
-            context.read<UserCubit>().getUser(value);
-          }
-        },
-      );
+      SharedPreferencesHelper.getString(AppConstants.userId).then((value) {
+        if (!mounted) return;
+        if (value != null) {
+          context.read<UserCubit>().getUser(value);
+        }
+      });
     });
   }
 
@@ -215,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 30.r,
-                        backgroundColor: AppColors.grey.withOpacity(.2),
+                        backgroundColor: AppColors.grey.withValues(alpha: .2),
                         backgroundImage: image != null
                             ? FileImage(image!)
                             : userImagePath != null

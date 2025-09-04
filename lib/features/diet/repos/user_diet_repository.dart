@@ -22,4 +22,13 @@ class UserDietRepository {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
   }
+
+  Future<ApiResult<void>> removeUserDiet(String userId) async {
+    try {
+      await _apiService.removeAllUserFoods(userId);
+      return ApiResult.success(null);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
 }

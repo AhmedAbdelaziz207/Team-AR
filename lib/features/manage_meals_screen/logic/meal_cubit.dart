@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:team_ar/core/network/api_service.dart';
+import 'package:team_ar/core/network/api_error_model.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/manage_meals_screen/repos/diet_meal_repository.dart';
 import 'package:team_ar/features/select_meals/model/user_meal_request.dart';
@@ -15,10 +16,14 @@ import '../model/meal_model.dart';
 import 'meal_state.dart';
 
 class MealCubit extends Cubit<MealState> {
-  MealCubit() : super(const MealState.initial());
+  MealCubit() : super(const MealState.initial()) {
+    mealName = getMealName(mealNum);
+  }
 
   String? userId;
   int mealNum = 1;
+  String mealName = "";
+
 
   final nameController = TextEditingController();
   final caloriesController = TextEditingController();
@@ -43,8 +48,9 @@ class MealCubit extends Cubit<MealState> {
 
   Future<File> compressImage(File file) async {
     final dir = await Directory.systemTemp.createTemp();
-    final targetPath = "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
-    
+    final targetPath =
+        "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+
     final result = await FlutterImageCompress.compressAndGetFile(
       file.path,
       targetPath,
@@ -52,7 +58,7 @@ class MealCubit extends Cubit<MealState> {
       minWidth: 800, // الحد الأدنى للعرض
       minHeight: 800, // الحد الأدنى للارتفاع
     );
-    
+
     return File(result!.path);
   }
 
@@ -61,7 +67,7 @@ class MealCubit extends Cubit<MealState> {
 
   File? dietImage = File("path");
 
-  void getMeals() async {
+  Future<void> getMeals() async {
     emit(
       const MealState.loading(),
     );
@@ -71,52 +77,175 @@ class MealCubit extends Cubit<MealState> {
 
     result.when(
       success: (data) {
+        if (isClosed) return;
         emit(MealState.loaded(meals: data ?? []));
       },
       failure: (error) {
+      if (!isClosed) {
         emit(
           MealState.failure(
             message:
                 error.getErrorsMessage() ?? AppLocalKeys.unexpectedError.tr(),
           ),
         );
-      },
+      }
+    }
     );
+  }
+
+  Future<void> updateMeal(DietMealModel meal) async {
+    try {
+      // Client-side validation
+      final name = nameController.text.trim();
+      if (name.isEmpty) {
+        emit(MealState.failure(message: AppLocalKeys.fieldRequired.tr()));
+        return;
+      }
+
+      double? calories = double.tryParse(caloriesController.text.trim());
+      double? carbs = double.tryParse(carbsController.text.trim());
+      double? fats = double.tryParse(fatController.text.trim());
+      double? protein = double.tryParse(proteinController.text.trim());
+
+      if (calories == null ||
+          carbs == null ||
+          fats == null ||
+          protein == null) {
+        emit(const MealState.failure(message: "Please enter valid numbers"));
+        return;
+      }
+
+      emit(const MealState.loading());
+
+      final result = await mealRepository
+          .updateDietMeal(
+            diet: meal.copyWith(
+              name: name,
+              numOfCalories: calories / 100,
+              numOfCarbs: carbs / 100,
+              numOfFats: fats / 100,
+              numOfProtein: protein / 100,
+            ),
+            dietImage: image ?? File("path"),
+          )
+          .timeout(
+            _timeoutDuration,
+            onTimeout: () => ApiResult.failure(
+              ApiErrorModel(
+                message: 'انتهي الوقت, حاول مرة اخرى',
+                statusCode: 408,
+              ),
+            ),
+          );
+
+      if (!isClosed) {
+        result.when(
+          success: (updated) async {
+            await getMeals();
+            emit(const MealState.added()); // Success state to trigger snackbar
+          },
+          failure: (error) {
+            emit(MealState.failure(
+              message:
+                  error.getErrorsMessage() ?? AppLocalKeys.unexpectedError.tr(),
+            ));
+          },
+        );
+      }
+    } catch (e) {
+      if (!isClosed) {
+        emit(const MealState.failure(
+          message: 'حدث خطأ أثناء تحديث الوجبة. يرجى المحاولة مرة أخرى',
+        ));
+      }
+      log('Error in updateMeal: $e');
+    }
   }
 
   void deleteMeal(int id) async {
     await mealRepository.deleteMeal(id);
+    await getMeals();
   }
 
-  void addMeal() async {
-    emit(const MealState.loading());
-    final result = await mealRepository.addDietMeal(
-      diet: DietMealModel(
-        id: 0,
-        name: nameController.text,
-        numOfCalories: double.parse(caloriesController.text) / 100,
-        numOfCarbs: double.parse(carbsController.text) / 100,
-        numOfFats: double.parse(fatController.text) / 100,
-        numOfProtein: double.parse(proteinController.text) / 100,
-        numOfGrams: 1,
-        foodCategory: mealType,
-      ),
-      dietImage: image!,
-    );
+  
 
-    result.when(
-      success: (data) {
-        emit(const MealState.added());
-      },
-      failure: (error) {
+  static const Duration _timeoutDuration = Duration(seconds: 10);
+
+  Future<void> addMeal() async {
+    // Client-side validation
+    final name = nameController.text.trim();
+    if (name.isEmpty) {
+      emit(MealState.failure(message: AppLocalKeys.fieldRequired.tr()));
+      return;
+    }
+    if (image == null) {
+      emit(MealState.failure(message: AppLocalKeys.pleaseSelectImage.tr()));
+      return;
+    }
+
+    double? calories = double.tryParse(caloriesController.text.trim());
+    double? carbs = double.tryParse(carbsController.text.trim());
+    double? fats = double.tryParse(fatController.text.trim());
+    double? protein = double.tryParse(proteinController.text.trim());
+
+    if (calories == null || carbs == null || fats == null || protein == null) {
+      emit(const MealState.failure(message: "Please enter valid numbers"));
+      return;
+    }
+
+    emit(const MealState.loading());
+
+    try {
+      final result = await mealRepository
+          .addDietMeal(
+            diet: DietMealModel(
+              id: 0,
+              name: name,
+              numOfCalories: calories / 100,
+              numOfCarbs: carbs / 100,
+              numOfFats: fats / 100,
+              numOfProtein: protein / 100,
+              numOfGrams: 1,
+              foodCategory: mealType,
+            ),
+            dietImage: image!,
+          )
+          .timeout(
+            _timeoutDuration,
+            onTimeout: () => ApiResult.failure(
+              ApiErrorModel(
+                message: 'انتهي الوقت, حاول مرة اخرى',
+                statusCode: 408,
+              ),
+            ),
+          );
+
+      if (!isClosed) {
+        result.when(
+          success: (data) {
+            emit(const MealState.added());
+          },
+          failure: (error) {
+            emit(
+              MealState.failure(
+                message: error.getErrorsMessage() ??
+                    AppLocalKeys.unexpectedError.tr(),
+              ),
+            );
+          },
+        );
+      }
+    } catch (e) {
+      if (!isClosed) {
         emit(
-          MealState.failure(
+          const MealState.failure(
             message:
-                error.getErrorsMessage() ?? AppLocalKeys.unexpectedError.tr(),
+                'An error occurred while adding the meal. Please try again.',
           ),
         );
-      },
-    );
+      }
+      log('Error in addMeal: $e');
+    }
   }
 
   double totalCalories = 0;
@@ -219,6 +348,7 @@ class MealCubit extends Cubit<MealState> {
       applicationUserId: userId,
       foods: selectedFoods,
       foodType: mealNum,
+      Note: "",
     );
 
     final result = await mealRepository.assignDietMealToTrainee(
@@ -238,6 +368,7 @@ class MealCubit extends Cubit<MealState> {
 
         mealNum++;
         emit(MealState.loaded(meals: resetMeals));
+        mealName = getMealName(mealNum);
         emit(const MealState.assigned());
       },
       failure: (error) {
@@ -246,5 +377,22 @@ class MealCubit extends Cubit<MealState> {
         ));
       },
     );
+  }
+
+  getMealName(int mealNum) {
+    switch (mealNum) {
+      case 1:
+        return AppLocalKeys.firstMeal.tr();
+      case 2:
+        return AppLocalKeys.secondMeal.tr();
+      case 3:
+        return AppLocalKeys.thirdMeal.tr();
+      case 4:
+        return AppLocalKeys.fourthMeal.tr();
+      case 5:
+        return AppLocalKeys.fifthMeal.tr();
+      default:
+        return "";
+    }
   }
 }

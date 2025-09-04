@@ -7,11 +7,13 @@ class UserMealRequestModel {
   final String applicationUserId;
   final int foodType;
   final List<FoodItem> foods;
+  final String Note;
 
   UserMealRequestModel({
     required this.applicationUserId,
     required this.foodType,
     required this.foods,
+    required this.Note,
   });
 
   factory UserMealRequestModel.fromJson(Map<String, dynamic> json) =>

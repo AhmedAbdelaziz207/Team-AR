@@ -562,14 +562,13 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<DietMealModel> updateDietMeal(Map<String, dynamic> body) async {
+  Future<void> deleteDietMeal(int id) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'Id': id};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(body);
-    final _options = _setStreamType<DietMealModel>(Options(
-      method: 'PUT',
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<void>(Options(
+      method: 'DELETE',
       headers: _headers,
       extra: _extra,
     )
@@ -584,21 +583,13 @@ class _ApiService implements ApiService {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DietMealModel _value;
-    try {
-      _value = DietMealModel.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
+    await _dio.fetch<void>(_options);
   }
 
   @override
-  Future<void> deleteDietMeal(int id) async {
+  Future<void> removeAllUserFoods(String id) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'Id': id};
+    final queryParameters = <String, dynamic>{r'UserId': id};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<void>(Options(
@@ -608,7 +599,7 @@ class _ApiService implements ApiService {
     )
         .compose(
           _dio.options,
-          'api/Food',
+          'api/UserFood/RemoveAllFoodsFromUser',
           queryParameters: queryParameters,
           data: _data,
         )

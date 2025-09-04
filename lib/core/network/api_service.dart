@@ -80,11 +80,17 @@ abstract class ApiService {
     @Body() Map<String, dynamic> body,
   );
 
-  @PUT(ApiEndPoints.dietMeals)
-  Future<DietMealModel> updateDietMeal(@Body() Map<String, dynamic> body);
+//   @PUT(ApiEndPoints.dietMeals)
+//   Future<DietMealModel> updateDietMeal(
+//   @Query("Id") int id,
+  
+//   );
 
   @DELETE(ApiEndPoints.dietMeals)
   Future<void> deleteDietMeal(@Query("Id") int id);
+
+  @DELETE(ApiEndPoints.removeAllUserFoods)
+  Future<void> removeAllUserFoods(@Query("UserId") String id);
 
   @GET(ApiEndPoints.getUserById)
   Future<TraineeModel> getLoggedUserData(@Query("userId") String id);

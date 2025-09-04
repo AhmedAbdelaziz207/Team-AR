@@ -8,6 +8,7 @@ import 'package:team_ar/features/manage_meals_screen/logic/meal_cubit.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_local_keys.dart';
+import 'diet_meal_dialog.dart';
 
 class MealCard extends StatelessWidget {
   const MealCard({
@@ -17,131 +18,153 @@ class MealCard extends StatelessWidget {
 
   final DietMealModel? meal;
 
+  void _showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(AppLocalKeys.deleteMealTitle.tr()),
+          content: Text(AppLocalKeys.deleteMealMessage.tr()),
+          actions: <Widget>[
+            TextButton(
+              child: Text(AppLocalKeys.cancel.tr()),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: Text(
+                AppLocalKeys.delete.tr(),
+                style: const TextStyle(color: Colors.red),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    ).then((confirmDelete) {
+      if (confirmDelete == true) {
+        context.read<MealCubit>().deleteMeal(meal!.id!);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: UniqueKey(),
-      direction: DismissDirection.horizontal,
-      onDismissed: (direction) {
-        context.read<MealCubit>().deleteMeal(meal!.id!);
+    return InkWell(
+      onTap: () {
+        showDietMealSheet(context, isForEdit: true, meal: meal);
       },
-      background: Container(
-        alignment: AlignmentDirectional.centerStart,
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        margin: EdgeInsets.all(8.r),
-        decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(20.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 2,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      child: Container(
-        padding: EdgeInsets.all(16.r),
-        margin: EdgeInsets.all(8.r),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(20.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 2,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4.r),
-                child: CachedNetworkImage(
-                  imageUrl: ApiEndPoints.imagesBaseUrl + meal!.imageURL!,
-                  width: 100.w,
-                  height: 100.h,
-                  placeholder: (context, url) => Container(
-                    color: Colors.grey[200],
+      onDoubleTap: () {
+        _showDeleteDialog(context);
+      },
+
+      child: InkWell(
+        onTap: () {
+          showDietMealSheet(context, isForEdit: true, meal: meal);
+        },
+        child: Container(
+          padding: EdgeInsets.all(16.r),
+          margin: EdgeInsets.all(8.r),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(20.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 2,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4.r),
+                  child: CachedNetworkImage(
+                    imageUrl: ApiEndPoints.imagesBaseUrl + meal!.imageURL!,
                     width: 100.w,
                     height: 100.h,
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
-                  errorWidget: (context, error, stackTrace) => Container(
-                    color: Colors.grey[200],
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.broken_image,
-                          color: Colors.grey,
-                          size: 50,
-                        ),
-                        Text(
-                          AppLocalKeys.noImage.tr(),
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ],
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey[200],
+                      width: 100.w,
+                      height: 100.h,
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                    errorWidget: (context, error, stackTrace) => Container(
+                      color: Colors.grey[200],
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.broken_image,
+                            color: Colors.grey,
+                            size: 50,
+                          ),
+                          Text(
+                            AppLocalKeys.noImage.tr(),
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(width: 8.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    meal?.name ?? "",
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Wrap(
-                    children: [
-                      Column(
-                        children: [
-                          buildDetailsItem(
-                            AppLocalKeys.calories,
-                            (meal!.numOfCalories!*100).toStringAsFixed(1),
-                          ),
-                          SizedBox(height: 12.h),
-                          buildDetailsItem(
-                            AppLocalKeys.proteins,
-                            (meal!.numOfProtein!*100).toStringAsFixed(1),
-                          )
-                        ],
+                SizedBox(width: 8.w),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      meal?.name ?? "",
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Column(
-                        children: [
-                          buildDetailsItem(
-                            AppLocalKeys.carbs,
-                            meal?.numOfCarbs == null
-                                ? "0"
-                                : (meal!.numOfCarbs!*100).toStringAsFixed(1),
-                          ),
-                          SizedBox(height: 12.h),
-                          buildDetailsItem(
-                            AppLocalKeys.fats,
-                            (meal!.numOfFats!*100).toStringAsFixed(1),
-                          ),
-                        ],
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ],
+                    ),
+                    SizedBox(height: 8.h),
+                    Wrap(
+                      children: [
+                        Column(
+                          children: [
+                            buildDetailsItem(
+                              AppLocalKeys.calories,
+                              (meal!.numOfCalories!*100).toStringAsFixed(1),
+                            ),
+                            SizedBox(height: 12.h),
+                            buildDetailsItem(
+                              AppLocalKeys.proteins,
+                              (meal!.numOfProtein!*100).toStringAsFixed(1),
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            buildDetailsItem(
+                              AppLocalKeys.carbs,
+                              meal?.numOfCarbs == null
+                                  ? "0"
+                                  : (meal!.numOfCarbs!*100).toStringAsFixed(1),
+                            ),
+                            SizedBox(height: 12.h),
+                            buildDetailsItem(
+                              AppLocalKeys.fats,
+                              (meal!.numOfFats!*100).toStringAsFixed(1),
+                            ),
+                          ],
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

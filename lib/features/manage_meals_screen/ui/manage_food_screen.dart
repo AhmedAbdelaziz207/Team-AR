@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/features/manage_meals_screen/logic/meal_cubit.dart';
 import 'package:team_ar/features/manage_meals_screen/logic/meal_state.dart';
@@ -17,10 +18,31 @@ class ManageMealsScreen extends StatefulWidget {
 }
 
 class _ManageMealsScreenState extends State<ManageMealsScreen> {
+  late SharedPreferences _prefs;
+  final Map<int, Map<String, int>> _mealOrders = {};
+  bool _isLoadingOrder = true;
+
   @override
   void initState() {
-    getData();
     super.initState();
+    _initOrder().then((_) => getData());
+  }
+
+  Future<void> _initOrder() async {
+    _prefs = await SharedPreferences.getInstance();
+    // Load orders for each category
+    for (int i = 0; i < categories.length; i++) {
+      final order = _prefs.getStringList('meal_order_$i') ?? [];
+      _mealOrders[i] = {};
+      for (int j = 0; j < order.length; j++) {
+        _mealOrders[i]![order[j]] = j;
+      }
+    }
+    setState(() => _isLoadingOrder = false);
+  }
+
+  Future<void> _saveMealOrder(int category, List<String> mealIds) async {
+    await _prefs.setStringList('meal_order_$category', mealIds);
   }
 
   final List<String> categories = [
@@ -130,11 +152,42 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                           ));
                         }
 
-                        return ListView.builder(
+                        if (_isLoadingOrder) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
+                        // Sort meals based on saved order for this category
+                        final categoryOrder = _mealOrders[selectedTab] ?? {};
+                        filteredMeals.sort((a, b) {
+                          final orderA = categoryOrder[a.id.toString()] ?? filteredMeals.length;
+                          final orderB = categoryOrder[b.id.toString()] ?? filteredMeals.length;
+                          return orderA.compareTo(orderB);
+                        });
+
+                        return ReorderableListView.builder(
                           itemCount: filteredMeals.length,
                           itemBuilder: (context, index) => MealCard(
+                            key: Key('meal_${filteredMeals[index].id}'),
                             meal: filteredMeals[index],
                           ),
+                          onReorder: (oldIndex, newIndex) {
+                            setState(() {
+                              if (oldIndex < newIndex) newIndex -= 1;
+                              final item = filteredMeals.removeAt(oldIndex);
+                              filteredMeals.insert(newIndex, item);
+                              
+                              // Save the new order for this category
+                              final order = filteredMeals.map((m) => m.id.toString()).toList();
+                              _saveMealOrder(selectedTab, order);
+                              
+                              // Update local order cache for this category
+                              _mealOrders[selectedTab] = {};
+                              for (int i = 0; i < order.length; i++) {
+                                _mealOrders[selectedTab]![order[i]] = i;
+                              }
+                            });
+                          },
+                          buildDefaultDragHandles: true,
                         );
                       },
                       orElse: () => const SizedBox(),

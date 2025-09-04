@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,6 +16,9 @@ class MealsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+log("Number of Grams ${userDiet.first.numOfGrams}");
+
+
     final double totalCalories = userDiet
         .map((e) => e.meal?.numOfCalories ?? 0)
         .fold(0, (sum, cal) => sum + cal);
@@ -35,7 +40,7 @@ class MealsList extends StatelessWidget {
             ),
           ),
           Text(
-            "${userDiet.length} items | $totalCalories calories",
+            "${userDiet.length} items | ${totalCalories.toStringAsFixed(1)} calories",
             style: TextStyle(
               color: AppColors.grey.withOpacity(.6),
               fontSize: 12.sp,
@@ -54,7 +59,10 @@ class MealsList extends StatelessWidget {
                   Routes.mealDetails,
                   arguments: meal,
                 ),
-                child: MealItem(mealModel: meal),
+                child: MealItem(
+                  mealModel: meal,
+                  grams: e.numOfGrams,
+                ),
               );
             }).toList(),
           ),

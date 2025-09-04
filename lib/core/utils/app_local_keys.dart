@@ -120,6 +120,8 @@ class AppLocalKeys {
 
   static var calories = "Calories";
 
+  static var totalDailyCalories = "Total Daily Calories";
+
   static var proteins = "Proteins";
 
   static var fats = "Fats";
@@ -287,7 +289,9 @@ class AppLocalKeys {
   static const sendTestNotification = "sendTestNotification";
   static const deleteNotification = "deleteNotification";
   static const confirmDeleteNotification = "confirmDeleteNotification";
-  static const delete = "delete";
+  static const delete = 'delete';
+  static const deleteMealTitle = 'deleteMealTitle';
+  static const deleteMealMessage = 'deleteMealMessage';
   static const notificationDeleted = "notificationDeleted";
   static const clearAllNotifications = "clearAllNotifications";
   static const confirmClearAllNotifications = "confirmClearAllNotifications";

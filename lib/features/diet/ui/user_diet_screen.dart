@@ -104,11 +104,64 @@ class _UserDietScreenState extends State<UserDietScreen> {
                                     .add(diet);
                               }
 
+                              // Calculate total calories from all meals
+                              final num totalDayCalories = userDietList
+                                  .map((e) => e.meal?.numOfCalories ?? 0)
+                                  .fold(0, (sum, cal) => sum + cal);
+
                               return SingleChildScrollView(
                                 child: Column(
-                                  children: grouped.entries.map((entry) {
-                                    return MealsList(userDiet: entry.value);
-                                  }).toList(),
+                                  children: [
+                                    // Display total calories at the top of first meal
+                                    if (grouped.isNotEmpty)
+                                      Container(
+                                        width: double.infinity,
+                                        margin: EdgeInsets.all(15.0.sp),
+                                        padding: EdgeInsets.all(16.0.sp),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(12.r),
+                                          border: Border.all(
+                                            color: Colors.green.withOpacity(0.3),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Expanded(
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                AppLocalKeys.totalDailyCalories.tr(),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: "Cairo",
+                                                  
+                                                  color: Colors.green[700],
+                                                ),
+                                              ),
+                                              Text(
+                                                "$totalDayCalories ${AppLocalKeys.calories.tr()}",
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: "Cairo",
+                                                  color: Colors.green[800],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    // Display meal groups
+                                    ...grouped.entries.map((entry) {
+                                      return MealsList(userDiet: entry.value);
+                                    }).toList(),
+                                  ],
                                 ),
                               );
                             },

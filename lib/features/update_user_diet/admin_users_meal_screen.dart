@@ -34,6 +34,7 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
   }
 
   int numberOfMeals = 0;
+  bool isEmpty = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +44,21 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
         backgroundColor: AppColors.white,
         elevation: 0,
         leading: const AppBarBackButton(),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showDeleteDietDialog(isEmpty ? null :  () {
+                  context
+                      .read<UserDietCubit>()
+                      .removeUserDiet(widget.userId ?? "");
+                  Navigator.pop(context);
+                });
+              },
+              icon: const Icon(
+                Icons.delete,
+                color: AppColors.red,
+              ))
+        ],
         title: Text(
           AppLocalKeys.manageUserMeals.tr(),
           style: TextStyle(
@@ -61,9 +77,14 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
 
             setState(() {
               numberOfMeals = groupedTypes.length;
+              isEmpty = false;
             });
 
             log("number of meals: $numberOfMeals");
+          } else  {
+            setState(() {
+              isEmpty = true;
+            });
           }
         },
         builder: (context, state) {
@@ -225,6 +246,30 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
               child: const Icon(Icons.add),
             )
           : const SizedBox(),
+    );
+  }
+
+  showDeleteDietDialog(onAccept) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("حذف النظام الغذائي"),
+          content: const Text("هل انت متأكد من حذف النظام الغذائي؟"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("الغاء"),
+            ),
+            TextButton(
+              onPressed: onAccept,
+              child: const Text("حذف"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -8,10 +8,12 @@ import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
 
 class MealItem extends StatelessWidget {
   final DietMealModel? mealModel;
+  final int? grams;
 
   const MealItem({
     super.key,
     this.mealModel,
+    this.grams,
   });
 
   @override
@@ -65,8 +67,8 @@ class MealItem extends StatelessWidget {
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(8.sp),
                   ),
-                  child: Text(
-                    '${mealModel?.numOfGrams ?? "0"} ${AppLocalKeys.gram.tr()}',
+                  child: Text( 
+                    '${(grams ?? mealModel?.numOfGrams?.toInt() ?? 0)} ${AppLocalKeys.gram.tr()}',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -98,7 +100,7 @@ class MealItem extends StatelessWidget {
                         color: Colors.black),
                     SizedBox(width: 5.w),
                     Text(
-                      '${mealModel?.numOfCalories ?? 0} Kcal',
+                      '${mealModel?.numOfCalories?.toStringAsFixed(1) ?? 0} Kcal',
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontFamily: "Cairo",
@@ -112,16 +114,17 @@ class MealItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: _buildMacroInfo(AppLocalKeys.proteins.tr(),
-                          '${mealModel?.numOfProtein ?? 0}g'),
+                      child: _buildMacroInfo(
+                          AppLocalKeys.proteins.tr(),
+                          '${(mealModel?.numOfProtein ?? 0).toStringAsFixed(1)}g'),
                     ),
                     Expanded(
                       child: _buildMacroInfo(AppLocalKeys.fats.tr(),
-                          '${mealModel?.numOfFats ?? 0}g'),
+                          '${(mealModel?.numOfFats ?? 0).toStringAsFixed(1)}g'),
                     ),
                     Expanded(
                       child: _buildMacroInfo(AppLocalKeys.carbs.tr(),
-                          '${mealModel?.numOfCarbs ?? 0}g'),
+                          '${(mealModel?.numOfCarbs ?? 0).toStringAsFixed(1)}g'),
                     ),
                   ],
                 ),
