@@ -13,6 +13,8 @@ class PaymentCubit extends Cubit<PaymentState> {
   PaymentData? _currentPaymentData;
   UserPlan? _currentPlan;
   String? _currentUserId;
+  double? _originalAmount;
+
 
   // إعدادات المهلة الزمنية المحسنة
   static const Duration _defaultPollInterval = Duration(seconds: 5);
@@ -105,6 +107,7 @@ class PaymentCubit extends Cubit<PaymentState> {
   }) async {
     // إيقاف أي تحقق سابق
     _cancelVerificationTimer();
+    _originalAmount = plan.newPrice?.toDouble();
 
     final validationResult = PaymentValidator.validatePaymentData(
       customerName: customerName,
@@ -130,15 +133,25 @@ class PaymentCubit extends Cubit<PaymentState> {
         paymentMethodId: paymentMethodId,
       );
 
-      debugPrint('استجابة إنشاء الدفع: ${response.isSuccess}');
-
       if (response.isSuccess && response.data != null) {
         _currentPaymentData = response.data!;
-        debugPrint('تم إنشاء الفاتورة: ${response.data!.invoiceId}');
-        emit(PaymentCreated(response.data!));
 
-        // إزالة التحقق التلقائي - دع المستخدم يتحكم في العملية
-        // لا نبدأ أي تحقق تلقائي هنا
+        // التأكد من أن المبلغ صحيح
+        if (_currentPaymentData!.amount == 0.0 && _originalAmount != null) {
+          _currentPaymentData = PaymentData(
+            invoiceId: _currentPaymentData!.invoiceId,
+            invoiceKey: _currentPaymentData!.invoiceKey,
+            status: _currentPaymentData!.status,
+            redirectTo: _currentPaymentData!.redirectTo,
+            fawryCode: _currentPaymentData!.fawryCode,
+            expireDate: _currentPaymentData!.expireDate,
+            walletReference: _currentPaymentData!.walletReference,
+            amount: _originalAmount!, // استخدام المبلغ الأصلي
+            currency: _currentPaymentData!.currency,
+            methodType: _currentPaymentData!.methodType,
+          );
+        }
+        emit(PaymentCreated(_currentPaymentData!));
       } else {
         final errorMessage = response.message.isNotEmpty ? response.message : 'فشل في إنشاء الفاتورة';
         emit(PaymentError(errorMessage));
