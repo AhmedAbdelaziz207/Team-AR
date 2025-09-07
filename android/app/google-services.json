@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "332918158818",
+    "project_id": "team-ar-v2",
+    "storage_bucket": "team-ar-v2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332918158818:android:d90c53c09f8f455ce8b5bb",
+        "android_client_info": {
+          "package_name": "com.thecore.team_ar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6Agf8o_ygwbzmt_zc1TFyipvcF6W5Xt8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
