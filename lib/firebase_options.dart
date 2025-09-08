@@ -50,20 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAZB-BNJXmQvy46gtGPe7Y-Ex4DVFJ0QZM',
-    appId: '1:516254771758:android:c1c77eed876f1b341b4dbf',
-    messagingSenderId: '516254771758',
-    projectId: 'teamar-a88ba',
-    storageBucket: 'teamar-a88ba.firebasestorage.app',
+    apiKey: 'AIzaSyBYH5oCEB03aekCga5y8J1snQBrgFzx6cA',
+    appId: '1:42470386595:android:42b1310aad6cd166dac816',
+    messagingSenderId: '42470386595',
+    projectId: 'ar-team-c0ca4',
+    storageBucket: 'ar-team-c0ca4.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB1-9ywxFapltZOS_BBiPJePZDdJuk7ZlA',
-    appId: '1:516254771758:ios:ecb5603b99ba1eaa1b4dbf',
-    messagingSenderId: '516254771758',
-    projectId: 'teamar-a88ba',
-    storageBucket: 'teamar-a88ba.firebasestorage.app',
-    iosBundleId: 'com.thecore.baseApp',
+    apiKey: 'AIzaSyB1Jzd89IszX-u9qlBaR-HSC1XnBsSiSkw',
+    appId: '1:42470386595:ios:492335911793ac07dac816',
+    messagingSenderId: '42470386595',
+    projectId: 'ar-team-c0ca4',
+    storageBucket: 'ar-team-c0ca4.firebasestorage.app',
+    iosBundleId: 'com.zoony.teamAr',
   );
 
 }

@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/features/manage_meals_screen/logic/meal_state.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
 import 'package:team_ar/features/manage_meals_screen/widget/meal_type_dropdown.dart';
-
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_local_keys.dart';
 import '../../../core/widgets/custom_text_form_field.dart';
@@ -31,6 +30,7 @@ showDietMealSheet(BuildContext context, {bool isForEdit = false, DietMealModel? 
         if (isForEdit && meal != null) {
           final shouldPrefill =
               c.nameController.text.isEmpty &&
+              c.arabicNameController.text.isEmpty &&
               c.caloriesController.text.isEmpty &&
               c.carbsController.text.isEmpty &&
               c.proteinController.text.isEmpty &&
@@ -38,6 +38,7 @@ showDietMealSheet(BuildContext context, {bool isForEdit = false, DietMealModel? 
 
           if (shouldPrefill) {
             c.nameController.text = meal.name ?? '';
+            c.arabicNameController.text = meal.arabicName ?? '';
             c.caloriesController.text = ((meal.numOfCalories ?? 0) * 100).toStringAsFixed(1);
             c.carbsController.text = ((meal.numOfCarbs ?? 0) * 100).toStringAsFixed(1);
             c.proteinController.text = ((meal.numOfProtein ?? 0) * 100).toStringAsFixed(1);
@@ -101,6 +102,14 @@ showDietMealSheet(BuildContext context, {bool isForEdit = false, DietMealModel? 
                     suffixIcon: Icons.fastfood,
                     controller: c.nameController,
                     hintText: AppLocalKeys.name.tr(),
+                  ),
+                  SizedBox(
+                    height: 8.h,
+                  ),
+                  CustomTextFormField(
+                    suffixIcon: Icons.translate,
+                    controller: c.arabicNameController,
+                    hintText: 'Arabic name',
                   ),
                   SizedBox(
                     height: 8.h,

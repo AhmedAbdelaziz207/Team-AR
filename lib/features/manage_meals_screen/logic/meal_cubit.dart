@@ -26,6 +26,7 @@ class MealCubit extends Cubit<MealState> {
 
 
   final nameController = TextEditingController();
+  final arabicNameController = TextEditingController();
   final caloriesController = TextEditingController();
   final carbsController = TextEditingController();
   final fatController = TextEditingController();
@@ -97,6 +98,7 @@ class MealCubit extends Cubit<MealState> {
     try {
       // Client-side validation
       final name = nameController.text.trim();
+      final arabicName = arabicNameController.text.trim();
       if (name.isEmpty) {
         emit(MealState.failure(message: AppLocalKeys.fieldRequired.tr()));
         return;
@@ -121,12 +123,13 @@ class MealCubit extends Cubit<MealState> {
           .updateDietMeal(
             diet: meal.copyWith(
               name: name,
+              arabicName: arabicName.isEmpty ? meal.arabicName : arabicName,
               numOfCalories: calories / 100,
               numOfCarbs: carbs / 100,
               numOfFats: fats / 100,
               numOfProtein: protein / 100,
             ),
-            dietImage: image ?? File("path"),
+            imageUrl: image?.path ?? "",
           )
           .timeout(
             _timeoutDuration,
@@ -142,6 +145,7 @@ class MealCubit extends Cubit<MealState> {
         result.when(
           success: (updated) async {
             await getMeals();
+            if (isClosed) return;
             emit(const MealState.added()); // Success state to trigger snackbar
           },
           failure: (error) {
@@ -174,6 +178,7 @@ class MealCubit extends Cubit<MealState> {
   Future<void> addMeal() async {
     // Client-side validation
     final name = nameController.text.trim();
+    final arabicName = arabicNameController.text.trim();
     if (name.isEmpty) {
       emit(MealState.failure(message: AppLocalKeys.fieldRequired.tr()));
       return;
@@ -201,6 +206,7 @@ class MealCubit extends Cubit<MealState> {
             diet: DietMealModel(
               id: 0,
               name: name,
+              arabicName: arabicName.isEmpty ? null : arabicName,
               numOfCalories: calories / 100,
               numOfCarbs: carbs / 100,
               numOfFats: fats / 100,

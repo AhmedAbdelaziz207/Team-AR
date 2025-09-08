@@ -5,14 +5,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import 'package:team_ar/app.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/utils/app_assets.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
-
 import 'package:team_ar/features/notification/services/push_notifications_services.dart';
 import 'package:team_ar/features/notification/services/local_notification_service.dart';
 import 'package:team_ar/features/notification/services/notification_storage.dart';

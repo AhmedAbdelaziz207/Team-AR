@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "332918158818",
-    "project_id": "team-ar-v2",
-    "storage_bucket": "team-ar-v2.firebasestorage.app"
+    "project_number": "42470386595",
+    "project_id": "ar-team-c0ca4",
+    "storage_bucket": "ar-team-c0ca4.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:332918158818:android:d90c53c09f8f455ce8b5bb",
+        "mobilesdk_app_id": "1:42470386595:android:42b1310aad6cd166dac816",
         "android_client_info": {
-          "package_name": "com.thecore.team_ar"
+          "package_name": "com.zoony.team_ar"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB6Agf8o_ygwbzmt_zc1TFyipvcF6W5Xt8"
+          "current_key": "AIzaSyBYH5oCEB03aekCga5y8J1snQBrgFzx6cA"
         }
       ],
       "services": {

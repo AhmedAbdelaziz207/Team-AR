@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -77,7 +78,17 @@ class _SelectMealCardState extends State<SelectMealCard> {
                     children: [
                       Expanded(
                         child: Text(
-                          widget.meal.name ?? '',
+                          (() {
+                            final isAr = context.locale.languageCode == 'ar';
+                            final arName = widget.meal.arabicName;
+                            final enName = widget.meal.name;
+                            if (isAr) {
+                              return (arName != null && arName.isNotEmpty)
+                                  ? arName
+                                  : (enName ?? '');
+                            }
+                            return enName ?? arName ?? '';
+                          })(),
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,

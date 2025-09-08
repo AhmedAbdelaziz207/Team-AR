@@ -7,6 +7,8 @@ part 'meal_model.g.dart';
 class DietMealModel extends Equatable {
   final int? id;
   final String? name;
+  @JsonKey(name: 'arabicName')
+  final String? arabicName;
   final bool? isSelected;
   final String? imageURL;
   final double? numOfGrams;
@@ -22,6 +24,7 @@ class DietMealModel extends Equatable {
   DietMealModel({
     this.id,
     this.name,
+    this.arabicName,
     this.isSelected = false,
     this.numOfGrams = 100,
     this.imageURL,
@@ -42,6 +45,7 @@ class DietMealModel extends Equatable {
   DietMealModel copyWith({
     int? id,
     String? name,
+    String? arabicName,
     bool? isSelected,
     String? imageURL,
     double? numOfGrams,
@@ -55,6 +59,7 @@ class DietMealModel extends Equatable {
     return DietMealModel(
       id: id ?? this.id,
       name: name ?? this.name,
+      arabicName: arabicName ?? this.arabicName,
       isSelected: isSelected ?? this.isSelected,
       imageURL: imageURL ?? this.imageURL,
       numOfGrams: numOfGrams ?? this.numOfGrams,
@@ -68,5 +73,5 @@ class DietMealModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, name, imageURL, isSelected, numOfGrams];
+  List<Object?> get props => [id, name, arabicName, imageURL, isSelected, numOfGrams];
 }

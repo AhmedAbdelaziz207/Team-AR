@@ -64,7 +64,17 @@ class UserMealDetails extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      meal?.name ?? "",
+                      (() {
+                        final isAr = context.locale.languageCode == 'ar';
+                        final arName = meal?.arabicName;
+                        final enName = meal?.name;
+                        if (isAr) {
+                          return (arName != null && arName.isNotEmpty)
+                              ? arName
+                              : (enName ?? "");
+                        }
+                        return enName ?? arName ?? "";
+                      })(),
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontSize: 20.sp,

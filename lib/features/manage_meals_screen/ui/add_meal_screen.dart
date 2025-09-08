@@ -90,6 +90,14 @@ class _AddMealScreenState extends State<AddMealScreen> {
                   height: 8.h,
                 ),
                 CustomTextFormField(
+                  suffixIcon: Icons.translate,
+                  controller: context.read<MealCubit>().arabicNameController,
+                  hintText: 'Arabic name',
+                ),
+                SizedBox(
+                  height: 8.h,
+                ),
+                CustomTextFormField(
                   suffixIcon: Icons.propane_tank,
                   controller: context.read<MealCubit>().caloriesController,
                   hintText: AppLocalKeys.numOfCalories.tr(),

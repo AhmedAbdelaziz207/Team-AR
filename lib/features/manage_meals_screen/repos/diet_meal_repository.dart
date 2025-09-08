@@ -49,6 +49,7 @@ class DietMealRepository {
       // Build FormData with PascalCase keys expected by backend
       final formMap = <String, dynamic>{
         "Name": diet.name,
+        "ArabicName": diet.arabicName,
         "NumOfCalories": diet.numOfCalories,
         "NumOfCarps": diet.numOfCarbs, // note: server key uses 'Carps'
         "NumOfFats": diet.numOfFats,
@@ -89,87 +90,60 @@ class DietMealRepository {
       }
     }
   }
+Future<ApiResult<void>> updateDietMeal({
+  required DietMealModel diet,
+  required String imageUrl, // send the image URL instead of File
+}) async {
+  try {
+    final Dio dio = DioFactory.getDio();
 
- Future<ApiResult<void>> updateDietMeal({
-    required DietMealModel diet,
-    required File dietImage,
-  }) async {
-    try {
-      final Dio dio = DioFactory.getDio();
-  
-    //   // التحقق من حجم الصورة
-    //   final fileSize = await dietImage.length();
-    //   if (fileSize > 5 * 1024 * 1024) { // أكبر من 5 ميجابايت
-    //     return ApiResult.failure(ApiErrorModel(message: "حجم الصورة كبير جدًا، يجب أن يكون أقل من 5 ميجابايت"));
-    //   }
-  
-      // Build FormData with PascalCase keys expected by backend
-      final formMap = <String, dynamic>{
-        "Name": diet.name,
-        "NumOfCalories": diet.numOfCalories,
-        "NumOfCarps": diet.numOfCarbs, // note: server key uses 'Carps'
-        "NumOfFats": diet.numOfFats,
-        "NumOfProtein": diet.numOfProtein,
-        "NumOfGrams": diet.numOfGrams,
-        "FoodCategory": diet.foodCategory,
-        // "Image": await MultipartFile.fromFile(
-        //   dietImage.path,
-        //   filename: dietImage.path.split('/').last,
-        // ),
-      };
+    final body = {
+      "id": diet.id,
+      "name": diet.name,
+      "arabicName": diet.arabicName,
+      "numOfCalories": diet.numOfCalories,
+      "numOfProtein": diet.numOfProtein,
+      "numOfFats": diet.numOfFats,
+      "numOfCarps": diet.numOfCarbs,
+      "foodCategory": diet.foodCategory,
+      "imageURL": imageUrl,
+    };
 
-      // Create FormData for file upload
-      FormData formData = FormData.fromMap(formMap);
-  
-      await dio.put(
-        ApiEndPoints.baseUrl + ApiEndPoints.dietMeals,
-        data: formData,
-        options: Options(contentType: 'multipart/form-data'),
-      );
-      log("Success");
-  
-      return const ApiResult.success(null);
-    } catch (e) {
-      log(e.toString());
-      return ApiResult.failure(ApiErrorHandler.handle(e));
-    } finally {
-      // تنظيف الموارد
-      if (dietImage.existsSync()) {
-        // تنظيف الصورة المؤقتة إذا كانت في مجلد مؤقت
-        if (dietImage.path.contains('temp') || dietImage.path.contains('cache')) {
-          try {
-            await dietImage.delete();
-          } catch (e) {
-            log("Error deleting temporary image: $e");
-          }
-        }
-      }
-    }
+    await dio.put(
+      ApiEndPoints.baseUrl + ApiEndPoints.dietMeals,
+      data: body,
+      options: Options(contentType: "application/json"),
+    );
+
+    log("Success");
+    return const ApiResult.success(null);
+  } catch (e) {
+    log(e.toString());
+    return ApiResult.failure(ApiErrorHandler.handle(e));
   }
+}
 
-  Future<ApiResult<void>> assignDietMealToTrainee(
-    UserMealRequestModel userMeal, {
-    bool isUpdate = false,
-  }) async {
-    try {
-      if (isUpdate) {
-log("Update Diet ${userMeal.foods[0].foodId} ${userMeal.applicationUserId}");
-
-        await _apiService.updateDietMealForUser(userMeal.toJson());
-      } else {
-        await _apiService.assignDietMealForUser(userMeal.toJson());
-      }
-      log("Success Assign Diet Meal");
-      return const ApiResult.success(null);
-    } catch (e) {
-      return ApiResult.failure(ApiErrorHandler.handle(e));
-    }
-  }
 
   Future<ApiResult<void>> deleteMeal(int id) async {
     try {
       await _apiService.deleteDietMeal(id);
       return const ApiResult.success(true);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
+
+  Future<ApiResult<void>> assignDietMealToTrainee(
+    UserMealRequestModel request, {
+    bool isUpdate = false,
+  }) async {
+    try {
+      if (isUpdate) {
+        await _apiService.updateDietMealForUser(request.toJson());
+      } else {
+        await _apiService.assignDietMealForUser(request.toJson());
+      }
+      return const ApiResult.success(null);
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }

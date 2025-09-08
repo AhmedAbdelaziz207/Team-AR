@@ -122,7 +122,17 @@ class MealCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      meal?.name ?? "",
+                      (() {
+                        final isAr = context.locale.languageCode == 'ar';
+                        final arName = meal?.arabicName;
+                        final enName = meal?.name;
+                        if (isAr) {
+                          return (arName != null && arName.isNotEmpty)
+                              ? arName
+                              : (enName ?? "");
+                        }
+                        return enName ?? arName ?? "";
+                      })(),
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.bold,

@@ -86,7 +86,17 @@ class MealItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  mealModel?.name ?? "",
+                  (() {
+                    final isAr = context.locale.languageCode == 'ar';
+                    final arName = mealModel?.arabicName;
+                    final enName = mealModel?.name;
+                    if (isAr) {
+                      return (arName != null && arName.isNotEmpty)
+                          ? arName
+                          : (enName ?? "");
+                    }
+                    return enName ?? arName ?? "";
+                  })(),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.sp,
