@@ -158,8 +158,11 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                                       email: cubit.emailController.text,
                                       password: cubit.passwordController.text,
                                       startPackage: DateTime.now(),
-                                      endPackage: DateTime.now().add(Duration(
-                                          days: widget.userPlan.duration!)),
+                                      endPackage: DateTime.now().add(
+                                        Duration(
+                                          days: widget.userPlan.duration!,
+                                        ),
+                                      ),
                                       packageId: widget.userPlan.id!,
                                     ),
                                   );

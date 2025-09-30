@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -6,11 +8,9 @@ import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/features/payment/model/payment_model.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
-import 'package:team_ar/features/auth/register/model/user_model.dart';
-import 'package:team_ar/features/auth/register/repos/register_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class PaymentResultScreen extends StatefulWidget {
   final bool isSuccess;
@@ -80,6 +80,22 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
     );
   }
 
+  Future<void> _updateUserPaymentStatus() async {
+    try {
+      final String? userId =
+          await SharedPreferencesHelper.getString(AppConstants.userId);
+      log("Upadte user payment status $userId");
+      if (userId == null || userId.isEmpty) {
+        return;
+      }
+
+      final api = getIt<ApiService>();
+      await api.updateUserPayment(userId);
+    } catch (e) {
+      debugPrint('Failed to update user payment status: $e');
+    }
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -89,7 +105,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false, // منع الرجوع بزر الظهر
+      onWillPop: () async => false,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
@@ -235,6 +251,8 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
       } else {
         title = 'تم الدفع بنجاح! 🎉';
         titleColor = Colors.green;
+        // Handle is Paid to be true ;
+        _updateUserPaymentStatus();
       }
     } else {
       title = 'فشل في عملية الدفع ❌';
@@ -365,19 +383,20 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
               ),
             ],
           ),
-
           SizedBox(height: 16.h),
-
-          _buildDetailRow('رقم الفاتورة:', widget.paymentData!.invoiceId.toString()),
+          _buildDetailRow(
+              'رقم الفاتورة:', widget.paymentData!.invoiceId.toString()),
           _buildDetailRow('الباقة:', widget.plan.name ?? 'غير محدد'),
-          _buildDetailRow('المبلغ:', '${widget.paymentData!.amount} ${widget.paymentData!.currency}'),
+          _buildDetailRow('المبلغ:',
+              '${widget.paymentData!.amount} ${widget.paymentData!.currency}'),
           _buildDetailRow('طريقة الدفع:', _getPaymentMethodName()),
-          _buildDetailRow('التاريخ:', DateFormat('dd/MM/yyyy HH:mm', 'ar').format(DateTime.now())),
+          _buildDetailRow('التاريخ:',
+              DateFormat('dd/MM/yyyy HH:mm', 'ar').format(DateTime.now())),
           _buildDetailRow('المدة:', '${widget.plan.duration} يوم'),
-
           if (widget.paymentData!.fawryCode != null) ...[
             Divider(height: 20.h),
-            _buildDetailRow('كود فوري:', widget.paymentData!.fawryCode!, isHighlight: true),
+            _buildDetailRow('كود فوري:', widget.paymentData!.fawryCode!,
+                isHighlight: true),
           ],
         ],
       ),
@@ -399,7 +418,8 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
     }
   }
 
-  Widget _buildDetailRow(String label, String value, {bool isHighlight = false}) {
+  Widget _buildDetailRow(String label, String value,
+      {bool isHighlight = false}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6.h),
       child: Row(
@@ -432,13 +452,15 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
   Widget _buildActionButtons(BuildContext context) {
     return Column(
       children: [
-        if (widget.isSuccess && (_accountCreated || !widget.shouldCreateAccount)) ...[
+        if (widget.isSuccess &&
+            (_accountCreated || !widget.shouldCreateAccount)) ...[
           // زر تسجيل الدخول
           SizedBox(
             width: double.infinity,
             height: 50.h,
             child: ElevatedButton(
-              onPressed: _isCreatingAccount ? null : () => _navigateToLogin(context),
+              onPressed:
+                  _isCreatingAccount ? null : () => _navigateToLogin(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.newPrimaryColor,
                 foregroundColor: Colors.white,
@@ -478,7 +500,8 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
               ),
             ),
           ),
-        ] else if (widget.shouldCreateAccount && _accountCreationError != null) ...[
+        ] else if (widget.shouldCreateAccount &&
+            _accountCreationError != null) ...[
           // زر المحاولة مرة أخرى لإنشاء الحساب
           SizedBox(
             width: double.infinity,
@@ -581,7 +604,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
     Navigator.pushNamedAndRemoveUntil(
       context,
       Routes.login,
-          (route) => false,
+      (route) => false,
     );
   }
 
@@ -589,7 +612,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
     Navigator.pushNamedAndRemoveUntil(
       context,
       Routes.plans,
-          (route) => false,
+      (route) => false,
     );
   }
 }

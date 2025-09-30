@@ -26,6 +26,12 @@ class LoginCubit extends Cubit<LoginState> {
     result.when(
       success: (data) async {
         final loginResponse = data as LoginResponse;
+        DioFactory.setTokenIntoHeaderAfterLogin(loginResponse.token!);
+          await  SharedPreferencesHelper.setString(
+            AppConstants.userId,
+            loginResponse.id!,
+          );
+
         log("User token: ${loginResponse.token}");
         // Flags (we do NOT save yet)
         final bool isUnpaid = (loginResponse.isPaid == false);
@@ -41,34 +47,36 @@ class LoginCubit extends Cubit<LoginState> {
           return;
         }
 
-        // // If user hasn't paid: let UI redirect to plans/payment (do NOT save)
-        // if (isUnpaid) {
-        //   log("User is not paid -> UI will navigate to plans");
-        //   emit(LoginState.loginSuccess(loginResponse));
-        //   return;
-        // }
+        // If user hasn't paid: let UI redirect to plans/payment (do NOT save)
+        if (isUnpaid) {
+          log("User is not paid -> UI will navigate to plans");
+          emit(LoginState.loginSuccess(loginResponse));
+          return;
+        }
 
         // If paid, check package expiry BEFORE saving (endPackage <= today)
-        // try {
-        //   final userId = loginResponse.id;
-        //   if (userId != null && userId.isNotEmpty) {
-        //     final api = getIt<ApiService>();
-        //     final user = await api.getLoggedUserData(userId);
-        //     final end = user.endPackage; // DateTime?
-        //     final expired =
-        //         (end == null) || end.difference(DateTime.now()).inDays < 1;
-        //     if (expired) {
-        //       log("User package expired -> navigate to subscription expired (no save)");
-        //       emit(LoginState.navigateToSubscriptionExpired(loginResponse));
-        //       return;
-        //     }
-        //   }
-        // } catch (e) {
-        //   // If we fail to verify, be conservative and do not save; sen   log("Failed to verify subscription expiry: $e");d to expired screen
-       
-        //   emit(LoginState.navigateToSubscriptionExpired(loginResponse));
-        //   return;
-        // }
+        try {
+          final userId = loginResponse.id;
+          if (userId != null && userId.isNotEmpty) {
+     
+            DioFactory.setTokenIntoHeaderAfterLogin(loginResponse.token!);
+            final api = getIt<ApiService>();
+
+            final user = await api.getLoggedUserData(userId);
+            final end = user.endPackage; // DateTime?
+            final expired =
+                (end == null) || end.difference(DateTime.now()).inDays < 1;
+            if (expired) {
+              log("User package expired -> navigate to subscription expired (no save)");
+              emit(LoginState.navigateToSubscriptionExpired(loginResponse));
+              return;
+            }
+          }
+        } catch (e) {
+          // If we fail to verify, be conservative and do not save; sen log("Failed to verify subscription expiry: $e");d to expired screen
+          emit(LoginState.navigateToSubscriptionExpired(loginResponse));
+          return;
+        }
 
         // Handle incomplete data for trainers
         if (isIncomplete) {

@@ -46,12 +46,12 @@ class LoginBlocListener extends StatelessWidget {
               );
               return;
             }
-            // // Non-admin: go to subscription expired screen
-            // Navigator.pushNamedAndRemoveUntil(
-            //   context,
-            //   Routes.subscriptionExpired,
-            //   (route) => false,
-            // );
+            // Non-admin: go to subscription expired screen
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.subscriptionExpired,
+              (route) => false,
+            );
           },
           navigateToCompleteData: (loginResponse) {
             Navigator.pushNamedAndRemoveUntil(

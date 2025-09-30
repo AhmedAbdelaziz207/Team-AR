@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:team_ar/core/network/dio_factory.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
@@ -34,32 +35,42 @@ class RegisterBlocListener extends StatelessWidget {
               message: apiErrorModel.getErrorsMessage() ?? '',
             );
           }
-        }, success: (registerResponse) {
+        }, success: (registerResponse) async {
+          DioFactory.setTokenIntoHeaderAfterLogin(registerResponse.token!);
+          // save user Id
+        await  SharedPreferencesHelper.setString(
+            AppConstants.userId,
+            registerResponse.id!,
+          );
           showCustomDialog(
             context,
             onConfirm: () async {
-            
               final role = await SharedPreferencesHelper.getString(
                   AppConstants.userRole);
 
               if (role?.toLowerCase() == "admin") {
-                Navigator.pushReplacementNamed(context, Routes.registerSuccess,arguments: RegisterSuccessModel(
-                  userName: context
-                      .read<ConfirmSubscriptionCubit>()
-                      .nameController
-                      .text,
-                  email: context
-                      .read<ConfirmSubscriptionCubit>()
-                      .emailController
-                      .text,
-                  password: context
-                      .read<ConfirmSubscriptionCubit>()
-                      .passwordController
-                      .text,
-                ),);
+                Navigator.pushReplacementNamed(
+                  context,
+                  Routes.registerSuccess,
+                  arguments: RegisterSuccessModel(
+                    userName: context
+                        .read<ConfirmSubscriptionCubit>()
+                        .nameController
+                        .text,
+                    email: context
+                        .read<ConfirmSubscriptionCubit>()
+                        .emailController
+                        .text,
+                    password: context
+                        .read<ConfirmSubscriptionCubit>()
+                        .passwordController
+                        .text,
+                  ),
+                );
               } else {
                 // Non-admin: go to payment with userId so PaymentScreen fetches data
-                final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
+                final userId = await SharedPreferencesHelper.getString(
+                    AppConstants.userId);
                 if (context.mounted) {
                   if (userId != null && userId.isNotEmpty) {
                     Navigator.pushReplacement(
