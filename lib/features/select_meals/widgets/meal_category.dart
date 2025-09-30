@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
 import 'package:team_ar/features/select_meals/widgets/selected_meal_card.dart';
+import 'package:team_ar/features/select_meals/widgets/natural_supplement_card.dart';
 import '../../../core/theme/app_colors.dart';
 
 class MealCategory extends StatelessWidget {
@@ -35,10 +36,15 @@ class MealCategory extends StatelessWidget {
       iconColor: AppColors.black,
       collapsedIconColor: AppColors.black,
       children: meals.map(
-            (meal) => SelectMealCard(
-          key: ValueKey(meal.id),
-          meal: meal,
-        ),
+            (meal) => meal.foodCategory == 4
+                ? NaturalSupplementCard(
+                    key: ValueKey(meal.id),
+                    meal: meal,
+                  )
+                : SelectMealCard(
+                    key: ValueKey(meal.id),
+                    meal: meal,
+                  ),
       ).toList(),
     );
   }

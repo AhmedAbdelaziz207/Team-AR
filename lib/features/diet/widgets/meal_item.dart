@@ -58,26 +58,28 @@ class MealItem extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
-                bottom: 5.h,
-                left: 5.w,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 3.h),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(8.sp),
-                  ),
-                  child: Text( 
-                    '${(grams ?? mealModel?.numOfGrams?.toInt() ?? 0)} ${AppLocalKeys.gram.tr()}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10.sp,
-                      fontFamily: "Cairo",
+              if ((grams ?? mealModel?.numOfGrams?.toInt() ?? 0) > 0)
+                Positioned(
+                  bottom: 5.h,
+                  left: 5.w,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 6.w, vertical: 3.h),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(8.sp),
+                    ),
+                    child: Text(
+                      '${(grams ?? mealModel?.numOfGrams?.toInt() ?? 0)} ${AppLocalKeys.gram.tr()}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10.sp,
+                        fontFamily: "Cairo",
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
           SizedBox(width: 10.w),
@@ -103,47 +105,76 @@ class MealItem extends StatelessWidget {
                     fontFamily: "Cairo",
                   ),
                 ),
-                SizedBox(height: 5.h),
-                Row(
-                  children: [
-                    const Icon(Icons.local_fire_department,
-                        color: Colors.black),
-                    SizedBox(width: 5.w),
-                    Text(
-                      '${mealModel?.numOfCalories?.toStringAsFixed(1) ?? 0} Kcal',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontFamily: "Cairo",
-                        fontWeight: FontWeight.w500,
+                if ((mealModel?.numOfCalories ?? 0) > 0) ...[
+                  SizedBox(height: 5.h),
+                  Row(
+                    children: [
+                      const Icon(Icons.local_fire_department,
+                          color: Colors.black),
+                      SizedBox(width: 5.w),
+                      Text(
+                        '${mealModel?.numOfCalories?.toStringAsFixed(1) ?? 0} Kcal',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontFamily: "Cairo",
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: _buildMacroInfo(
-                          AppLocalKeys.proteins.tr(),
-                          '${(mealModel?.numOfProtein ?? 0).toStringAsFixed(1)}g'),
-                    ),
-                    Expanded(
-                      child: _buildMacroInfo(AppLocalKeys.fats.tr(),
-                          '${(mealModel?.numOfFats ?? 0).toStringAsFixed(1)}g'),
-                    ),
-                    Expanded(
-                      child: _buildMacroInfo(AppLocalKeys.carbs.tr(),
-                          '${(mealModel?.numOfCarbs ?? 0).toStringAsFixed(1)}g'),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
+                if (_hasAnyMacroNutrients()) ...[
+                  SizedBox(height: 10.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: _buildMacroNutrients(),
+                  ),
+                ],
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  bool _hasAnyMacroNutrients() {
+    return (mealModel?.numOfProtein ?? 0) > 0 ||
+        (mealModel?.numOfFats ?? 0) > 0 ||
+        (mealModel?.numOfCarbs ?? 0) > 0;
+  }
+
+  List<Widget> _buildMacroNutrients() {
+    List<Widget> macroWidgets = [];
+
+    if ((mealModel?.numOfProtein ?? 0) > 0) {
+      macroWidgets.add(
+        Expanded(
+          child: _buildMacroInfo(AppLocalKeys.proteins.tr(),
+              '${(mealModel?.numOfProtein ?? 0).toStringAsFixed(1)}g'),
+        ),
+      );
+    }
+
+    if ((mealModel?.numOfFats ?? 0) > 0) {
+      macroWidgets.add(
+        Expanded(
+          child: _buildMacroInfo(AppLocalKeys.fats.tr(),
+              '${(mealModel?.numOfFats ?? 0).toStringAsFixed(1)}g'),
+        ),
+      );
+    }
+
+    if ((mealModel?.numOfCarbs ?? 0) > 0) {
+      macroWidgets.add(
+        Expanded(
+          child: _buildMacroInfo(AppLocalKeys.carbs.tr(),
+              '${(mealModel?.numOfCarbs ?? 0).toStringAsFixed(1)}g'),
+        ),
+      );
+    }
+
+    return macroWidgets;
   }
 
   Widget _buildMacroInfo(String label, String value) {

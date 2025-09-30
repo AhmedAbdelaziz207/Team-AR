@@ -33,7 +33,7 @@ Future<void> setupServiceLocator() async {
     getIt.registerSingleton<SharedPreferences>(sharedPreferences);
 
     // Dio and ApiService
-    Dio dio = DioFactory.getDio();
+    Dio dio = await DioFactory.getDio();
     getIt.registerLazySingleton<Dio>(() => dio);
     getIt.registerLazySingleton<ApiService>(() => ApiService(getIt<Dio>()));
     print('✅ ApiService registered successfully');

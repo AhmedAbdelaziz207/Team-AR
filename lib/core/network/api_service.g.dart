@@ -536,7 +536,7 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<void> updateDietMealForUser(Map<String, dynamic> body) async {
+  Future<void> updateUserDiet(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -549,7 +549,7 @@ class _ApiService implements ApiService {
     )
         .compose(
           _dio.options,
-          '/api/UserFood',
+          'api/UserFood/UpdateFoodsToUser',
           queryParameters: queryParameters,
           data: _data,
         )

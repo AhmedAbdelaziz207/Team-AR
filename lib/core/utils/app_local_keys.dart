@@ -204,6 +204,13 @@ class AppLocalKeys {
 
   static var vegetables = "Vegetables";
 
+  static var naturalSupplements = "Natural Supplements";
+  
+  static var howToUseNaturalSupplements = "How to use natural supplements";
+  static var usageInstructions = "Usage Instructions";
+  static var enterUsageInstructions = "Enter usage instructions...";
+  static var howToUseIt = "How to use it";
+
   static var selectMealType = 'Select Meal Type';
 
   static var addNewUser = 'Add New User';

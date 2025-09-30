@@ -15,6 +15,7 @@ import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription
 import '../../../core/utils/app_local_keys.dart';
 import '../../../core/widgets/custom_dialog.dart';
 import '../../trainer_register_success/model/register_success_model.dart';
+import 'package:team_ar/features/payment/screens/payment_screen.dart';
 
 class RegisterBlocListener extends StatelessWidget {
   const RegisterBlocListener({super.key});
@@ -57,7 +58,23 @@ class RegisterBlocListener extends StatelessWidget {
                       .text,
                 ),);
               } else {
-                Navigator.pushNamed(context, Routes.rootScreen);
+                // Non-admin: go to payment with userId so PaymentScreen fetches data
+                final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
+                if (context.mounted) {
+                  if (userId != null && userId.isNotEmpty) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PaymentScreen(
+                          userId: userId,
+                        ),
+                      ),
+                    );
+                  } else {
+                    // Fallback to home if userId not available
+                    Navigator.pushNamed(context, Routes.rootScreen);
+                  }
+                }
               }
             },
             iconColor: AppColors.green,

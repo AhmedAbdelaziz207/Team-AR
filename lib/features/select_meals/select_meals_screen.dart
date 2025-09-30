@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,10 +20,13 @@ class SelectMealsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize meal number from params and ensure name is in sync
+    // Initialize meal number from params ONCE and ensure name is in sync
     final cubit = context.read<MealCubit>();
-    cubit.mealNum = params!.mealNum;
-    cubit.mealName = cubit.getMealName(cubit.mealNum);
+    if (!cubit.initializedFromScreen) {
+      cubit.mealNum = params!.mealNum;
+      cubit.mealName = cubit.getMealName(cubit.mealNum);
+      cubit.initializedFromScreen = true;
+    }
 
     log("meal num: ${params!.mealNum}");
 

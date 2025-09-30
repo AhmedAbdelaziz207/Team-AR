@@ -10,7 +10,7 @@ DietMealModel _$DietMealModelFromJson(Map<String, dynamic> json) =>
     DietMealModel(
       id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String?,
-      arabicName: (json['arabicName'] ?? json['ArabicName']) as String?,
+      arabicName: json['arabicName'] as String?,
       isSelected: json['isSelected'] as bool? ?? false,
       numOfGrams: (json['numOfGrams'] as num?)?.toDouble() ?? 100,
       imageURL: json['imageURL'] as String?,
@@ -19,6 +19,7 @@ DietMealModel _$DietMealModelFromJson(Map<String, dynamic> json) =>
       numOfCarbs: (json['numOfCarps'] as num?)?.toDouble(),
       numOfFats: (json['numOfFats'] as num?)?.toDouble(),
       foodCategory: (json['foodCategory'] as num?)?.toInt(),
+      note: json['note'] as String?,
     );
 
 Map<String, dynamic> _$DietMealModelToJson(DietMealModel instance) =>
@@ -34,4 +35,5 @@ Map<String, dynamic> _$DietMealModelToJson(DietMealModel instance) =>
       'numOfCarps': instance.numOfCarbs,
       'numOfFats': instance.numOfFats,
       'foodCategory': instance.foodCategory,
+      'note': instance.note,
     };

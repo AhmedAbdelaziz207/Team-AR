@@ -25,7 +25,8 @@ class RegisterRepository {
   }
 
   Future<ApiResult<RegisterResponse>> addTrainerByAdmin(
-      RegisterAdminRequest request) async {
+    RegisterAdminRequest request,
+  ) async {
     // Backend expects multipart/form-data
     try {
       final response = await apiService.addTrainerByAdmin(request.toJson());

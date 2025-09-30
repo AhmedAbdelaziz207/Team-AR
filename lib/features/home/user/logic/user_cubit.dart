@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
@@ -78,6 +79,10 @@ class UserCubit extends Cubit<UserState> {
   }
 
   updateUserPackage(userId, packageId) async {
+    log("=== UPDATE USER PACKAGE ===");
+    log("User ID: $userId");
+    log("Package ID: $packageId");
+    
     final result = await repo.updateUserPackage({
       "userId": userId,
       "packageId": packageId,
@@ -86,10 +91,32 @@ class UserCubit extends Cubit<UserState> {
     if (isClosed) return;
 
     result.when(
-      success: (data) => emit(const UserState.updateUserSuccess()),
-      failure: (error) => emit(
-        UserState.updateUserFailure(error.getErrorsMessage() ?? ""),
-      ),
+      success: (data) async {
+        log("Package update successful, now updating payment status...");
+        
+        // After successfully updating the package, also update payment status
+        final paymentResult = await repo.updateUserPayment(userId);
+        
+        if (isClosed) return;
+        
+        paymentResult.when(
+          success: (_) {
+            log("Payment status updated successfully - user is now paid");
+            emit(const UserState.updateUserSuccess());
+          },
+          failure: (error) {
+            // Even if payment update fails, we still show success for package update
+            // but log the payment error
+            log("Payment update failed: ${error.getErrorsMessage()}");
+            print("Payment update failed: ${error.getErrorsMessage()}");
+            emit(const UserState.updateUserSuccess());
+          },
+        );
+      },
+      failure: (error) {
+        log("Package update failed: ${error.getErrorsMessage()}");
+        emit(UserState.updateUserFailure(error.getErrorsMessage() ?? ""));
+      },
     );
   }
 

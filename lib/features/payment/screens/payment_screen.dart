@@ -1,42 +1,28 @@
-import 'dart:convert';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
-import 'package:team_ar/core/network/dio_factory.dart';
-import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
-import 'package:team_ar/core/utils/app_constants.dart';
-import 'package:team_ar/features/auth/register/model/user_model.dart';
-import 'package:team_ar/features/auth/register/repos/register_repository.dart';
+import 'package:team_ar/features/home/admin/data/trainee_model.dart' as admin_user;
 import 'package:team_ar/features/payment/logic/payment_cubit.dart';
 import 'package:team_ar/features/payment/model/payment_model.dart';
 import 'package:team_ar/features/payment/repository/payment_repository.dart';
 import 'package:team_ar/features/payment/screens/payment_result_screen.dart';
+import 'package:team_ar/features/payment/widgets/customer_info_card.dart';
+import 'package:team_ar/features/payment/widgets/info_row.dart';
+import 'package:team_ar/features/payment/widgets/payment_methods_list.dart';
+import 'package:team_ar/features/payment/widgets/plan_details_card.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentScreen extends StatefulWidget {
-  final UserPlan plan;
-  final String customerName;
-  final String customerEmail;
-  final String customerPhone;
-  final bool isNewUser;
-  final String? userId;
+  final String userId;
 
-  const PaymentScreen({
-    super.key,
-    required this.plan,
-    required this.customerName,
-    required this.customerEmail,
-    required this.customerPhone,
-    this.userId,
-    this.isNewUser = false,
-  });
+  const PaymentScreen({super.key, required this.userId});
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -44,114 +30,49 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   late PaymentCubit _paymentCubit;
-  String? _userId;
-  Map<String, dynamic>? _tempUserData;
   bool _isLoadingUserData = true;
+  admin_user.TraineeModel? _userData;
+  UserPlan? _planData;
 
   @override
   void initState() {
     super.initState();
     debugPrint('=== بداية تهيئة شاشة الدفع ===');
     _paymentCubit = PaymentCubit(getIt<PaymentRepository>());
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    debugPrint('=== بداية تحميل بيانات المستخدم ===');
-
-    try {
-      if (widget.isNewUser) {
-        await _loadTempUserData();
-      } else {
-        await _loadExistingUserData();
-      }
-    } catch (e) {
-      debugPrint('خطأ في تحميل بيانات المستخدم: $e');
-      _showErrorAndNavigate('حدث خطأ في تحميل بيانات المستخدم');
-    } finally {
-      setState(() {
-        _isLoadingUserData = false;
-      });
-    }
-  }
-
-  Future<void> _loadTempUserData() async {
-    debugPrint('تحميل بيانات المستخدم المؤقت');
-
-    final prefs = await SharedPreferences.getInstance();
-    final tempUserJson = prefs.getString('temp_user') ??
-        await SharedPreferencesHelper.getString('temp_user');
-
-    if (tempUserJson != null && tempUserJson.isNotEmpty) {
-      try {
-        final tempData = jsonDecode(tempUserJson);
-
-        // التحقق من صحة البيانات وإصلاحها إذا لزم الأمر
-        if (tempData['Id'] == null || tempData['Id'] == 0) {
-          tempData['Id'] = DateTime.now().millisecondsSinceEpoch;
-          await _saveTempUserData(tempData);
-        }
-
+    _fetchUserAndPlan(widget.userId).whenComplete(() {
+      if (mounted) {
         setState(() {
-          _tempUserData = tempData;
+          _isLoadingUserData = false;
         });
-        debugPrint('تم تحميل بيانات المستخدم المؤقت بنجاح');
-      } catch (e) {
-        debugPrint('خطأ في تحليل بيانات المستخدم المؤقت: $e');
-        _showErrorAndNavigate('بيانات التسجيل غير صحيحة، يرجى إعادة التسجيل');
       }
-    } else {
-      _showErrorAndNavigate('لم يتم العثور على بيانات التسجيل');
-    }
+    });
   }
 
-  Future<void> _loadExistingUserData() async {
-    final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
-
-    if (userId != null && userId.isNotEmpty) {
-      setState(() {
-        _userId = userId;
-      });
-      debugPrint('تم تحميل معرف المستخدم: $userId');
-    } else {
-      _showErrorAndNavigate('يرجى تسجيل الدخول أولاً');
-    }
-  }
-
-  Future<void> _saveTempUserData(Map<String, dynamic> data) async {
+  Future<void> _fetchUserAndPlan(String userId) async {
     try {
-      final jsonString = jsonEncode(data);
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('temp_user', jsonString);
-      await SharedPreferencesHelper.setString('temp_user', jsonString);
-    } catch (e) {
-      debugPrint('خطأ في حفظ البيانات المؤقتة: $e');
-    }
-  }
-
-  void _showErrorAndNavigate(String message) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          if (widget.isNewUser) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, Routes.register, (route) => false);
-          } else {
-            Navigator.pushNamedAndRemoveUntil(
-                context, Routes.login, (route) => false);
-          }
-        }
+      final api = getIt<ApiService>();
+      final user = await api.getLoggedUserData(userId);
+      setState(() {
+        _userData = user;
       });
+      // If no plan passed, and user has packageId, fetch plan
+      final pkgId = user.packageId;
+      debugPrint('Fetched user. packageId=$pkgId');
+      if (pkgId != null) {
+        try {
+          final plan = await api.getPlan(pkgId);
+          setState(() {
+            _planData = plan;
+          });
+        } catch (e) {
+          debugPrint('فشل في جلب تفاصيل الباقة: $e');
+        }
+      }
+    } catch (e) {
+      debugPrint('فشل في جلب بيانات المستخدم: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -194,19 +115,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
         message: 'تم الدفع بنجاح! جاري إنشاء حسابك...',
         paymentData: state.paymentData,
         plan: state.plan,
-        shouldCreateAccount: true,
-        tempUserData: state.tempUserData,
-        customerEmail: state.customerEmail,
-        customerPassword: state.customerPassword,
       );
     } else if (state is PaymentFailed) {
-      _navigateToPaymentResult(
-        isSuccess: false,
-        message: state.message,
-        paymentData: state.paymentData,
-        plan: state.plan,
-      );
-    } else if (state is PaymentExpired) {
       _navigateToPaymentResult(
         isSuccess: false,
         message: state.message,
@@ -225,7 +135,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         isSuccess: false,
         message: state.message,
         paymentData: null,
-        plan: widget.plan,
+        plan: _planData,
       );
     } else if (state is PaymentMethodsError) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -243,11 +153,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
     required String message,
     PaymentData? paymentData,
     UserPlan? plan,
-    bool shouldCreateAccount = false,
-    Map<String, dynamic>? tempUserData,
-    String? customerEmail,
-    String? customerPassword,
   }) {
+    final UserPlan? effectivePlan = plan ?? _planData;
+    final String effectiveEmail = _userData?.email ?? '';
+    if (effectivePlan == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('لا توجد باقة لعرض نتيجة الدفع')),
+      );
+      return;
+    }
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -255,42 +169,70 @@ class _PaymentScreenState extends State<PaymentScreen> {
           isSuccess: isSuccess,
           message: message,
           paymentData: paymentData,
-          plan: plan ?? widget.plan,
-          userEmail: customerEmail ?? widget.customerEmail,
-          shouldCreateAccount: shouldCreateAccount,
-          tempUserData: tempUserData,
-          customerPassword: customerPassword,
+          plan: effectivePlan,
+          userEmail: effectiveEmail,
         ),
       ),
     );
   }
 
   void _createPaymentWithMethod(int paymentMethodId) {
-    final userId = _getUserId();
-    if (userId == null) return;
+    log("_createPaymentWithMethod: $paymentMethodId");
+    final effectivePlan = _planData;
+    // if (effectivePlan == null) {
+    //   // No plan available: navigate user to plans screen to select one
+    //   Navigator.pushNamed(context, Routes.subscriptionPlans);
+    //   return;
+    // }
+    final userId = widget.userId;
 
     debugPrint('إنشاء دفع بطريقة: $paymentMethodId');
 
-    // حفظ البيانات المؤقتة في PaymentCubit
-    if (widget.isNewUser && _tempUserData != null) {
-      _paymentCubit.setTempUserData(
-        _tempUserData!,
-        widget.customerEmail,
-        // استخراج كلمة السر من البيانات المؤقتة
-        _tempUserData!['Password'] ?? '',
+    // Resolve reliable customer data
+    Future<void> proceedWith(String name, String email) async {
+      _paymentCubit.createPayment(
+        customerName: name,
+        customerEmail: email,
+        plan: effectivePlan!,
+        userId: userId,
+        paymentMethodId: paymentMethodId,
       );
     }
 
-    _paymentCubit.createPayment(
-      customerName: widget.customerName,
-      customerEmail: widget.customerEmail,
-      plan: widget.plan,
-      userId: userId,
-      paymentMethodId: paymentMethodId,
-    );
+    String name = _userData?.name ?? _userData?.userName ?? '';
+    String email = _userData?.email ?? '';
+
+    // If missing, try fetching user data once more
+    if (name.isEmpty || email.isEmpty) {
+      getIt<ApiService>().getLoggedUserData(userId).then((user) {
+        setState(() {
+          _userData = user;
+        });
+        final fallbackName = user.name ?? user.userName ?? '';
+        final fallbackEmail = user.email ?? '';
+        if (fallbackName.isEmpty || fallbackEmail.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تعذر الحصول على بيانات العميل. يرجى المحاولة مرة أخرى.'),
+            ),
+          );
+          return;
+        }
+        proceedWith(fallbackName, fallbackEmail);
+      }).catchError((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تعذر الحصول على بيانات العميل. يرجى المحاولة مرة أخرى.'),
+          ),
+        );
+      });
+    } else {
+      proceedWith(name, email);
+    }
   }
 
   Widget _buildPaymentContent(BuildContext context, PaymentState state) {
+    log("_buildPaymentContent: $state");
     if (state is PaymentLoading || state is PaymentVerifying) {
       return _buildLoadingWidget();
     } else if (state is PaymentCreated) {
@@ -298,7 +240,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
     } else if (state is PaymentMethodsLoading) {
       return const Center(child: CircularProgressIndicator());
     } else if (state is PaymentMethodsLoaded) {
-      return _buildPaymentMethodsScreen(state.paymentMethods);
+      return PaymentMethodsList(
+        methods: state.paymentMethods,
+        onSelect: (m) => _createPaymentWithMethod(m.id),
+      );
     } else {
       return _buildInitialScreen();
     }
@@ -318,74 +263,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Widget _buildInitialScreen() {
+    final UserPlan? effectivePlan = _planData;
+    final String name = _userData?.name ?? _userData?.userName ?? '';
+    final String email = _userData?.email ?? '';
     return SingleChildScrollView(
       padding: EdgeInsets.all(16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildPlanDetailsCard(),
+          if (effectivePlan != null) PlanDetailsCard(plan: effectivePlan),
           SizedBox(height: 24.h),
-          _buildCustomerInfoCard(),
+          CustomerInfoCard(
+            customerName: name,
+            customerEmail: email,
+          ),
           SizedBox(height: 32.h),
           _buildPaymentButton(),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPlanDetailsCard() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      child: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'تفاصيل الاشتراك',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.newPrimaryColor,
-              ),
-            ),
-            SizedBox(height: 16.h),
-            _buildInfoRow('الباقة:', widget.plan.name ?? 'غير محدد'),
-            _buildInfoRow('المدة:', '${widget.plan.duration} يوم'),
-            _buildInfoRow('السعر:', '${widget.plan.newPrice} جنيه'),
-            if (widget.plan.oldPrice != null &&
-                widget.plan.oldPrice! > widget.plan.newPrice!)
-              _buildInfoRow('الخصم:',
-                  '${widget.plan.oldPrice! - widget.plan.newPrice!} جنيه'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCustomerInfoCard() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      child: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'معلومات العميل',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.newPrimaryColor,
-              ),
-            ),
-            SizedBox(height: 16.h),
-            _buildInfoRow('الاسم:', widget.customerName),
-            _buildInfoRow('البريد الإلكتروني:', widget.customerEmail),
-          ],
-        ),
       ),
     );
   }
@@ -417,117 +311,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  Widget _buildPaymentMethodsScreen(List<PaymentMethod> paymentMethods) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'اختر طريقة الدفع',
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: AppColors.newPrimaryColor,
-            ),
-          ),
-          SizedBox(height: 16.h),
-          ...paymentMethods.map((method) => _buildPaymentMethodCard(method)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentMethodCard(PaymentMethod method) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8.h),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      child: InkWell(
-        onTap: () => _createPaymentWithMethod(method.id),
-        borderRadius: BorderRadius.circular(12.r),
-        child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Row(
-            children: [
-              _buildPaymentMethodIcon(method),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      method.name,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if (method.redirect)
-                      Text(
-                        'يتطلب إعادة توجيه',
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 20.w,
-                color: Colors.grey,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPaymentMethodIcon(PaymentMethod method) {
-    if (method.logo != null && method.logo!.isNotEmpty) {
-      return Image.network(
-        method.logo!,
-        width: 40.w,
-        height: 40.h,
-        errorBuilder: (context, error, stackTrace) {
-          return Icon(
-            Icons.payment,
-            size: 40.w,
-            color: AppColors.newPrimaryColor,
-          );
-        },
-      );
-    }
-    return Icon(
-      Icons.payment,
-      size: 40.w,
-      color: AppColors.newPrimaryColor,
-    );
-  }
-
-  String? _getUserId() {
-    if (widget.isNewUser && _tempUserData != null) {
-      final userId = _tempUserData!['Id']?.toString();
-      if (userId == null || userId.isEmpty || userId == '0') {
-        _showErrorAndNavigate('معرف المستخدم غير صحيح');
-        return null;
-      }
-      return userId;
-    } else if (!widget.isNewUser && _userId != null && _userId!.isNotEmpty) {
-      return _userId;
-    } else {
-      _showErrorAndNavigate(widget.isNewUser
-          ? 'يرجى إكمال التسجيل أولاً'
-          : 'يرجى تسجيل الدخول أولاً');
-      return null;
-    }
-  }
-
-// payment_screen.dart - تحديث دالة _buildPaymentWebView
   Widget _buildPaymentWebView(PaymentData paymentData) {
+    log("Redirect to url:  ${paymentData.redirectTo}");
     if (paymentData.redirectTo == null || paymentData.redirectTo!.isEmpty) {
       return _buildPaymentInstructions(paymentData);
     }
@@ -551,11 +336,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   isSuccess: true,
                   message: 'تم الدفع بنجاح!',
                   paymentData: paymentData,
-                  plan: widget.plan,
-                  shouldCreateAccount: widget.isNewUser,
-                  tempUserData: _tempUserData,
-                  customerEmail: widget.customerEmail,
-                  customerPassword: _tempUserData?['Password'] ?? '',
+                  plan: _planData,
                 );
               });
             } else if (lowerUrl.contains('fail') ||
@@ -565,7 +346,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 isSuccess: false,
                 message: 'فشلت عملية الدفع',
                 paymentData: paymentData,
-                plan: widget.plan,
+                plan: _planData,
               );
             } else if (lowerUrl.contains('cancel')) {
               debugPrint('تم إلغاء الدفع: $url');
@@ -573,7 +354,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 isSuccess: false,
                 message: 'تم إلغاء عملية الدفع',
                 paymentData: paymentData,
-                plan: widget.plan,
+                plan: _planData,
               );
             } else if (lowerUrl.contains('pending')) {
               debugPrint('الدفع قيد المعالجة: $url');
@@ -599,6 +380,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ),
       );
 
+    log("Redirect to url:  ${paymentData.redirectTo}");
     // تحميل الرابط
     controller.loadRequest(Uri.parse(paymentData.redirectTo!));
     return WebViewWidget(controller: controller);
@@ -635,12 +417,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
             child: Column(
               children: [
-                _buildInfoRow(
-                    'رقم الفاتورة:', paymentData.invoiceId.toString()),
-                _buildInfoRow(
-                    'المبلغ:', '${paymentData.amount} ${paymentData.currency}'),
+                InfoRow(
+                    label: 'رقم الفاتورة:', value: paymentData.invoiceId.toString()),
+                InfoRow(
+                    label: 'المبلغ:', value: '${paymentData.amount} ${paymentData.currency}'),
                 if (paymentData.expireDate != null)
-                  _buildInfoRow('تنتهي في:', paymentData.expireDate!),
+                  InfoRow(label: 'تنتهي في:', value: paymentData.expireDate!),
               ],
             ),
           ),
@@ -685,11 +467,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       isSuccess: true,
                       message: 'تم الدفع بنجاح!',
                       paymentData: paymentData,
-                      plan: widget.plan,
-                      shouldCreateAccount: widget.isNewUser,
-                      tempUserData: _tempUserData,
-                      customerEmail: widget.customerEmail,
-                      customerPassword: _tempUserData?['Password'] ?? '',
+                      plan: _planData,
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -728,7 +506,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       isSuccess: false,
                       message: 'فشل في عملية الدفع',
                       paymentData: paymentData,
-                      plan: widget.plan,
+                      plan: _planData,
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -812,133 +590,5 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.h),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[700],
-            ),
-          ),
-          SizedBox(width: 8.w),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(fontSize: 16.sp),
-              textAlign: TextAlign.start,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Future<void> _handlePaymentSuccess() async {
-    debugPrint('=== بداية معالجة نجاح الدفع ===');
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تم الدفع بنجاح! جاري تفعيل الاشتراك...'),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    if (widget.isNewUser && _tempUserData != null) {
-      await _completeUserRegistration();
-    } else {
-      // للمستخدم الحالي، العودة إلى الشاشة الرئيسية
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    }
-  }
-
-  Future<void> _completeUserRegistration() async {
-    try {
-      final registerRepo = RegisterRepository(getIt<ApiService>());
-      final oldUser = UserModel.fromJson(_tempUserData!);
-
-      final now = DateTime.now();
-      final user = UserModel(
-        id: oldUser.id,
-        userName: oldUser.userName,
-        email: oldUser.email,
-        password: oldUser.password,
-        age: oldUser.age,
-        address: oldUser.address,
-        phone: oldUser.phone,
-        long: oldUser.long,
-        weight: oldUser.weight,
-        dailyWork: oldUser.dailyWork,
-        areYouSmoker: oldUser.areYouSmoker,
-        aimOfJoin: oldUser.aimOfJoin,
-        anyPains: oldUser.anyPains,
-        allergyOfFood: oldUser.allergyOfFood,
-        foodSystem: oldUser.foodSystem,
-        numberOfMeals: oldUser.numberOfMeals,
-        lastExercise: oldUser.lastExercise,
-        anyInfection: oldUser.anyInfection,
-        abilityOfSystemMoney: oldUser.abilityOfSystemMoney,
-        numberOfDays: oldUser.numberOfDays,
-        gender: oldUser.gender,
-        packageId: widget.plan.id,
-        startPackage: now,
-        endPackage: now.add(Duration(days: widget.plan.duration!)),
-      );
-
-      final result = await registerRepo.addTrainer(user);
-
-      result.when(
-        success: (data) async {
-          // حفظ بيانات المستخدم
-          await SharedPreferencesHelper.setString(
-              AppConstants.userId, data.id.toString());
-          await SharedPreferencesHelper.setString(
-              AppConstants.userName, data.userName ?? '');
-          await SharedPreferencesHelper.setString(
-              AppConstants.token, data.token ?? '');
-          await SharedPreferencesHelper.setString(
-              AppConstants.userRole, 'user');
-
-          if (data.token != null) {
-            DioFactory.setTokenIntoHeaderAfterLogin(data.token!);
-          }
-
-          // حذف البيانات المؤقتة
-          await SharedPreferencesHelper.remove('temp_user');
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.remove('temp_user');
-
-          // التوجيه إلى الشاشة الرئيسية
-          Navigator.pushNamedAndRemoveUntil(
-              context, Routes.rootScreen, (route) => false);
-        },
-        failure: (error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('فشل إكمال التسجيل: ${error.toString()}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        },
-      );
-    } catch (e) {
-      debugPrint('خطأ في إكمال التسجيل: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('حدث خطأ في إكمال التسجيل: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }

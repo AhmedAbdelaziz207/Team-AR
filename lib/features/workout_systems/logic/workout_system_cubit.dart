@@ -15,6 +15,7 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
   );
   final nameController = TextEditingController();
   File? workoutPdf;
+  double uploadProgress = 0.0; // 0.0 - 1.0
   
   // إضافة متغيرات لتخزين البيانات
   List<WorkoutSystemModel>? _cachedWorkoutSystems;
@@ -49,6 +50,12 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
   }
 
   void uploadWorkoutSystem() async {
+    // Guard: require name and file
+    if ((nameController.text).trim().isEmpty || workoutPdf == null) {
+      return;
+    }
+
+    uploadProgress = 0.0;
     emit(const WorkoutSystemState.loading());
 
     final ApiResult result = await repo.uploadWorkoutSystemFile(
@@ -58,11 +65,23 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
         url: "",
       ),
       workoutPdf!,
+      onSendProgress: (sent, total) {
+        if (total > 0) {
+          uploadProgress = sent / total;
+          if (!isClosed) emit(const WorkoutSystemState.loading());
+        }
+      },
     );
 
     result.when(
-      success: (data) => emit(const WorkoutSystemState.uploadSuccess()),
-      failure: (error) => emit(WorkoutSystemState.failure(error)),
+      success: (data) {
+        uploadProgress = 0.0;
+        if (!isClosed) emit(const WorkoutSystemState.uploadSuccess());
+      },
+      failure: (error) {
+        uploadProgress = 0.0;
+        if (!isClosed) emit(WorkoutSystemState.failure(error));
+      },
     );
   }
 

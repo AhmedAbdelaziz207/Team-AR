@@ -47,12 +47,14 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                showDeleteDietDialog(isEmpty ? null :  () {
-                  context
-                      .read<UserDietCubit>()
-                      .removeUserDiet(widget.userId ?? "");
-                  Navigator.pop(context);
-                });
+                showDeleteDietDialog(isEmpty
+                    ? null
+                    : () {
+                        context
+                            .read<UserDietCubit>()
+                            .removeUserDiet(widget.userId ?? "");
+                        Navigator.pop(context);
+                      });
               },
               icon: const Icon(
                 Icons.delete,
@@ -81,7 +83,7 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
             });
 
             log("number of meals: $numberOfMeals");
-          } else  {
+          } else {
             setState(() {
               isEmpty = true;
             });
@@ -159,45 +161,48 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
                                 fontFamily: "Cairo",
                               ),
                             ),
-                            // TextButton(
-                            //   onPressed: () {
-                            //     Navigator.pushNamed(
-                            //       context,
-                            //       Routes.selectUserMeals,
-                            //       arguments: SelectMealParams(
-                            //           userId: widget.userId!,
-                            //           mealNum: entry.key,
-                            //           isUpdate: true),
-                            //     );
-                            //   },
-                            //   style: TextButton.styleFrom(
-                            //     foregroundColor: AppColors.primaryColor,
-                            //   ),
-                            //   child: Row(
-                            //     children: [
-                            //       Text(
-                            //         AppLocalKeys.replace.tr(),
-                            //         style: Theme.of(context)
-                            //             .textTheme
-                            //             .bodyMedium
-                            //             ?.copyWith(
-                            //               fontWeight: FontWeight.w600,
-                            //               color: AppColors.primaryColor,
-                            //               fontFamily: "Cairo",
-                            //             ),
-                            //       ),
-                            //       const SizedBox(width: 4),
-                            //       const Icon(
-                            //         Icons.replay_circle_filled_outlined,
-                            //         size: 16,
-                            //         color: AppColors.primaryColor,
-                            //       ),
-                            //     ],
-                            //   ),
-                            // )
-                         
-                         
-                         
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.selectUserMeals,
+                                  arguments: SelectMealParams(
+                                      userId: widget.userId!,
+                                      mealNum: entry.key,
+                                      isUpdate: true),
+                                ).then((value) {
+                                  if (value != null) {
+                                    context.read<UserDietCubit>().getUserDiet(
+                                          userId: widget.userId ?? "",
+                                        );
+                                  }
+                                });
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: AppColors.primaryColor,
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    AppLocalKeys.replace.tr(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.primaryColor,
+                                          fontFamily: "Cairo",
+                                        ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(
+                                    Icons.replay_circle_filled_outlined,
+                                    size: 16,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         ),
                         const SizedBox(height: 8),

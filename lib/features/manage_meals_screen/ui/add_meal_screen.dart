@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +19,7 @@ class AddMealScreen extends StatefulWidget {
 
 class _AddMealScreenState extends State<AddMealScreen> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  int selectedMealType = 0; // Track selected meal type
 
   @override
   Widget build(BuildContext context) {
@@ -97,45 +99,81 @@ class _AddMealScreenState extends State<AddMealScreen> {
                 SizedBox(
                   height: 8.h,
                 ),
-                CustomTextFormField(
-                  suffixIcon: Icons.propane_tank,
-                  controller: context.read<MealCubit>().caloriesController,
-                  hintText: AppLocalKeys.numOfCalories.tr(),
-                  keyboardType: TextInputType.number,
-                ),
-                SizedBox(
-                  height: 8.h,
-                ),
-                CustomTextFormField(
-                  controller: context.read<MealCubit>().carbsController,
-                  hintText: AppLocalKeys.numOfCarbs.tr(),
-                  keyboardType: const TextInputType.numberWithOptions(),
-                  suffixIcon: Icons.propane,
-                ),
-                SizedBox(
-                  height: 8.h,
-                ),
-                CustomTextFormField(
-                  controller: context.read<MealCubit>().proteinController,
-                  hintText: AppLocalKeys.numOfProteins.tr(),
-                  keyboardType: const TextInputType.numberWithOptions(),
-                  suffixIcon: Icons.propane_tank,
-                ),
-                SizedBox(
-                  height: 8.h,
-                ),
-                CustomTextFormField(
-                  controller: context.read<MealCubit>().fatController,
-                  hintText: AppLocalKeys.numOfFat.tr(),
-                  keyboardType: const TextInputType.numberWithOptions(),
-                  suffixIcon: Icons.propane,
-                ),
+                // Show different fields based on meal type
+                if (selectedMealType == 4) ...[
+                //   // Natural supplements - show usage instructions field
+                //   CustomTextFormField(
+                //     suffixIcon: Icons.eco,
+                //     controller: context.read<MealCubit>().usageInstructionsController,
+                //     hintText: AppLocalKeys.enterUsageInstructions.tr(),
+                //     isMultiline: true,
+                //     onChanged: (value) {
+                //       log("=== USAGE INSTRUCTIONS CHANGED ===");
+                //       log("New value: '$value'");
+                //     },
+                //   ),
+                ] else ...[
+                  // Regular meals - show nutritional fields
+                  CustomTextFormField(
+                    suffixIcon: Icons.propane_tank,
+                    controller: context.read<MealCubit>().caloriesController,
+                    hintText: AppLocalKeys.numOfCalories.tr(),
+                    keyboardType: TextInputType.number,
+                  ),
+                  SizedBox(
+                    height: 8.h,
+                  ),
+                  CustomTextFormField(
+                    controller: context.read<MealCubit>().carbsController,
+                    hintText: AppLocalKeys.numOfCarbs.tr(),
+                    keyboardType: const TextInputType.numberWithOptions(),
+                    suffixIcon: Icons.propane,
+                  ),
+                  SizedBox(
+                    height: 8.h,
+                  ),
+                  CustomTextFormField(
+                    controller: context.read<MealCubit>().proteinController,
+                    hintText: AppLocalKeys.numOfProteins.tr(),
+                    keyboardType: const TextInputType.numberWithOptions(),
+                    suffixIcon: Icons.propane_tank,
+                  ),
+                  SizedBox(
+                    height: 8.h,
+                  ),
+                  CustomTextFormField(
+                    controller: context.read<MealCubit>().fatController,
+                    hintText: AppLocalKeys.numOfFat.tr(),
+                    keyboardType: const TextInputType.numberWithOptions(),
+                    suffixIcon: Icons.propane,
+                  ),
+                ],
                 SizedBox(
                   height: 12.h,
                 ),
                 MealTypeDropdown(
                   onChanged: (type) {
+                    log("=== MEAL TYPE CHANGE ===");
+                    log("Selected meal type: $type");
+                    log("Is Natural Supplement: ${type == 4}");
+                    
+                    setState(() {
+                      selectedMealType = type;
+                    });
                     context.read<MealCubit>().mealType = type;
+                    
+                    // Set nutritional values to zero for Natural supplements
+                    if (type == 4) {
+                      context.read<MealCubit>().caloriesController.text = '0';
+                      context.read<MealCubit>().carbsController.text = '0';
+                      context.read<MealCubit>().proteinController.text = '0';
+                      context.read<MealCubit>().fatController.text = '0';
+                      log("Set nutritional values to 0 for natural supplement");
+                    } else {
+                      // Clear usage instructions when switching away from natural supplements
+                      context.read<MealCubit>().usageInstructionsController.clear();
+                      log("Cleared usage instructions for regular meal");
+                    }
                   },
                 ),
                 SizedBox(
@@ -164,8 +202,15 @@ class _AddMealScreenState extends State<AddMealScreen> {
                     builder: (context, state) {
                       return ElevatedButton(
                         onPressed: () {
+                          log("=== SAVE BUTTON PRESSED ===");
+                          log("Selected meal type: $selectedMealType");
+                          log("Usage instructions: '${context.read<MealCubit>().usageInstructionsController.text}'");
+                          log("Form valid: ${formKey.currentState!.validate()}");
+                          log("Image selected: ${context.read<MealCubit>().image != null}");
+                          
                           if (formKey.currentState!.validate() &&
                               context.read<MealCubit>().image != null) {
+                            log("Calling addMeal()...");
                             context.read<MealCubit>().addMeal();
                           }
 

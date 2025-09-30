@@ -2,32 +2,27 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:team_ar/features/manage_meals_screen/logic/meal_state.dart';
 import '../../../core/network/api_endpoints.dart';
 import '../../manage_meals_screen/logic/meal_cubit.dart';
 import '../../manage_meals_screen/model/meal_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'meal_counter.dart';
 
-class SelectMealCard extends StatefulWidget {
+class SelectMealCard extends StatelessWidget {
   final DietMealModel meal;
 
   const SelectMealCard({super.key, required this.meal});
 
   @override
-  State<SelectMealCard> createState() => _SelectMealCardState();
-}
-
-class _SelectMealCardState extends State<SelectMealCard> {
-  @override
   Widget build(BuildContext context) {
-    return BlocListener<MealCubit, MealState>(
-      listener: (context, state) {
-        if (state is MailAssigned) {
-          {
-            context.read<MealCubit>().getMeals();
-          }
-        }
+    // No listener here; do not trigger getMeals() after assign. The cubit
+    // already emits MealsLoaded with cached/reset meals.
+    return InkWell(
+      onTap: () {
+        context.read<MealCubit>().toggleMealSelection(
+              meal.id!,
+              meal.numOfGrams ?? 100,
+            );
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -50,7 +45,7 @@ class _SelectMealCardState extends State<SelectMealCard> {
               borderRadius: BorderRadius.circular(12),
               child: CachedNetworkImage(
                 imageUrl:
-                    ApiEndPoints.imagesBaseUrl + (widget.meal.imageURL ?? ""),
+                    ApiEndPoints.imagesBaseUrl + (meal.imageURL ?? ""),
                 width: 80.w,
                 height: 80.h,
                 fit: BoxFit.cover,
@@ -80,8 +75,8 @@ class _SelectMealCardState extends State<SelectMealCard> {
                         child: Text(
                           (() {
                             final isAr = context.locale.languageCode == 'ar';
-                            final arName = widget.meal.arabicName;
-                            final enName = widget.meal.name;
+                            final arName = meal.arabicName;
+                            final enName = meal.name;
                             if (isAr) {
                               return (arName != null && arName.isNotEmpty)
                                   ? arName
@@ -96,11 +91,11 @@ class _SelectMealCardState extends State<SelectMealCard> {
                         ),
                       ),
                       Checkbox(
-                        value: widget.meal.isSelected,
+                        value: meal.isSelected ?? false,
                         onChanged: (_) {
                           context.read<MealCubit>().toggleMealSelection(
-                                widget.meal.id!,
-                                widget.meal.numOfGrams ?? 100,
+                                meal.id!,
+                                meal.numOfGrams ?? 100,
                               );
                         },
                       ),
@@ -108,11 +103,11 @@ class _SelectMealCardState extends State<SelectMealCard> {
                   ),
                   const SizedBox(height: 6),
                   CounterWidget(
-                    key: ValueKey(widget.meal.id),
-                    meal: widget.meal,
+                    key: ValueKey(meal.id),
+                    meal: meal,
                     onChanged: (value) {
                       context.read<MealCubit>().updateMealQuantity(
-                            widget.meal.id!,
+                            meal.id!,
                             value,
                           );
                     },

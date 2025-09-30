@@ -23,7 +23,17 @@ class _MealListState extends State<MealList> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MealCubit, MealState>(
+    return BlocListener<MealCubit, MealState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          assigned: () {
+            // After pressing Next/Finish: refetch once from server
+            context.read<MealCubit>().getMeals();
+          },
+          orElse: () {},
+        );
+      },
+      child: BlocBuilder<MealCubit, MealState>(
       buildWhen: (previous, current) => current.maybeWhen(
         loading: () => true,
         loaded: (_) => true,
@@ -36,32 +46,37 @@ class _MealListState extends State<MealList> {
           loading: (_) => const Center(child: CircularProgressIndicator()),
           loaded: (value) {
             final meals = value.meals;
-
+            
             final proteinsMeals = meals.where((meal) => meal.foodCategory == 0).toList();
             final fatsMeals = meals.where((meal) => meal.foodCategory == 1).toList();
             final carbsMeals = meals.where((meal) => meal.foodCategory == 2).toList();
             final vegetablesMeals = meals.where((meal) => meal.foodCategory == 3).toList();
+            final naturalSupplementsMeals = meals.where((meal) => meal.foodCategory == 4).toList();
 
-
-            return Expanded(
-              child: ListView(
-                children: [
-                  MealCategory(
-                    title: AppLocalKeys.proteins.tr(),
-                    meals: proteinsMeals,
-                  ),
-                      MealCategory(
-                    title: AppLocalKeys.fats.tr(),
-                    meals: fatsMeals,
-                  ),     MealCategory(
-                    title: AppLocalKeys.carbs.tr(),
-                    meals: carbsMeals,
-                  ),     MealCategory(
-                    title: AppLocalKeys.vegetables.tr(),
-                    meals: vegetablesMeals,
-                  ),
-                ],
-              ),
+            // Do NOT wrap with Expanded here; parent already wraps MealList with Expanded
+            return ListView(
+              children: [
+                MealCategory(
+                  title: AppLocalKeys.proteins.tr(),
+                  meals: proteinsMeals,
+                ),
+                MealCategory(
+                  title: AppLocalKeys.fats.tr(),
+                  meals: fatsMeals,
+                ),
+                MealCategory(
+                  title: AppLocalKeys.carbs.tr(),
+                  meals: carbsMeals,
+                ),
+                MealCategory(
+                  title: AppLocalKeys.vegetables.tr(),
+                  meals: vegetablesMeals,
+                ),
+                MealCategory(
+                  title: AppLocalKeys.naturalSupplements.tr(),
+                  meals: naturalSupplementsMeals,
+                ),
+              ],
             );
           },
           failure: (value) => Center(
@@ -74,6 +89,7 @@ class _MealListState extends State<MealList> {
           orElse: () => const SizedBox.shrink(),
         );
       },
+    ),
     );
   }
 }

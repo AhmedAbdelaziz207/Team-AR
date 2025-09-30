@@ -33,6 +33,7 @@ import 'package:team_ar/features/select_launguage/select_launguage.dart';
 import 'package:team_ar/features/select_meals/model/select_meal_params.dart';
 import 'package:team_ar/features/select_meals/select_meals_screen.dart';
 import 'package:team_ar/features/splash/splash_screen.dart';
+import 'package:team_ar/features/subscription/screens/subscription_expired_screen.dart';
 import 'package:team_ar/features/trainees_screen/trainees_screen.dart';
 import 'package:team_ar/features/trainer_register_success/trainer_register_success_screen.dart';
 import 'package:team_ar/features/update_user_diet/admin_users_meal_screen.dart';
@@ -257,6 +258,10 @@ class AppRouter {
           ),
         );
 
+      case Routes.subscriptionExpired:
+        return MaterialPageRoute(
+          builder: (context) => const SubscriptionExpiredScreen(),
+        );
       case Routes.chat:
         final user = settings?.arguments as ChatUserModel;
 

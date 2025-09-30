@@ -23,6 +23,7 @@ class MealCubit extends Cubit<MealState> {
   String? userId;
   int mealNum = 1;
   String mealName = "";
+  bool initializedFromScreen = false; // prevent repeated re-initialization
 
 
   final nameController = TextEditingController();
@@ -31,8 +32,14 @@ class MealCubit extends Cubit<MealState> {
   final carbsController = TextEditingController();
   final fatController = TextEditingController();
   final proteinController = TextEditingController();
+  final usageInstructionsController = TextEditingController();
+  final noteController = TextEditingController();
   int mealType = 0;
   File? image;
+
+  // Prevent unnecessary refetching between steps
+  bool _mealsFetched = false;
+  List<DietMealModel>? _cachedMeals;
 
   void pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -69,9 +76,13 @@ class MealCubit extends Cubit<MealState> {
   File? dietImage = File("path");
 
   Future<void> getMeals() async {
-    emit(
-      const MealState.loading(),
-    );
+    // If already fetched, reuse cached data
+    if (_mealsFetched && _cachedMeals != null) {
+      if (!isClosed) emit(MealState.loaded(meals: _cachedMeals!));
+      return;
+    }
+
+    emit(const MealState.loading());
 
     final ApiResult<List<DietMealModel>?> result =
         await mealRepository.getDietMeals();
@@ -79,7 +90,9 @@ class MealCubit extends Cubit<MealState> {
     result.when(
       success: (data) {
         if (isClosed) return;
-        emit(MealState.loaded(meals: data ?? []));
+        _cachedMeals = data ?? [];
+        _mealsFetched = true;
+        emit(MealState.loaded(meals: _cachedMeals!));
       },
       failure: (error) {
       if (!isClosed) {
@@ -193,27 +206,56 @@ class MealCubit extends Cubit<MealState> {
     double? fats = double.tryParse(fatController.text.trim());
     double? protein = double.tryParse(proteinController.text.trim());
 
-    if (calories == null || carbs == null || fats == null || protein == null) {
+    log("=== VALIDATION DEBUG ===");
+    log("Calories: $calories, Carbs: $carbs, Fats: $fats, Protein: $protein");
+    log("Meal Type: $mealType");
+
+    // Skip nutritional validation for natural supplements
+    if (mealType != 4 && (calories == null || carbs == null || fats == null || protein == null)) {
+      log("Validation failed for regular meal - missing nutritional values");
       emit(const MealState.failure(message: "Please enter valid numbers"));
       return;
+    }
+    
+    // For natural supplements, set default values if not provided
+    if (mealType == 4) {
+      calories = 0;
+      carbs = 0;
+      fats = 0;
+      protein = 0;
+      log("Set default nutritional values for natural supplement");
     }
 
     emit(const MealState.loading());
 
     try {
+      // For natural supplements (mealType == 4), use usage instructions as note
+      final note = mealType == 4 ? usageInstructionsController.text.trim() : "";
+      
+      log("=== ADD MEAL DEBUG ===");
+      log("Meal Type: $mealType");
+      log("Note: '$note'");
+      log("Usage Instructions Controller: '${usageInstructionsController.text}'");
+      log("Is Natural Supplement: ${mealType == 4}");
+      
+      final dietMeal = DietMealModel(
+        id: 0,
+        name: name,
+        arabicName: arabicName.isEmpty ? null : arabicName,
+        numOfCalories: (calories ?? 0) / 100,
+        numOfCarbs: (carbs ?? 0) / 100,
+        numOfFats: (fats ?? 0) / 100,
+        numOfProtein: (protein ?? 0) / 100,
+        numOfGrams: 1,
+        foodCategory: mealType,
+        note: note,
+      );
+      
+      log("DietMeal note field: '${dietMeal.note}'");
+      
       final result = await mealRepository
           .addDietMeal(
-            diet: DietMealModel(
-              id: 0,
-              name: name,
-              arabicName: arabicName.isEmpty ? null : arabicName,
-              numOfCalories: calories / 100,
-              numOfCarbs: carbs / 100,
-              numOfFats: fats / 100,
-              numOfProtein: protein / 100,
-              numOfGrams: 1,
-              foodCategory: mealType,
-            ),
+            diet: dietMeal,
             dietImage: image!,
           )
           .timeout(
@@ -259,6 +301,13 @@ class MealCubit extends Cubit<MealState> {
   double totalCarbs = 0;
   double totalProtein = 0;
 
+  void resetTotals() {
+    totalCalories = 0;
+    totalFats = 0;
+    totalCarbs = 0;
+    totalProtein = 0;
+  }
+
   double calculateTotalCalories(List<DietMealModel> meals) {
     double calories = 0;
     double fats = 0;
@@ -267,6 +316,9 @@ class MealCubit extends Cubit<MealState> {
 
     for (var meal in meals) {
       if (meal.isSelected ?? false) {
+        // Skip natural supplements (category 4) in calorie calculations
+        if (meal.foodCategory == 4) continue;
+        
         final grams = meal.numOfGrams ?? 0;
 
         calories += (meal.numOfCalories ?? 0) * grams;
@@ -281,10 +333,6 @@ class MealCubit extends Cubit<MealState> {
     totalCarbs = carbs;
     totalProtein = protein;
     log("fats : $fats , carbs : $carbs , protein : $protein");
-
-    if (state is MealsLoaded) {
-      emit(MealState.loaded(meals: meals));
-    }
 
     return calories;
   }
@@ -323,8 +371,46 @@ class MealCubit extends Cubit<MealState> {
     }
   }
 
+  void toggleNaturalSupplementSelection(int mealId, String usageInstructions) {
+    final currentState = state;
+    log("usageInstructions $usageInstructions");
+    if (currentState is MealsLoaded) {
+      final updatedMeals = currentState.meals.map((meal) {
+        if (meal.id == mealId) {
+          return meal.copyWith(
+            isSelected: !(meal.isSelected ?? false),
+            usageInstructions: usageInstructions,
+            numOfGrams: 0, // Natural supplements don't use grams
+          );
+        }
+        return meal;
+      }).toList();
+
+      // Natural supplements don't contribute to calorie calculation
+      totalCalories = calculateTotalCalories(updatedMeals);
+
+      emit(MealState.loaded(meals: updatedMeals));
+    }
+  }
+
+  void updateNaturalSupplementUsage(int mealId, String usageInstructions) {
+    final currentState = state;
+
+    if (currentState is MealsLoaded) {
+      final updatedMeals = currentState.meals.map((meal) {
+        if (meal.id == mealId) {
+          return meal.copyWith(usageInstructions: usageInstructions);
+        }
+        return meal;
+      }).toList();
+
+      emit(MealState.loaded(meals: updatedMeals));
+    }
+  }
+
   Future<void> assignDietMealForUser(String userId, {bool? isUpdate}) async {
     log("isUpdate Meal : $isUpdate");
+    log("usageInstructionsController ${noteController.text}");
 
     // Step 0: Validate state
     final currentState = state;
@@ -345,7 +431,7 @@ class MealCubit extends Cubit<MealState> {
     final selectedFoods = selectedMeals
         .map((meal) => FoodItem(
               foodId: meal.id!,
-              note: "", // or attach a note if you support it
+              note: noteController.text, // Include usage instructions for natural supplements
               numOfGrams: meal.numOfGrams ?? 100,
             ))
         .toList();
@@ -356,6 +442,9 @@ class MealCubit extends Cubit<MealState> {
       foodType: mealNum,
       Note: "",
     );
+
+    // Emit assigning state so UI can show loading on Next/Finish button
+    emit(const MealState.assignLoading());
 
     final result = await mealRepository.assignDietMealToTrainee(
       userMeal,
@@ -369,12 +458,21 @@ class MealCubit extends Cubit<MealState> {
             .map((meal) => meal.copyWith(
                   isSelected: false,
                   numOfGrams: 100,
+                  usageInstructions: null, // Reset usage instructions
                 ))
             .toList();
 
+        // Reset footer values
+        resetTotals();
+
+        // Update counters and title BEFORE emitting state so UI updates together
         mealNum++;
-        emit(MealState.loaded(meals: resetMeals));
         mealName = getMealName(mealNum);
+
+        // Update cache and emit without refetching
+        _cachedMeals = resetMeals;
+        _mealsFetched = true;
+        emit(MealState.loaded(meals: _cachedMeals!));
         emit(const MealState.assigned());
       },
       failure: (error) {

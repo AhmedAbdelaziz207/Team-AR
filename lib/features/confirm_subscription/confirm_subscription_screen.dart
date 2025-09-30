@@ -4,10 +4,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
+import 'package:team_ar/features/auth/register/model/register_admin_request.dart';
 import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_cubit.dart';
 import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_state.dart';
 import 'package:team_ar/features/confirm_subscription/widget/confirm_subscription_form.dart';
@@ -127,96 +126,124 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                     child: state is SubscriptionLoading
                         ? const CircularProgressIndicator()
                         : MaterialButton(
-                          onPressed: () async {
-                            final role = await SharedPreferencesHelper.getString(AppConstants.userRole);
+                            onPressed: () async {
+                              final role =
+                                  await SharedPreferencesHelper.getString(
+                                      AppConstants.userRole);
 
-                            // التحقق من صحة البيانات
-                            if (context.read<ConfirmSubscriptionCubit>().formKey.currentState!.validate()) {
-                              final cubit = context.read<ConfirmSubscriptionCubit>();
+                              // التحقق من صحة البيانات
+                              if (context
+                                  .read<ConfirmSubscriptionCubit>()
+                                  .formKey
+                                  .currentState!
+                                  .validate()) {
+                                final cubit =
+                                    context.read<ConfirmSubscriptionCubit>();
 
-                              if (role?.toLowerCase() == "admin") {
-                                // للأدمن - السلوك القديم
-                                cubit.subscribe();
-                              } else {
-                                // للمستخدمين العاديين - إنشاء الحساب أولاً
-                                setState(() {
-                                  // إظهار مؤشر التحميل
-                                });
+                                if (role?.toLowerCase() == "admin") {
+                                  // للأدمن - السلوك القديم
+                                  cubit.subscribe();
+                                } else {
+                                  // للمستخدمين العاديين - إنشاء الحساب أولاً
+                                  setState(() {
+                                    // إظهار مؤشر التحميل
+                                  });
 
-                                // إنشاء حساب المستخدم مع التحقق الكامل
-                                final user = cubit.getUser();
-                                final result = await cubit.repo.addTrainer(user);
+                                  // إنشاء حساب المستخدم مع التحقق الكامل
+                                  final user = cubit.getUser();
+                                  final result =
+                                      await cubit.repo.addTrainerByAdmin(
+                                    RegisterAdminRequest(
+                                      userName: cubit.nameController.text,
+                                      email: cubit.emailController.text,
+                                      password: cubit.passwordController.text,
+                                      startPackage: DateTime.now(),
+                                      endPackage: DateTime.now().add(Duration(
+                                          days: widget.userPlan.duration!)),
+                                      packageId: widget.userPlan.id!,
+                                    ),
+                                  );
 
-                                result.when(
-                                  success: (data) async {
-                                    // تم إنشاء الحساب بنجاح - الآن ننتقل للدفع
-                                    print('✅ تم إنشاء الحساب بنجاح قبل الدفع');
-                                    print('معرف المستخدم: ${data.id}');
+                                  result.when(
+                                    success: (data) async {
+                                      // تم إنشاء الحساب بنجاح - الآن ننتقل للدفع
+                                      print(
+                                          '✅ تم إنشاء الحساب بنجاح قبل الدفع');
+                                      print('معرف المستخدم: ${data.id}');
 
-                                    // حفظ بيانات المستخدم للاسترجاع في حالة فشل الدفع
-                                    final userData = {
-                                      'user_id': data.id,
-                                      'name': cubit.nameController.text,
-                                      'email': cubit.emailController.text,
-                                      'phone': cubit.phoneController.text,
-                                      'plan': widget.userPlan.toJson(),
-                                    };
+                                      // حفظ بيانات المستخدم للاسترجاع في حالة فشل الدفع
+                                      final userData = {
+                                        'user_id': data.id,
+                                        'name': cubit.nameController.text,
+                                        'email': cubit.emailController.text,
+                                        'phone': cubit.phoneController.text,
+                                        'plan': widget.userPlan.toJson(),
+                                      };
 
-                                    await SharedPreferencesHelper.setString(
-                                        'pending_payment_user_data',
-                                        jsonEncode(userData)
-                                    );
+                                      await SharedPreferencesHelper.setString(
+                                          'pending_payment_user_data',
+                                          jsonEncode(userData));
 
-                                    // التوجيه إلى صفحة الدفع مع معرف المستخدم الجديد
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => PaymentScreen(
-                                          plan: widget.userPlan,
-                                          customerName: cubit.nameController.text,
-                                          customerEmail: cubit.emailController.text,
-                                          customerPhone: cubit.phoneController.text,
-                                          userId: data.id.toString(), // إرسال المعرف الحقيقي
-                                          isNewUser: true,
+                                      // التوجيه إلى صفحة الدفع مع معرف المستخدم الجديد
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PaymentScreen(
+                                            userId: data.id.toString(),
+                                          ),
                                         ),
-                                      ),
-                                    );
+                                      );
 
-                                    setState(() {
-                                      // إخفاء مؤشر التحميل
-                                    });
-                                  },
-                                  failure: (error) {
-                                    // عرض رسالة الخطأ التفصيلية من الباك اند
-                                    String errorMessage = 'فشل في إنشاء الحساب';
+                                      setState(() {
+                                        // إخفاء مؤشر التحميل
+                                      });
+                                    },
+                                    failure: (error) {
+                                      // عرض رسالة الخطأ التفصيلية من الباك اند
+                                      String errorMessage =
+                                          'فشل في إنشاء الحساب';
 
-                                    if (error.toString().contains('username')) {
-                                      errorMessage = 'اسم المستخدم غير صالح أو مستخدم بالفعل';
-                                    } else if (error.toString().contains('password')) {
-                                      errorMessage = 'كلمة المرور ضعيفة أو غير مطابقة للمتطلبات';
-                                    } else if (error.toString().contains('email')) {
-                                      errorMessage = 'البريد الإلكتروني غير صالح أو مستخدم بالفعل';
-                                    } else if (error.toString().contains('phone')) {
-                                      errorMessage = 'رقم الهاتف غير صالح أو مستخدم بالفعل';
-                                    }
+                                      if (error
+                                          .toString()
+                                          .contains('username')) {
+                                        errorMessage =
+                                            'اسم المستخدم غير صالح أو مستخدم بالفعل';
+                                      } else if (error
+                                          .toString()
+                                          .contains('password')) {
+                                        errorMessage =
+                                            'كلمة المرور ضعيفة أو غير مطابقة للمتطلبات';
+                                      } else if (error
+                                          .toString()
+                                          .contains('email')) {
+                                        errorMessage =
+                                            'البريد الإلكتروني غير صالح أو مستخدم بالفعل';
+                                      } else if (error
+                                          .toString()
+                                          .contains('phone')) {
+                                        errorMessage =
+                                            'رقم الهاتف غير صالح أو مستخدم بالفعل';
+                                      }
 
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('$errorMessage\n$error'),
-                                        backgroundColor: Colors.red,
-                                        duration: const Duration(seconds: 5),
-                                      ),
-                                    );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content:
+                                              Text('$errorMessage\n$error'),
+                                          backgroundColor: Colors.red,
+                                          duration: const Duration(seconds: 5),
+                                        ),
+                                      );
 
-                                    setState(() {
-                                      // إخفاء مؤشر التحميل
-                                    });
-                                  },
-                                );
+                                      setState(() {
+                                        // إخفاء مؤشر التحميل
+                                      });
+                                    },
+                                  );
+                                }
                               }
-                            }
-                          },
-                        color: AppColors.newPrimaryColor,
+                            },
+                            color: AppColors.newPrimaryColor,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 60.w, vertical: 4.h),
                             shape: RoundedRectangleBorder(

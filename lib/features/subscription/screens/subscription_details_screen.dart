@@ -1,11 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 
 import '../../../core/routing/routes.dart';
 import '../../../core/services/subscription_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../home/model/user_data.dart';
+import '../../../core/utils/app_constants.dart';
+import 'package:team_ar/features/payment/screens/payment_screen.dart';
 
 class SubscriptionDetailsScreen extends StatelessWidget {
   final UserData userData;
@@ -55,6 +58,28 @@ class SubscriptionDetailsScreen extends StatelessWidget {
           final status = statusSnapshot.data!;
           final daysRemaining = SubscriptionService.getDaysRemaining(userData);
 
+          // Auto-redirect to payment if expiring soon or expired
+          if (status == SubscriptionStatus.expiringSoon || status == SubscriptionStatus.expired) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
+              if (!context.mounted) return;
+              if (userId != null && userId.isNotEmpty) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PaymentScreen(
+                      userId: userId,
+                    ),
+                  ),
+                );
+              } else {
+                // Fallback to plans if no user id
+                Navigator.pushReplacementNamed(context, Routes.subscriptionPlans);
+              }
+            });
+            return const SizedBox.shrink();
+          }
+
           return _buildContent(context, status, daysRemaining);
         },
       ),
@@ -81,7 +106,7 @@ class SubscriptionDetailsScreen extends StatelessWidget {
               gradient: LinearGradient(
                 colors: [
                   AppColors.newPrimaryColor,
-                  AppColors.newPrimaryColor.withOpacity(0.8),
+                  AppColors.newPrimaryColor.withValues(alpha: 0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -114,7 +139,7 @@ class SubscriptionDetailsScreen extends StatelessWidget {
                 Text(
                   'باقة ${userData.packageId}',
                   style: TextStyle(
-                    color: AppColors.white.withOpacity(0.9),
+                    color: AppColors.white.withValues(alpha: 0.9),
                     fontSize: 14.sp,
                     fontFamily: "Cairo",
                   ),
@@ -150,7 +175,7 @@ class SubscriptionDetailsScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(15.w),
             decoration: BoxDecoration(
-              color: AppColors.grey.withOpacity(0.1),
+              color: AppColors.grey.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10.r),
             ),
             child: Column(
@@ -182,7 +207,7 @@ class SubscriptionDetailsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.r),
                   child: LinearProgressIndicator(
                     value: progress,
-                    backgroundColor: AppColors.grey.withOpacity(0.3),
+                    backgroundColor: AppColors.grey.withValues(alpha: 0.3),
                     valueColor: AlwaysStoppedAnimation<Color>(
                       status == SubscriptionStatus.expiringSoon
                           ? Colors.orange
@@ -237,8 +262,7 @@ class SubscriptionDetailsScreen extends StatelessWidget {
               height: 50.h,
               child: ElevatedButton(
                 onPressed: () {
-                  // توجيه المستخدم إلى شاشة الباقات
-                  Navigator.pushNamed(context, Routes.subscriptionPlans);
+                  
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.newPrimaryColor,

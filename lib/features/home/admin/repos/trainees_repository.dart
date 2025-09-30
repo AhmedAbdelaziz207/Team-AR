@@ -122,6 +122,16 @@ class TraineesRepository {
     }
   }
 
+  Future<ApiResult<void>> updateUserPayment(String userId) async {
+    try {
+      log("Update User Payment Status");
+      final response = await apiService.updateUserPayment(userId);
+
+      return ApiResult.success(response);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
 
   Future<ApiResult<void>> deleteUser(String id) async {
     try {
@@ -133,4 +143,4 @@ class TraineesRepository {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
   }
-  }
+}

@@ -52,132 +52,121 @@ class _UserDietScreenState extends State<UserDietScreen> {
           centerTitle: true,
         ),
       ),
-      body: BlocBuilder<UserDietCubit, UserDietState>(
-        builder: (context, state) {
-          return state is UserDietLoading
-              ? const Center(child: CircularProgressIndicator())
-              : DraggableScrollableSheet(
-                  expand: true,
-                  minChildSize: .8,
-                  initialChildSize: .9,
-                  builder: (context, controller) {
-                    return BlocBuilder<UserDietCubit, UserDietState>(
-                      builder: (context, state) {
-                        return Container(
+      body: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.r),
+            topRight: Radius.circular(20.r),
+          ),
+        ),
+        child: BlocBuilder<UserDietCubit, UserDietState>(
+          builder: (context, state) {
+            return state.maybeMap(
+              orElse: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              loading: (value) => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              success: (value) {
+                final userDietList = value.diet;
+
+                // Return empty if null or empty
+                if (userDietList.isEmpty) {
+                  return Column(
+                    children: [
+                      Image.asset(AppAssets.hungry),
+                      Text(
+                        AppLocalKeys.noMeals.tr(),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 22.sp,
+                          fontFamily: "Cairo",
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                // Group meals by foodType
+                final Map<int, List<UserDiet>> grouped = {};
+
+                for (var diet in userDietList) {
+                  if (diet.foodType == null) continue;
+                  grouped
+                      .putIfAbsent(diet.foodType!, () => [])
+                      .add(diet);
+                }
+
+                // Calculate total calories from all meals
+                final num totalDayCalories = userDietList
+                    .map((e) => e.meal?.numOfCalories ?? 0)
+                    .fold(0, (sum, cal) => sum + cal);
+
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      // Display total calories at the top of first meal
+                      if (grouped.isNotEmpty)
+                        Container(
+                          width: double.infinity,
+                          margin: EdgeInsets.all(15.0.sp),
+                          padding: EdgeInsets.all(16.0.sp),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.r),
-                              topRight: Radius.circular(20.r),
+                            color: Colors.green.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(
+                              color: Colors.green.withOpacity(0.3),
+                              width: 1,
                             ),
                           ),
-                          child: state.maybeMap(
-                            orElse: () => const Text("Not found "),
-                            success: (value) {
-                              final userDietList = value.diet;
-
-                              // Return empty if null or empty
-                              if (userDietList.isEmpty) {
-                                return Column(
-                                  children: [
-                                    Image.asset(AppAssets.hungry),
-                                    Text(
-                                      AppLocalKeys.noMeals.tr(),
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 22.sp,
-                                        fontFamily: "Cairo",
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }
-
-                              // Group meals by foodType
-                              final Map<int, List<UserDiet>> grouped = {};
-
-                              for (var diet in userDietList) {
-                                if (diet.foodType == null) continue;
-                                grouped
-                                    .putIfAbsent(diet.foodType!, () => [])
-                                    .add(diet);
-                              }
-
-                              // Calculate total calories from all meals
-                              final num totalDayCalories = userDietList
-                                  .map((e) => e.meal?.numOfCalories ?? 0)
-                                  .fold(0, (sum, cal) => sum + cal);
-
-                              return SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    // Display total calories at the top of first meal
-                                    if (grouped.isNotEmpty)
-                                      Container(
-                                        width: double.infinity,
-                                        margin: EdgeInsets.all(15.0.sp),
-                                        padding: EdgeInsets.all(16.0.sp),
-                                        decoration: BoxDecoration(
-                                          color: Colors.green.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(12.r),
-                                          border: Border.all(
-                                            color: Colors.green.withOpacity(0.3),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Expanded(
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                AppLocalKeys.totalDailyCalories.tr(),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontFamily: "Cairo",
-                                                  
-                                                  color: Colors.green[700],
-                                                ),
-                                              ),
-                                              Text(
-                                                "$totalDayCalories ${AppLocalKeys.calories.tr()}",
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontSize: 12.sp,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontFamily: "Cairo",
-                                                  color: Colors.green[800],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    // Display meal groups
-                                    ...grouped.entries.map((entry) {
-                                      return MealsList(userDiet: entry.value);
-                                    }).toList(),
-                                  ],
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                AppLocalKeys.totalDailyCalories.tr(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "Cairo",
+                                  color: Colors.green[700],
                                 ),
-                              );
-                            },
-                            failure: (value) => Center(
-                              child: Text(
-                                value.errorMessage.message ??
-                                    AppLocalKeys.unexpectedError.tr(),
                               ),
-                            ),
+                              Text(
+                                "$totalDayCalories ${AppLocalKeys.calories.tr()}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "Cairo",
+                                  color: Colors.green[800],
+                                ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                    );
-                  },
+                        ),
+                      // Display meal groups
+                      ...grouped.entries.map((entry) {
+                        return MealsList(userDiet: entry.value);
+                      }).toList(),
+                    ],
+                  ),
                 );
-        },
+              },
+              failure: (value) => Center(
+                child: Text(
+                  value.errorMessage.message ??
+                      AppLocalKeys.unexpectedError.tr(),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

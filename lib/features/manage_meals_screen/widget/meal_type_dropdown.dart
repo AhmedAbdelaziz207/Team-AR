@@ -21,6 +21,7 @@ class _MealTypeDropdownState extends State<MealTypeDropdown> {
     AppLocalKeys.fats.tr(),
     AppLocalKeys.carbs.tr(),
     AppLocalKeys.vegetables.tr(),
+    AppLocalKeys.naturalSupplements.tr(),
   ];
 
   int? selectedIndex = 0 ;

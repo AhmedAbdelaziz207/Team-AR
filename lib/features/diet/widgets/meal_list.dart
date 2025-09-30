@@ -68,8 +68,20 @@ log("Number of Grams ${userDiet.first.numOfGrams}");
           ),
 
           /// alert
-          if (userDiet.first.note != null && userDiet.first.note!.isNotEmpty)
-            HealthAlert(message: userDiet.first.note!),
+          if (userDiet.first.note != null && userDiet.first.note!.isNotEmpty) ...[
+            // Check if any meal in this group is a natural supplement (foodCategory == 4)
+            Builder(
+              builder: (context) {
+                final hasNaturalSupplements = userDiet.any((diet) => 
+                  diet.meal?.foodCategory == 4
+                );
+                return HealthAlert(
+                  message: userDiet.first.note!,
+                  isNaturalSupplement: hasNaturalSupplements,
+                );
+              },
+            ),
+          ],
         ],
       ),
     );

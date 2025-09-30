@@ -23,6 +23,7 @@ mixin _$LoginState<T> {
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
     required TResult Function(LoginResponse data) navigateToCompleteData,
+    required TResult Function(LoginResponse data) navigateToSubscriptionExpired,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -32,6 +33,7 @@ mixin _$LoginState<T> {
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
     TResult? Function(LoginResponse data)? navigateToCompleteData,
+    TResult? Function(LoginResponse data)? navigateToSubscriptionExpired,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -41,6 +43,7 @@ mixin _$LoginState<T> {
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
     TResult Function(LoginResponse data)? navigateToCompleteData,
+    TResult Function(LoginResponse data)? navigateToSubscriptionExpired,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -52,6 +55,8 @@ mixin _$LoginState<T> {
     required TResult Function(LoginFailure<T> value) loginFailure,
     required TResult Function(NavigateToCompleteData<T> value)
         navigateToCompleteData,
+    required TResult Function(navigateToSubscriptionExpired<T> value)
+        navigateToSubscriptionExpired,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -61,6 +66,8 @@ mixin _$LoginState<T> {
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
     TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult? Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -70,6 +77,8 @@ mixin _$LoginState<T> {
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
     TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -142,6 +151,7 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
     required TResult Function(LoginResponse data) navigateToCompleteData,
+    required TResult Function(LoginResponse data) navigateToSubscriptionExpired,
   }) {
     return loginInitial();
   }
@@ -154,6 +164,7 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
     TResult? Function(LoginResponse data)? navigateToCompleteData,
+    TResult? Function(LoginResponse data)? navigateToSubscriptionExpired,
   }) {
     return loginInitial?.call();
   }
@@ -166,6 +177,7 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
     TResult Function(LoginResponse data)? navigateToCompleteData,
+    TResult Function(LoginResponse data)? navigateToSubscriptionExpired,
     required TResult orElse(),
   }) {
     if (loginInitial != null) {
@@ -183,6 +195,8 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     required TResult Function(LoginFailure<T> value) loginFailure,
     required TResult Function(NavigateToCompleteData<T> value)
         navigateToCompleteData,
+    required TResult Function(navigateToSubscriptionExpired<T> value)
+        navigateToSubscriptionExpired,
   }) {
     return loginInitial(this);
   }
@@ -195,6 +209,8 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
     TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult? Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
   }) {
     return loginInitial?.call(this);
   }
@@ -207,6 +223,8 @@ class _$LoginInitialImpl<T> implements _LoginInitial<T> {
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
     TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
     required TResult orElse(),
   }) {
     if (loginInitial != null) {
@@ -266,6 +284,7 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
     required TResult Function(LoginResponse data) navigateToCompleteData,
+    required TResult Function(LoginResponse data) navigateToSubscriptionExpired,
   }) {
     return loginLoading();
   }
@@ -278,6 +297,7 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
     TResult? Function(LoginResponse data)? navigateToCompleteData,
+    TResult? Function(LoginResponse data)? navigateToSubscriptionExpired,
   }) {
     return loginLoading?.call();
   }
@@ -290,6 +310,7 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
     TResult Function(LoginResponse data)? navigateToCompleteData,
+    TResult Function(LoginResponse data)? navigateToSubscriptionExpired,
     required TResult orElse(),
   }) {
     if (loginLoading != null) {
@@ -307,6 +328,8 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     required TResult Function(LoginFailure<T> value) loginFailure,
     required TResult Function(NavigateToCompleteData<T> value)
         navigateToCompleteData,
+    required TResult Function(navigateToSubscriptionExpired<T> value)
+        navigateToSubscriptionExpired,
   }) {
     return loginLoading(this);
   }
@@ -319,6 +342,8 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
     TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult? Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
   }) {
     return loginLoading?.call(this);
   }
@@ -331,6 +356,8 @@ class _$LoginLoadingImpl<T> implements LoginLoading<T> {
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
     TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
     required TResult orElse(),
   }) {
     if (loginLoading != null) {
@@ -418,6 +445,7 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
     required TResult Function(LoginResponse data) navigateToCompleteData,
+    required TResult Function(LoginResponse data) navigateToSubscriptionExpired,
   }) {
     return loginSuccess(data);
   }
@@ -430,6 +458,7 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
     TResult? Function(LoginResponse data)? navigateToCompleteData,
+    TResult? Function(LoginResponse data)? navigateToSubscriptionExpired,
   }) {
     return loginSuccess?.call(data);
   }
@@ -442,6 +471,7 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
     TResult Function(LoginResponse data)? navigateToCompleteData,
+    TResult Function(LoginResponse data)? navigateToSubscriptionExpired,
     required TResult orElse(),
   }) {
     if (loginSuccess != null) {
@@ -459,6 +489,8 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     required TResult Function(LoginFailure<T> value) loginFailure,
     required TResult Function(NavigateToCompleteData<T> value)
         navigateToCompleteData,
+    required TResult Function(navigateToSubscriptionExpired<T> value)
+        navigateToSubscriptionExpired,
   }) {
     return loginSuccess(this);
   }
@@ -471,6 +503,8 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
     TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult? Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
   }) {
     return loginSuccess?.call(this);
   }
@@ -483,6 +517,8 @@ class _$LoginSuccessImpl<T> implements LoginSuccess<T> {
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
     TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
     required TResult orElse(),
   }) {
     if (loginSuccess != null) {
@@ -578,6 +614,7 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
     required TResult Function(LoginResponse data) navigateToCompleteData,
+    required TResult Function(LoginResponse data) navigateToSubscriptionExpired,
   }) {
     return loginFailure(message);
   }
@@ -590,6 +627,7 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
     TResult? Function(LoginResponse data)? navigateToCompleteData,
+    TResult? Function(LoginResponse data)? navigateToSubscriptionExpired,
   }) {
     return loginFailure?.call(message);
   }
@@ -602,6 +640,7 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
     TResult Function(LoginResponse data)? navigateToCompleteData,
+    TResult Function(LoginResponse data)? navigateToSubscriptionExpired,
     required TResult orElse(),
   }) {
     if (loginFailure != null) {
@@ -619,6 +658,8 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     required TResult Function(LoginFailure<T> value) loginFailure,
     required TResult Function(NavigateToCompleteData<T> value)
         navigateToCompleteData,
+    required TResult Function(navigateToSubscriptionExpired<T> value)
+        navigateToSubscriptionExpired,
   }) {
     return loginFailure(this);
   }
@@ -631,6 +672,8 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
     TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult? Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
   }) {
     return loginFailure?.call(this);
   }
@@ -643,6 +686,8 @@ class _$LoginFailureImpl<T> implements LoginFailure<T> {
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
     TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
     required TResult orElse(),
   }) {
     if (loginFailure != null) {
@@ -741,6 +786,7 @@ class _$NavigateToCompleteDataImpl<T> implements NavigateToCompleteData<T> {
     required TResult Function(LoginResponse data) loginSuccess,
     required TResult Function(ApiErrorModel message) loginFailure,
     required TResult Function(LoginResponse data) navigateToCompleteData,
+    required TResult Function(LoginResponse data) navigateToSubscriptionExpired,
   }) {
     return navigateToCompleteData(data);
   }
@@ -753,6 +799,7 @@ class _$NavigateToCompleteDataImpl<T> implements NavigateToCompleteData<T> {
     TResult? Function(LoginResponse data)? loginSuccess,
     TResult? Function(ApiErrorModel message)? loginFailure,
     TResult? Function(LoginResponse data)? navigateToCompleteData,
+    TResult? Function(LoginResponse data)? navigateToSubscriptionExpired,
   }) {
     return navigateToCompleteData?.call(data);
   }
@@ -765,6 +812,7 @@ class _$NavigateToCompleteDataImpl<T> implements NavigateToCompleteData<T> {
     TResult Function(LoginResponse data)? loginSuccess,
     TResult Function(ApiErrorModel message)? loginFailure,
     TResult Function(LoginResponse data)? navigateToCompleteData,
+    TResult Function(LoginResponse data)? navigateToSubscriptionExpired,
     required TResult orElse(),
   }) {
     if (navigateToCompleteData != null) {
@@ -782,6 +830,8 @@ class _$NavigateToCompleteDataImpl<T> implements NavigateToCompleteData<T> {
     required TResult Function(LoginFailure<T> value) loginFailure,
     required TResult Function(NavigateToCompleteData<T> value)
         navigateToCompleteData,
+    required TResult Function(navigateToSubscriptionExpired<T> value)
+        navigateToSubscriptionExpired,
   }) {
     return navigateToCompleteData(this);
   }
@@ -794,6 +844,8 @@ class _$NavigateToCompleteDataImpl<T> implements NavigateToCompleteData<T> {
     TResult? Function(LoginSuccess<T> value)? loginSuccess,
     TResult? Function(LoginFailure<T> value)? loginFailure,
     TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult? Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
   }) {
     return navigateToCompleteData?.call(this);
   }
@@ -806,6 +858,8 @@ class _$NavigateToCompleteDataImpl<T> implements NavigateToCompleteData<T> {
     TResult Function(LoginSuccess<T> value)? loginSuccess,
     TResult Function(LoginFailure<T> value)? loginFailure,
     TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
     required TResult orElse(),
   }) {
     if (navigateToCompleteData != null) {
@@ -825,5 +879,181 @@ abstract class NavigateToCompleteData<T> implements LoginState<T> {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NavigateToCompleteDataImplCopyWith<T, _$NavigateToCompleteDataImpl<T>>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$navigateToSubscriptionExpiredImplCopyWith<T, $Res> {
+  factory _$$navigateToSubscriptionExpiredImplCopyWith(
+          _$navigateToSubscriptionExpiredImpl<T> value,
+          $Res Function(_$navigateToSubscriptionExpiredImpl<T>) then) =
+      __$$navigateToSubscriptionExpiredImplCopyWithImpl<T, $Res>;
+  @useResult
+  $Res call({LoginResponse data});
+}
+
+/// @nodoc
+class __$$navigateToSubscriptionExpiredImplCopyWithImpl<T, $Res>
+    extends _$LoginStateCopyWithImpl<T, $Res,
+        _$navigateToSubscriptionExpiredImpl<T>>
+    implements _$$navigateToSubscriptionExpiredImplCopyWith<T, $Res> {
+  __$$navigateToSubscriptionExpiredImplCopyWithImpl(
+      _$navigateToSubscriptionExpiredImpl<T> _value,
+      $Res Function(_$navigateToSubscriptionExpiredImpl<T>) _then)
+      : super(_value, _then);
+
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? data = null,
+  }) {
+    return _then(_$navigateToSubscriptionExpiredImpl<T>(
+      null == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
+              as LoginResponse,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$navigateToSubscriptionExpiredImpl<T>
+    implements navigateToSubscriptionExpired<T> {
+  const _$navigateToSubscriptionExpiredImpl(this.data);
+
+  @override
+  final LoginResponse data;
+
+  @override
+  String toString() {
+    return 'LoginState<$T>.navigateToSubscriptionExpired(data: $data)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$navigateToSubscriptionExpiredImpl<T> &&
+            (identical(other.data, data) || other.data == data));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, data);
+
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$navigateToSubscriptionExpiredImplCopyWith<T,
+          _$navigateToSubscriptionExpiredImpl<T>>
+      get copyWith => __$$navigateToSubscriptionExpiredImplCopyWithImpl<T,
+          _$navigateToSubscriptionExpiredImpl<T>>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() loginInitial,
+    required TResult Function() loginLoading,
+    required TResult Function(LoginResponse data) loginSuccess,
+    required TResult Function(ApiErrorModel message) loginFailure,
+    required TResult Function(LoginResponse data) navigateToCompleteData,
+    required TResult Function(LoginResponse data) navigateToSubscriptionExpired,
+  }) {
+    return navigateToSubscriptionExpired(data);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? loginInitial,
+    TResult? Function()? loginLoading,
+    TResult? Function(LoginResponse data)? loginSuccess,
+    TResult? Function(ApiErrorModel message)? loginFailure,
+    TResult? Function(LoginResponse data)? navigateToCompleteData,
+    TResult? Function(LoginResponse data)? navigateToSubscriptionExpired,
+  }) {
+    return navigateToSubscriptionExpired?.call(data);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? loginInitial,
+    TResult Function()? loginLoading,
+    TResult Function(LoginResponse data)? loginSuccess,
+    TResult Function(ApiErrorModel message)? loginFailure,
+    TResult Function(LoginResponse data)? navigateToCompleteData,
+    TResult Function(LoginResponse data)? navigateToSubscriptionExpired,
+    required TResult orElse(),
+  }) {
+    if (navigateToSubscriptionExpired != null) {
+      return navigateToSubscriptionExpired(data);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_LoginInitial<T> value) loginInitial,
+    required TResult Function(LoginLoading<T> value) loginLoading,
+    required TResult Function(LoginSuccess<T> value) loginSuccess,
+    required TResult Function(LoginFailure<T> value) loginFailure,
+    required TResult Function(NavigateToCompleteData<T> value)
+        navigateToCompleteData,
+    required TResult Function(navigateToSubscriptionExpired<T> value)
+        navigateToSubscriptionExpired,
+  }) {
+    return navigateToSubscriptionExpired(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_LoginInitial<T> value)? loginInitial,
+    TResult? Function(LoginLoading<T> value)? loginLoading,
+    TResult? Function(LoginSuccess<T> value)? loginSuccess,
+    TResult? Function(LoginFailure<T> value)? loginFailure,
+    TResult? Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult? Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
+  }) {
+    return navigateToSubscriptionExpired?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_LoginInitial<T> value)? loginInitial,
+    TResult Function(LoginLoading<T> value)? loginLoading,
+    TResult Function(LoginSuccess<T> value)? loginSuccess,
+    TResult Function(LoginFailure<T> value)? loginFailure,
+    TResult Function(NavigateToCompleteData<T> value)? navigateToCompleteData,
+    TResult Function(navigateToSubscriptionExpired<T> value)?
+        navigateToSubscriptionExpired,
+    required TResult orElse(),
+  }) {
+    if (navigateToSubscriptionExpired != null) {
+      return navigateToSubscriptionExpired(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class navigateToSubscriptionExpired<T> implements LoginState<T> {
+  const factory navigateToSubscriptionExpired(final LoginResponse data) =
+      _$navigateToSubscriptionExpiredImpl<T>;
+
+  LoginResponse get data;
+
+  /// Create a copy of LoginState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$navigateToSubscriptionExpiredImplCopyWith<T,
+          _$navigateToSubscriptionExpiredImpl<T>>
       get copyWith => throw _privateConstructorUsedError;
 }

@@ -8,7 +8,10 @@ class PaymentRepository {
   final FawaterkService _fawaterkService;
   final ApiService _apiService;
 
-  PaymentRepository(this._fawaterkService, this._apiService);
+  PaymentRepository(
+    this._fawaterkService,
+    this._apiService,
+  );
 
   // الحصول على طرق الدفع المدعومة فقط
   Future<PaymentMethodsResponse> getPaymentMethods() async {
@@ -53,7 +56,8 @@ class PaymentRepository {
       // تقسيم الاسم
       final nameParts = customerName.trim().split(' ');
       final firstName = nameParts.first;
-      final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+      final lastName =
+          nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
       // إنشاء طلب الدفع مع URLs صحيحة
       final request = PaymentRequest(
@@ -67,7 +71,8 @@ class PaymentRepository {
           address: 'العنوان غير محدد',
         ),
         redirectionUrls: RedirectionUrls(
-          successUrl: 'https://dev.fawaterk.com/success?invoice_id=${DateTime.now().millisecondsSinceEpoch}',
+          successUrl:
+              'https://dev.fawaterk.com/success?invoice_id=${DateTime.now().millisecondsSinceEpoch}',
           failUrl: 'https://dev.fawaterk.com/fail',
           pendingUrl: 'https://dev.fawaterk.com/pending',
         ),
@@ -98,10 +103,10 @@ class PaymentRepository {
   }
 
   Future<PaymentStatusResponse> verifyPaymentWithRetry(
-      String invoiceId, {
-        int maxRetries = 8, // زيادة المحاولات
-        Duration retryDelay = const Duration(seconds: 5), // زيادة التأخير
-      }) async {
+    String invoiceId, {
+    int maxRetries = 8, // زيادة المحاولات
+    Duration retryDelay = const Duration(seconds: 5), // زيادة التأخير
+  }) async {
     debugPrint('بداية التحقق من الدفع: $invoiceId');
 
     for (int i = 0; i < maxRetries; i++) {
@@ -110,13 +115,15 @@ class PaymentRepository {
 
         final response = await _fawaterkService.checkPaymentStatus(invoiceId);
 
-        debugPrint('محاولة ${i + 1}: ${response.isSuccess} - ${response.data?.status}');
+        debugPrint(
+            'محاولة ${i + 1}: ${response.isSuccess} - ${response.data?.status}');
 
         if (response.isSuccess && response.data != null) {
           final status = response.data!.status.toLowerCase();
 
           // إذا كانت الحالة واضحة، إرجاع النتيجة
-          if (['paid', 'success', 'completed', 'failed', 'expired', 'cancelled'].contains(status)) {
+          if (['paid', 'success', 'completed', 'failed', 'expired', 'cancelled']
+              .contains(status)) {
             return response;
           }
         }
@@ -140,7 +147,8 @@ class PaymentRepository {
     );
   }
 
-  Future<void> _savePaymentInfo(PaymentData paymentData, String userId, UserPlan plan) async {
+  Future<void> _savePaymentInfo(
+      PaymentData paymentData, String userId, UserPlan plan) async {
     try {
       final paymentInfo = {
         'invoice_id': paymentData.invoiceId,

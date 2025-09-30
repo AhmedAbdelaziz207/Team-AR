@@ -42,6 +42,7 @@ class _MealSummaryFooterState extends State<MealSummaryFooter> {
         },
         builder: (context, state) {
           final cubit = context.read<MealCubit>();
+          final isAssigning = state is MailAssignLoading;
 
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -78,7 +79,9 @@ class _MealSummaryFooterState extends State<MealSummaryFooter> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () async {
+                    onPressed: isAssigning
+                        ? null
+                        : () async {
                       // Assign the meal first.
                       await context.read<MealCubit>().assignDietMealForUser(
                             widget.userId,
@@ -115,13 +118,35 @@ class _MealSummaryFooterState extends State<MealSummaryFooter> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: Text(
-                      widget.isUpdate
-                          ? AppLocalKeys.save.tr()
-                          : (context.watch<MealCubit>().mealNum < 5
-                              ? AppLocalKeys.next.tr()
-                              : AppLocalKeys.save.tr()),
-                    ),
+                    child: isAssigning
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                              SizedBox(width: 12.w),
+                              Text(
+                                widget.isUpdate
+                                    ? AppLocalKeys.save.tr()
+                                    : (context.watch<MealCubit>().mealNum < 5
+                                        ? AppLocalKeys.next.tr()
+                                        : AppLocalKeys.save.tr()),
+                              ),
+                            ],
+                          )
+                        : Text(
+                            widget.isUpdate
+                                ? AppLocalKeys.save.tr()
+                                : (context.watch<MealCubit>().mealNum < 5
+                                    ? AppLocalKeys.next.tr()
+                                    : AppLocalKeys.save.tr()),
+                          ),
                   ),
                 ),
               ),

@@ -151,6 +151,21 @@ class PaymentCubit extends Cubit<PaymentState> {
             methodType: _currentPaymentData!.methodType,
           );
         }
+        // سجّل البيانات المهمة لتشخيص مشكلة عدم إعادة التوجيه
+        debugPrint('Payment created: invoiceId=${_currentPaymentData!.invoiceId}');
+        debugPrint('redirectTo=${_currentPaymentData!.redirectTo}');
+        debugPrint('fawryCode=${_currentPaymentData!.fawryCode}');
+        debugPrint('walletReference=${_currentPaymentData!.walletReference}');
+
+        // إذا لم نملك رابط إعادة توجيه ولا كود فوري ولا محفظة، فهذه استجابة غير صالحة لإكمال الدفع
+        final hasRedirect = (_currentPaymentData!.redirectTo != null && _currentPaymentData!.redirectTo!.isNotEmpty);
+        final hasFawry = (_currentPaymentData!.fawryCode != null && _currentPaymentData!.fawryCode!.isNotEmpty);
+        final hasWallet = (_currentPaymentData!.walletReference != null && _currentPaymentData!.walletReference!.isNotEmpty);
+        if (!hasRedirect && !hasFawry && !hasWallet) {
+          emit(PaymentError('تعذر الحصول على رابط الدفع من مزود الخدمة. يرجى المحاولة مرة أخرى أو اختيار طريقة دفع مختلفة.'));
+          return;
+        }
+
         emit(PaymentCreated(_currentPaymentData!));
       } else {
         final errorMessage = response.message.isNotEmpty ? response.message : 'فشل في إنشاء الفاتورة';

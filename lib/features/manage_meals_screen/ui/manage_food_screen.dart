@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,6 +51,7 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
     AppLocalKeys.fats.tr(),
     AppLocalKeys.carbs.tr(),
     AppLocalKeys.vegetables.tr(),
+    AppLocalKeys.naturalSupplements.tr(),
   ];
   int selectedTab = 0;
 
@@ -59,13 +61,16 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    getData();
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            getData();
-          },
+      body: RefreshIndicator(
+        onRefresh: () async {
+          log("refreshed");
+          _initOrder().then((_) => getData());
+          getData();
+        },
+        child: SafeArea(
           child: Column(
             children: [
               SizedBox(height: 16.h),
@@ -153,14 +158,17 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                         }
 
                         if (_isLoadingOrder) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
 
                         // Sort meals based on saved order for this category
                         final categoryOrder = _mealOrders[selectedTab] ?? {};
                         filteredMeals.sort((a, b) {
-                          final orderA = categoryOrder[a.id.toString()] ?? filteredMeals.length;
-                          final orderB = categoryOrder[b.id.toString()] ?? filteredMeals.length;
+                          final orderA = categoryOrder[a.id.toString()] ??
+                              filteredMeals.length;
+                          final orderB = categoryOrder[b.id.toString()] ??
+                              filteredMeals.length;
                           return orderA.compareTo(orderB);
                         });
 
@@ -175,11 +183,13 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                               if (oldIndex < newIndex) newIndex -= 1;
                               final item = filteredMeals.removeAt(oldIndex);
                               filteredMeals.insert(newIndex, item);
-                              
+
                               // Save the new order for this category
-                              final order = filteredMeals.map((m) => m.id.toString()).toList();
+                              final order = filteredMeals
+                                  .map((m) => m.id.toString())
+                                  .toList();
                               _saveMealOrder(selectedTab, order);
-                              
+
                               // Update local order cache for this category
                               _mealOrders[selectedTab] = {};
                               for (int i = 0; i < order.length; i++) {

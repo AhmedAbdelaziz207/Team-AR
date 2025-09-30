@@ -9,6 +9,7 @@ import 'package:team_ar/features/workout_systems/widget/workout_system_card.dart
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_local_keys.dart';
 import 'create_workout_system.dart';
+import 'dart:developer';
 
 class WorkoutSystemsScreen extends StatefulWidget {
   const WorkoutSystemsScreen({super.key});
@@ -43,8 +44,9 @@ class _WorkoutSystemsScreenState extends State<WorkoutSystemsScreen> {
         ),
       ),
       body: RefreshIndicator(
-        onRefresh: () async =>
-            context.read<WorkoutSystemCubit>().refreshWorkoutSystems(), // استخدام دالة التحديث
+        onRefresh: () async => context
+            .read<WorkoutSystemCubit>()
+            .refreshWorkoutSystems(), // استخدام دالة التحديث
         child: BlocBuilder<WorkoutSystemCubit, WorkoutSystemState>(
           builder: (context, state) {
             if (state is WorkoutSystemLoading) {
@@ -84,9 +86,13 @@ class _WorkoutSystemsScreenState extends State<WorkoutSystemsScreen> {
                 child: const CreateWorkoutScreen(),
               ),
             ),
-          ).then(
-            (value) => context.read<WorkoutSystemCubit>().getWorkoutSystems(),
-          );
+          ).then((value) => {
+                if (context.mounted)
+                  {
+                    context.read<WorkoutSystemCubit>().getWorkoutSystems(),
+                  },
+                log("then")
+              });
         },
         backgroundColor: AppColors.primaryColor,
         child: Image.asset(

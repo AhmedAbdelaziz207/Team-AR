@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/features/workout_systems/logic/workout_system_cubit.dart';
 import 'package:team_ar/features/workout_systems/model/workout_system_model.dart';
+import 'package:team_ar/features/workout_systems/widget/pdf_preview_widget.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_assets.dart';
 
@@ -102,13 +103,32 @@ class WorkoutSystemCard extends StatelessWidget {
                           ),
                           const Spacer(),
                           InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              if (workout?.url != null && workout!.url!.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PdfPreviewWidget(
+                                      pdfUrl: workout!.url!,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('No PDF available for preview'),
+                                  ),
+                                );
+                              }
+                            },
                             child: Icon(
-                              Icons.more_horiz,
+                              Icons.visibility_outlined,
                               color: AppColors.primaryColor,
                               size: 20.sp,
                             ),
-                          )
+                          ),
+                          SizedBox(width: 8.w),
+                       
                         ],
                       ),
 

@@ -47,22 +47,20 @@ class UserDietCubit extends Cubit<UserDietState> {
         }
         emit(UserDietState.success(data));
       },
-      failure: (error) => emit(UserDietState.failure(error)),
+      failure: (error) => {
+        if (!isClosed) emit(UserDietState.failure(error)),
+      },
     );
   }
-
-
 
   void removeUserDiet(String userId) async {
     emit(const UserDietState.loading());
     final result = await repo.removeUserDiet(userId);
     result.when(
       success: (data) {
-       getUserDiet(userId: userId);
+        getUserDiet(userId: userId);
       },
       failure: (error) => emit(UserDietState.failure(error)),
     );
-    
   }
-
 }

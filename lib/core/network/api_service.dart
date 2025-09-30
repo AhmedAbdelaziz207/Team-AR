@@ -75,8 +75,8 @@ abstract class ApiService {
     @Body() Map<String, dynamic> body,
   );
 
-  @PUT(ApiEndPoints.updateDietMealForUser)
-  Future<void> updateDietMealForUser(
+  @PUT(ApiEndPoints.updateUserDiet)
+  Future<void>  updateUserDiet(
     @Body() Map<String, dynamic> body,
   );
 

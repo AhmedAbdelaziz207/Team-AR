@@ -11,9 +11,10 @@ class ApiEndPoints {
   static const getNewUsers = "api/Account/GetNewUsers";
   static const getUserAboutToExpire = "/api/Account/GetUsersNearExpirePackage";
   static const dietMeals = "api/Food";
+  static const updateUserDiet = "api/UserFood/UpdateFoodsToUser";
   static const removeAllUserFoods = "api/UserFood/RemoveAllFoodsFromUser";
   static const addDietMealForUser = "/api/UserFood/AddFoodsToUser";
-  static const updateDietMealForUser = "/api/UserFood";
+//   static const updateDietMealForUser = "/api/UserFood";
   static const getUserById = "api/Account/GetUserById";
   static const getUserDiet = "api/UserFood/GetFoodsForUser";
   static const exercise = "api/Exercise";

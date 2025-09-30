@@ -18,8 +18,11 @@ class DietMealModel extends Equatable {
   final double? numOfCarbs;
   final double? numOfFats;
   final int? foodCategory;
-  @JsonKey(ignore: true)
+  final String? note;
+  @JsonKey(includeToJson: false, includeFromJson: false)
   final String? image;
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  final String? usageInstructions;
 
   DietMealModel({
     this.id,
@@ -33,7 +36,9 @@ class DietMealModel extends Equatable {
     this.numOfCarbs,
     this.numOfFats,
     this.foodCategory,
+    this.note,
     this.image,
+    this.usageInstructions,
   });
 
   factory DietMealModel.fromJson(Map<String, dynamic> json) =>
@@ -54,7 +59,9 @@ class DietMealModel extends Equatable {
     double? numOfCarbs,
     double? numOfFats,
     int? foodCategory,
+    String? note,
     String? image,
+    String? usageInstructions,
   }) {
     return DietMealModel(
       id: id ?? this.id,
@@ -68,7 +75,9 @@ class DietMealModel extends Equatable {
       numOfCarbs: numOfCarbs ?? this.numOfCarbs,
       numOfFats: numOfFats ?? this.numOfFats,
       foodCategory: foodCategory ?? this.foodCategory,
+      note: note ?? this.note,
       image: image ?? this.image,
+      usageInstructions: usageInstructions ?? this.usageInstructions,
     );
   }
 

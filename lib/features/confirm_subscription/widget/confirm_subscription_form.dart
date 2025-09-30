@@ -14,7 +14,7 @@ class ConfirmSubscriptionForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<ConfirmSubscriptionCubit>();
-    final isAdmin = context.watch<ConfirmSubscriptionCubit>().isAdmin;
+    // final isAdmin = context.watch<ConfirmSubscriptionCubit>().isAdmin;
 
     return Form(
       key: cubit.formKey,

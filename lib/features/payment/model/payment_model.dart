@@ -104,42 +104,64 @@ class PaymentData {
   });
 
   factory PaymentData.fromJson(Map<String, dynamic> json) {
-    final paymentData = json['payment_data'] as Map<String, dynamic>?;
+    final paymentData = json['payment_data'] as Map<String, dynamic>? ??
+        json['paymentData'] as Map<String, dynamic>?;
+
+    // استخراج رابط إعادة التوجيه مع دعم مفاتيح متعددة محتملة
+    final redirectTo = (paymentData != null)
+        ? (paymentData['redirectTo'] ??
+            paymentData['redirect_url'] ??
+            paymentData['redirectUrl'] ??
+            paymentData['payment_url'] ??
+            paymentData['paymentUrl'])
+        : (json['redirectTo'] ?? json['redirect_url'] ?? json['redirectUrl']);
+
+    // استخراج أكواد بديلة للحالات الأخرى
+    final fawryCode = paymentData != null
+        ? (paymentData['fawryCode'] ?? paymentData['fawry_code'])
+        : null;
+    final walletReference = paymentData != null
+        ? (paymentData['walletReference'] ?? paymentData['wallet_reference'])
+        : null;
 
     // تحديد نوع طريقة الدفع
     PaymentMethodType methodType = PaymentMethodType.unknown;
-    if (paymentData?['redirectTo'] != null) {
+    if (redirectTo != null && redirectTo.toString().isNotEmpty) {
       methodType = PaymentMethodType.visa;
-    } else if (paymentData?['fawryCode'] != null) {
+    } else if (fawryCode != null) {
       methodType = PaymentMethodType.fawry;
-    } else if (paymentData?['walletReference'] != null) {
+    } else if (walletReference != null) {
       methodType = PaymentMethodType.wallet;
     }
 
     // محاولة الحصول على المبلغ من مصادر متعددة
     double amount = 0.0;
-
-    // جرب الحصول على المبلغ من المواقع المختلفة في الاستجابة
-    if (json['amount'] != null) {
-      amount = double.tryParse(json['amount'].toString()) ?? 0.0;
-    } else if (json['cartTotal'] != null) {
-      amount = double.tryParse(json['cartTotal'].toString()) ?? 0.0;
-    } else if (paymentData?['amount'] != null) {
-      amount = double.tryParse(paymentData!['amount'].toString()) ?? 0.0;
-    } else if (json['total'] != null) {
-      amount = double.tryParse(json['total'].toString()) ?? 0.0;
+    final dynamic amountCandidate = json['amount'] ??
+        json['cartTotal'] ??
+        paymentData?['amount'] ??
+        json['total'];
+    if (amountCandidate != null) {
+      amount = double.tryParse(amountCandidate.toString()) ?? 0.0;
     }
 
+    // الحالة والعملة مع دعم مفاتيح متعددة
+    final status = (json['status'] ?? json['payment_status'] ?? 'pending')
+        .toString();
+    final currency = (json['currency'] ?? json['Currency'] ?? 'EGP').toString();
+
     return PaymentData(
-      invoiceId: json['invoice_id'] as int,
-      invoiceKey: json['invoice_key'] as String,
-      status: json['status'] ?? 'pending',
-      redirectTo: paymentData?['redirectTo'] as String?,
-      fawryCode: paymentData?['fawryCode'] as String?,
-      expireDate: paymentData?['expireDate'] as String?,
-      walletReference: paymentData?['walletReference'] as String?,
+      invoiceId: (json['invoice_id'] ?? json['invoiceId']) as int,
+      invoiceKey: (json['invoice_key'] ?? json['invoiceKey']) as String,
+      status: status,
+      redirectTo: redirectTo as String?,
+      fawryCode: fawryCode as String?,
+      expireDate: (paymentData != null
+              ? (paymentData['expireDate'] ?? paymentData['expire_date'])
+              : null)
+          as String?,
+      walletReference: walletReference as String?,
       amount: amount,
-      currency: json['currency'] ?? 'EGP',
+      currency: currency,
       methodType: methodType,
     );
   }

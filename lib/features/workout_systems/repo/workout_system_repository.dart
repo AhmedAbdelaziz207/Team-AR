@@ -32,7 +32,8 @@ class WorkoutSystemRepository {
   }
 
   Future<ApiResult<void>> uploadWorkoutSystemFile(
-      WorkoutSystemModel workoutSystem, File workoutPdf) async {
+      WorkoutSystemModel workoutSystem, File workoutPdf,
+      {void Function(int sent, int total)? onSendProgress}) async {
     final dio = await DioFactory.getDio();
 
     FormData formData = FormData.fromMap({
@@ -48,6 +49,7 @@ class WorkoutSystemRepository {
         ApiEndPoints.baseUrl + ApiEndPoints.exercise,
         data: formData,
         options: Options(contentType: 'multipart/form-data'),
+        onSendProgress: onSendProgress,
       );
       log("Upload Workout Success");
 

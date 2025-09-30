@@ -24,6 +24,18 @@ class DietMealRepository {
       }
 
       print("API Response: $response"); // Debugging line
+      
+      // Check if any meals have notes
+      log("=== GET MEALS DEBUG ===");
+      log("Total meals received: ${response.length}");
+      for (var meal in response) {
+        if (meal.note != null && meal.note!.isNotEmpty) {
+          log("Meal '${meal.name}' has note: '${meal.note}'");
+        }
+        if (meal.foodCategory == 4) {
+          log("Natural supplement '${meal.name}' note: '${meal.note ?? 'null'}'");
+        }
+      }
 
       return ApiResult.success(response);
     } catch (e, stacktrace) {
@@ -38,14 +50,14 @@ class DietMealRepository {
     required File dietImage,
   }) async {
     try {
-      final Dio dio = DioFactory.getDio();
-  
+      final Dio dio = await DioFactory.getDio();
+
       // التحقق من حجم الصورة
       final fileSize = await dietImage.length();
       if (fileSize > 5 * 1024 * 1024) { // أكبر من 5 ميجابايت
         return ApiResult.failure(ApiErrorModel(message: "حجم الصورة كبير جدًا، يجب أن يكون أقل من 5 ميجابايت"));
       }
-  
+
       // Build FormData with PascalCase keys expected by backend
       final formMap = <String, dynamic>{
         "Name": diet.name,
@@ -56,22 +68,40 @@ class DietMealRepository {
         "NumOfProtein": diet.numOfProtein,
         "NumOfGrams": diet.numOfGrams,
         "FoodCategory": diet.foodCategory,
+        "Note": diet.note ?? "", // Add note field for usage instructions
         "Image": await MultipartFile.fromFile(
           dietImage.path,
           filename: dietImage.path.split('/').last,
         ),
       };
 
+      log("=== REPOSITORY DEBUG ===");
+      log("Diet note from model: '${diet.note}'");
+      log("FormData Note value: '${formMap["Note"]}'");
+      log("Food Category: ${diet.foodCategory}");
+      log("FormData keys: ${formMap.keys.toList()}");
+
       // Create FormData for file upload
       FormData formData = FormData.fromMap(formMap);
-  
-      await dio.post(
+
+      log("=== FORMDATA DEBUG ===");
+      log("FormData fields:");
+      for (var field in formData.fields) {
+        log("  ${field.key}: ${field.value}");
+      }
+
+      log("API URL: ${ApiEndPoints.baseUrl + ApiEndPoints.dietMeals}");
+
+      final response = await dio.post(
         ApiEndPoints.baseUrl + ApiEndPoints.dietMeals,
         data: formData,
         options: Options(contentType: 'multipart/form-data'),
       );
-      log("Success");
-  
+      log("=== API RESPONSE ===");
+      log("Status Code: ${response.statusCode}");
+      log("Response Data: ${response.data}");
+      log("Success - Meal added successfully");
+
       return const ApiResult.success(null);
     } catch (e) {
       log(e.toString());
@@ -90,38 +120,39 @@ class DietMealRepository {
       }
     }
   }
-Future<ApiResult<void>> updateDietMeal({
-  required DietMealModel diet,
-  required String imageUrl, // send the image URL instead of File
-}) async {
-  try {
-    final Dio dio = DioFactory.getDio();
 
-    final body = {
-      "id": diet.id,
-      "name": diet.name,
-      "arabicName": diet.arabicName,
-      "numOfCalories": diet.numOfCalories,
-      "numOfProtein": diet.numOfProtein,
-      "numOfFats": diet.numOfFats,
-      "numOfCarps": diet.numOfCarbs,
-      "foodCategory": diet.foodCategory,
-      "imageURL": imageUrl,
-    };
+  Future<ApiResult<void>> updateDietMeal({
+    required DietMealModel diet,
+    required String imageUrl, // send the image URL instead of File
+  }) async {
+    try {
+      final Dio dio = await DioFactory.getDio();
 
-    await dio.put(
-      ApiEndPoints.baseUrl + ApiEndPoints.dietMeals,
-      data: body,
-      options: Options(contentType: "application/json"),
-    );
+      final body = {
+        "id": diet.id,
+        "name": diet.name,
+        "arabicName": diet.arabicName,
+        "numOfCalories": diet.numOfCalories,
+        "numOfProtein": diet.numOfProtein,
+        "numOfFats": diet.numOfFats,
+        "numOfCarps": diet.numOfCarbs,
+        "foodCategory": diet.foodCategory,
+        "imageURL": imageUrl,
+      };
 
-    log("Success");
-    return const ApiResult.success(null);
-  } catch (e) {
-    log(e.toString());
-    return ApiResult.failure(ApiErrorHandler.handle(e));
+      await dio.put(
+        ApiEndPoints.baseUrl + ApiEndPoints.dietMeals,
+        data: body,
+        options: Options(contentType: "application/json"),
+      );
+
+      log("Success");
+      return const ApiResult.success(null);
+    } catch (e) {
+      log(e.toString());
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
   }
-}
 
 
   Future<ApiResult<void>> deleteMeal(int id) async {
@@ -139,7 +170,7 @@ Future<ApiResult<void>> updateDietMeal({
   }) async {
     try {
       if (isUpdate) {
-        await _apiService.updateDietMealForUser(request.toJson());
+        await _apiService.updateUserDiet(request.toJson());
       } else {
         await _apiService.assignDietMealForUser(request.toJson());
       }

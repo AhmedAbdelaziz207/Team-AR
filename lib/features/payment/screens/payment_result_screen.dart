@@ -68,99 +68,8 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
 
     // إنشاء الحساب إذا كان الدفع ناجحاً ومطلوب إنشاء حساب
     if (widget.isSuccess && widget.shouldCreateAccount) {
-      _createUserAccount();
     } else if (widget.isSuccess) {
       _saveWelcomeMessage();
-    }
-  }
-
-  Future<void> _createUserAccount() async {
-    if (widget.tempUserData == null) {
-      setState(() {
-        _accountCreationError = 'بيانات المستخدم غير متوفرة';
-      });
-      return;
-    }
-
-    setState(() {
-      _isCreatingAccount = true;
-    });
-
-    try {
-      final registerRepo = RegisterRepository(getIt<ApiService>());
-      final oldUser = UserModel.fromJson(widget.tempUserData!);
-
-      final now = DateTime.now();
-      final user = UserModel(
-        id: oldUser.id,
-        userName: oldUser.userName,
-        email: oldUser.email,
-        password: oldUser.password,
-        age: oldUser.age,
-        address: oldUser.address,
-        phone: oldUser.phone,
-        long: oldUser.long,
-        weight: oldUser.weight,
-        dailyWork: oldUser.dailyWork,
-        areYouSmoker: oldUser.areYouSmoker,
-        aimOfJoin: oldUser.aimOfJoin,
-        anyPains: oldUser.anyPains,
-        allergyOfFood: oldUser.allergyOfFood,
-        foodSystem: oldUser.foodSystem,
-        numberOfMeals: oldUser.numberOfMeals,
-        lastExercise: oldUser.lastExercise,
-        anyInfection: oldUser.anyInfection,
-        abilityOfSystemMoney: oldUser.abilityOfSystemMoney,
-        numberOfDays: oldUser.numberOfDays,
-        gender: oldUser.gender,
-        packageId: widget.plan.id,
-        startPackage: now,
-        endPackage: now.add(Duration(days: widget.plan.duration!)),
-      );
-
-      debugPrint('=== إنشاء حساب المستخدم ===');
-      final result = await registerRepo.addTrainer(user);
-
-      result.when(
-        success: (data) async {
-          debugPrint('تم إنشاء الحساب بنجاح: ${data.id}');
-
-          // حذف البيانات المؤقتة
-          await _clearTempData();
-          await _saveWelcomeMessage();
-
-          setState(() {
-            _isCreatingAccount = false;
-            _accountCreated = true;
-          });
-        },
-        failure: (error) {
-          debugPrint('فشل في إنشاء الحساب: ${error.toString()}');
-          setState(() {
-            _isCreatingAccount = false;
-            _accountCreationError = 'فشل في إنشاء الحساب: ${error.toString()}';
-          });
-        },
-      );
-    } catch (e) {
-      debugPrint('خطأ في إنشاء الحساب: $e');
-      setState(() {
-        _isCreatingAccount = false;
-        _accountCreationError = 'حدث خطأ في إنشاء الحساب: ${e.toString()}';
-      });
-    }
-  }
-
-  Future<void> _clearTempData() async {
-    try {
-      await SharedPreferencesHelper.remove('temp_user');
-      await SharedPreferencesHelper.remove('temp_subscription_data');
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('temp_user');
-      await prefs.remove('temp_subscription_data');
-      debugPrint('تم حذف البيانات المؤقتة');
-    } catch (e) {
-      debugPrint('خطأ في حذف البيانات المؤقتة: $e');
     }
   }
 
@@ -575,7 +484,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
             width: double.infinity,
             height: 50.h,
             child: ElevatedButton(
-              onPressed: () => _createUserAccount(),
+              onPressed: () => _navigateToPlans(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,
