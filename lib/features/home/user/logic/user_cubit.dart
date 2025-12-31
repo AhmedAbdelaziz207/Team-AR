@@ -82,7 +82,7 @@ class UserCubit extends Cubit<UserState> {
     log("=== UPDATE USER PACKAGE ===");
     log("User ID: $userId");
     log("Package ID: $packageId");
-    
+
     final result = await repo.updateUserPackage({
       "userId": userId,
       "packageId": packageId,
@@ -93,12 +93,12 @@ class UserCubit extends Cubit<UserState> {
     result.when(
       success: (data) async {
         log("Package update successful, now updating payment status...");
-        
+
         // After successfully updating the package, also update payment status
         final paymentResult = await repo.updateUserPayment(userId);
-        
+
         if (isClosed) return;
-        
+
         paymentResult.when(
           success: (_) {
             log("Payment status updated successfully - user is now paid");
@@ -120,7 +120,23 @@ class UserCubit extends Cubit<UserState> {
     );
   }
 
-  void deleteUser(String id) async {
-    final response = await repo.deleteUser(id);
+  Future<bool> deleteUser(String id) async {
+    final result = await repo.deleteUser(id);
+
+    bool isSuccess = false;
+
+    if (isClosed) return false;
+
+    result.when(
+      success: (_) {
+        isSuccess = true;
+      },
+      failure: (error) {
+        log("Delete user failed: ${error.getErrorsMessage()}");
+        isSuccess = false;
+      },
+    );
+
+    return isSuccess;
   }
 }

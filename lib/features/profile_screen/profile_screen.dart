@@ -12,6 +12,8 @@ import 'package:team_ar/core/widgets/custom_text_form_field.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/features/admin_panal/widget/change_language_section.dart';
 import 'package:team_ar/features/admin_panal/widget/logout_button.dart';
+import 'package:team_ar/core/routing/routes.dart';
+import 'package:team_ar/features/auth/login/model/user_role.dart';
 import 'package:team_ar/features/home/user/logic/user_cubit.dart';
 import 'package:team_ar/features/home/user/logic/user_state.dart';
 import '../../core/prefs/shared_pref_manager.dart';
@@ -46,6 +48,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   File? image;
   bool isNotificationEnabled = true;
   bool isLoading = true;
+  bool _isAdmin = false;
+  bool _isUser = false;
+  bool _isDeletingAccount = false;
   String? userName;
   String? userEmail;
   String? userImage;
@@ -85,6 +90,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
       });
     });
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final role = await SharedPreferencesHelper.getString(AppConstants.userRole);
+
+    if (!mounted) return;
+
+    setState(() {
+      _isAdmin = _isAdminRole(role);
+      _isUser = _isUserRole(role);
+    });
+  }
+
+  bool _isAdminRole(String? role) {
+    final r = role?.toLowerCase().trim();
+    return r == UserRole.Admin.name.toLowerCase() ||
+        r == 'admin' ||
+        r == 'adimn' ||
+        r == 'administrator';
+  }
+
+  bool _isUserRole(String? role) {
+    final r = role?.toLowerCase().trim();
+    return r == UserRole.User.name.toLowerCase() || r == 'user';
   }
 
   @override
@@ -339,9 +369,130 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: LogoutButton(),
           ),
 
+          if (_isUser && !_isAdmin)
+            Padding(
+              padding: EdgeInsets.only(top: 8.h),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  icon: const Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                  label: _isDeletingAccount
+                      ? SizedBox(
+                          width: 20.w,
+                          height: 20.w,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          AppLocalKeys.deleteAccount.tr(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                  onPressed: _isDeletingAccount
+                      ? null
+                      : () => _showDeleteAccountDialog(context),
+                ),
+              ),
+            ),
+
           SizedBox(height: 21.h),
         ],
       ),
     );
+  }
+
+  Future<void> _showDeleteAccountDialog(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(AppLocalKeys.deleteAccountTitle.tr()),
+              content: Text(AppLocalKeys.deleteAccountMessage.tr()),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: Text(AppLocalKeys.cancel.tr()),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Text(AppLocalKeys.confirmDelete.tr()),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+
+    if (!confirmed) return;
+
+    setState(() {
+      _isDeletingAccount = true;
+    });
+
+    final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
+
+    if (!mounted) return;
+
+    if (userId == null) {
+      setState(() {
+        _isDeletingAccount = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalKeys.deleteAccountError.tr()),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final success = await context.read<UserCubit>().deleteUser(userId);
+
+    if (!mounted) return;
+
+    setState(() {
+      _isDeletingAccount = false;
+    });
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalKeys.deleteAccountSuccess.tr()),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      await SharedPreferencesHelper.removeAll();
+
+      if (!mounted) return;
+
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        Routes.login,
+        (route) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalKeys.deleteAccountError.tr()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

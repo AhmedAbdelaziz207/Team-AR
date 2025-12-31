@@ -148,6 +148,14 @@ class AppLocalKeys {
 
   static var tipsAndGuides = "Tips And Guides";
 
+  // Delete account
+  static const deleteAccount = 'deleteAccount';
+  static const deleteAccountTitle = 'deleteAccountTitle';
+  static const deleteAccountMessage = 'deleteAccountMessage';
+  static const confirmDelete = 'confirmDelete';
+  static const deleteAccountSuccess = 'deleteAccountSuccess';
+  static const deleteAccountError = 'deleteAccountError';
+
   static var yourJourney = "You are on your journey";
 
   static var yourDietPlan = "Your Diet Plan";
@@ -205,7 +213,7 @@ class AppLocalKeys {
   static var vegetables = "Vegetables";
 
   static var naturalSupplements = "Natural Supplements";
-  
+
   static var howToUseNaturalSupplements = "How to use natural supplements";
   static var usageInstructions = "Usage Instructions";
   static var enterUsageInstructions = "Enter usage instructions...";
