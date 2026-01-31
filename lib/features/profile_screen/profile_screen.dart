@@ -369,41 +369,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: LogoutButton(),
           ),
 
-          if (_isUser && !_isAdmin)
-            Padding(
-              padding: EdgeInsets.only(top: 8.h),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
-                  icon: const Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
-                  label: _isDeletingAccount
-                      ? SizedBox(
-                          width: 20.w,
-                          height: 20.w,
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          AppLocalKeys.deleteAccount.tr(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                  onPressed: _isDeletingAccount
-                      ? null
-                      : () => _showDeleteAccountDialog(context),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 8.h),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.newPrimaryColor,
                 ),
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+                label: _isDeletingAccount
+                    ? SizedBox(
+                        width: 20.w,
+                        height: 20.w,
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        AppLocalKeys.deleteAccount.tr(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                onPressed: _isDeletingAccount
+                    ? null
+                    : () => _showDeleteAccountDialog(context),
               ),
             ),
+          ),
 
           SizedBox(height: 21.h),
         ],
