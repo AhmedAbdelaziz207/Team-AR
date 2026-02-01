@@ -9,6 +9,7 @@ class AppConstants {
   static const userRole = 'userRole';
   static const userId = 'userId';
   static const dataCompleted = 'dataCompleted';
+  static const isReleased = 'isReleased';
 
   // إضافة مفاتيح جديدة لبيانات المستخدم
   static const userName = 'userName';

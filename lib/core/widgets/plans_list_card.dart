@@ -6,6 +6,8 @@ import 'package:team_ar/features/manage_plans/widget/plans_dialog.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
 import '../routing/routes.dart';
 import '../theme/app_colors.dart';
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
 
 class PlansListCard extends StatelessWidget {
   const PlansListCard({
@@ -110,55 +112,64 @@ class PlansListCard extends StatelessWidget {
                       ),
                       SizedBox(height: 12.h),
                       if (!isAdmin)
-                        TextButton(
-                          onPressed: isSelected
-                              ? null
-                              : () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    Routes.confirmSubscription,
-                                    arguments: plan,
-                                  );
-                                },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(180.w, 40.h),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              side: BorderSide(
-                                color: backgroundColor?.withOpacity(.3) ??
-                                    AppColors.newSecondaryColor.withOpacity(.3),
+                        FutureBuilder<bool>(
+                          future: SharedPreferencesHelper.getBool(
+                              AppConstants.isReleased),
+                          builder: (context, snapshot) {
+                            final isReleased = snapshot.data ?? false;
+                            if (!isReleased) return const SizedBox.shrink();
+                            return TextButton(
+                              onPressed: isSelected
+                                  ? null
+                                  : () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        Routes.confirmSubscription,
+                                        arguments: plan,
+                                      );
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(180.w, 40.h),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  side: BorderSide(
+                                    color: backgroundColor?.withOpacity(.3) ??
+                                        AppColors.newSecondaryColor
+                                            .withOpacity(.3),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (isSelected)
-                                Icon(
-                                  Icons.check_circle,
-                                  color: backgroundColor ??
-                                      AppColors.newPrimaryColor,
-                                  size: 30,
-                                ),
-                              if (isSelected)
-                                SizedBox(
-                                  width: 16.w,
-                                ),
-                              Text(
-                                isSelected
-                                    ? AppLocalKeys.subscribed.tr()
-                                    : AppLocalKeys.subscribe.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      fontSize: 16.sp,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (isSelected)
+                                    Icon(
+                                      Icons.check_circle,
                                       color: backgroundColor ??
-                                          AppColors.newSecondaryColor,
+                                          AppColors.newPrimaryColor,
+                                      size: 30,
                                     ),
+                                  if (isSelected)
+                                    SizedBox(
+                                      width: 16.w,
+                                    ),
+                                  Text(
+                                    isSelected
+                                        ? AppLocalKeys.subscribed.tr()
+                                        : AppLocalKeys.subscribe.tr(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(
+                                          fontSize: 16.sp,
+                                          color: backgroundColor ??
+                                              AppColors.newSecondaryColor,
+                                        ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
                       if (isAdmin)
                         TextButton(

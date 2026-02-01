@@ -1,4 +1,3 @@
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'trainee_model.g.dart';
@@ -28,6 +27,7 @@ class TraineeModel {
   final String? phoneNumber;
   @JsonKey(name: 'reminderOfPackage')
   final int? remindDays;
+  @JsonKey(includeToJson: false)
   final String? password;
   final String? address;
   final String? status;

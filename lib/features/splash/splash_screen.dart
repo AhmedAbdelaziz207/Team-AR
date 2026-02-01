@@ -25,8 +25,11 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Future.delayed(
       const Duration(seconds: 2),
-          () async {
-        await handleNavigation();
+      () async {
+        await _fetchAndSaveReleaseStatus();
+        if (mounted) {
+          await handleNavigation();
+        }
       },
     );
   }
@@ -45,18 +48,20 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> handleNavigation() async {
     final token = await SharedPreferencesHelper.getString(AppConstants.token);
-    final userRole = await SharedPreferencesHelper.getString(AppConstants.userRole);
+    final userRole =
+        await SharedPreferencesHelper.getString(AppConstants.userRole);
     final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
-    final isDataCompleted = await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
+    final isDataCompleted =
+        await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
 
-log("HandleNavigation: dataCompleted, $isDataCompleted");
+    log("HandleNavigation: dataCompleted, $isDataCompleted");
 
     if (token != null && userRole != null && context.mounted) {
       if (userRole.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
         Navigator.pushNamedAndRemoveUntil(
           context,
           Routes.adminLanding,
-              (route) => false,
+          (route) => false,
         );
       } else {
         // Non-admin: if trainer and data not completed, force complete data first
@@ -81,7 +86,7 @@ log("HandleNavigation: dataCompleted, $isDataCompleted");
         Navigator.pushNamedAndRemoveUntil(
           context,
           Routes.onboarding,
-              (route) => false,
+          (route) => false,
         );
       }
     }
@@ -92,7 +97,7 @@ log("HandleNavigation: dataCompleted, $isDataCompleted");
       Navigator.pushNamedAndRemoveUntil(
         context,
         Routes.onboarding,
-            (route) => false,
+        (route) => false,
       );
       return;
     }
@@ -104,7 +109,9 @@ log("HandleNavigation: dataCompleted, $isDataCompleted");
       result.when(
         success: (trainerData) async {
           // تحويل TrainerModel إلى نوع يمكن للـ SubscriptionService التعامل معه
-          final status = await SubscriptionService.checkTrainerModelSubscription(trainerData);
+          final status =
+              await SubscriptionService.checkTrainerModelSubscription(
+                  trainerData);
 
           if (status == SubscriptionStatus.expired) {
             // الاشتراك منتهي - إظهار شاشة انتهاء الاشتراك
@@ -113,14 +120,14 @@ log("HandleNavigation: dataCompleted, $isDataCompleted");
               MaterialPageRoute(
                 builder: (context) => const SubscriptionExpiredScreen(),
               ),
-                  (route) => false,
+              (route) => false,
             );
           } else {
             // الاشتراك نشط أو قارب على الانتهاء - الانتقال للشاشة الرئيسية
             Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.rootScreen,
-                  (route) => false,
+              (route) => false,
             );
           }
         },
@@ -129,7 +136,7 @@ log("HandleNavigation: dataCompleted, $isDataCompleted");
           Navigator.pushNamedAndRemoveUntil(
             context,
             Routes.rootScreen,
-                (route) => false,
+            (route) => false,
           );
         },
       );
@@ -138,8 +145,22 @@ log("HandleNavigation: dataCompleted, $isDataCompleted");
       Navigator.pushNamedAndRemoveUntil(
         context,
         Routes.rootScreen,
-            (route) => false,
+        (route) => false,
       );
+    }
+  }
+
+  Future<void> _fetchAndSaveReleaseStatus() async {
+    try {
+      final api = getIt<ApiService>();
+      final isReleased = await api.isReleased();
+      log("IsReleased Status: $isReleased");
+      await SharedPreferencesHelper.setData(
+          AppConstants.isReleased, isReleased);
+    } catch (e) {
+      log("Failed to fetch IsReleased status: $e");
+      // Default to false (Review Mode) if API fails, for safety
+      await SharedPreferencesHelper.setData(AppConstants.isReleased, false);
     }
   }
 }

@@ -11,6 +11,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_local_keys.dart';
 import '../logic/login_state.dart';
 
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
+
 class LoginForm extends StatelessWidget {
   const LoginForm({super.key});
 
@@ -23,18 +26,18 @@ class LoginForm extends StatelessWidget {
         children: [
           const EmailAndPasswordWidget(),
           SizedBox(height: 12.h),
-        //   // Forgot Password
-        //   InkWell(
-        //     onTap: () {},
-        //     child: Text(
-        //       AppLocalKeys.forgotPassword.tr(),
-        //       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        //             fontWeight: FontWeight.w500,
-        //             color: AppColors.grey,
-        //             decoration: TextDecoration.underline,
-        //           ),
-        //     ),
-        //   ),
+          //   // Forgot Password
+          //   InkWell(
+          //     onTap: () {},
+          //     child: Text(
+          //       AppLocalKeys.forgotPassword.tr(),
+          //       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          //             fontWeight: FontWeight.w500,
+          //             color: AppColors.grey,
+          //             decoration: TextDecoration.underline,
+          //           ),
+          //     ),
+          //   ),
 
           SizedBox(height: 32.h),
 
@@ -42,7 +45,7 @@ class LoginForm extends StatelessWidget {
             return Align(
               alignment: Alignment.center,
               child: ElevatedButton(
-                style:  ElevatedButton.styleFrom(
+                style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.newPrimaryColor,
                 ),
                 onPressed: state is LoginLoading
@@ -65,33 +68,41 @@ class LoginForm extends StatelessWidget {
             );
           }),
           SizedBox(height: 24.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                AppLocalKeys.dontHaveAnAccount.tr(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grey,
+          FutureBuilder<bool>(
+            future: SharedPreferencesHelper.getBool(AppConstants.isReleased),
+            builder: (context, snapshot) {
+              // Default to false (hidden) if loading or null/false
+              final isReleased = snapshot.data ?? false;
+              if (!isReleased) return const SizedBox.shrink();
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    AppLocalKeys.dontHaveAnAccount.tr(),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.grey,
+                        ),
+                  ),
+                  SizedBox(
+                    width: 8.w,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, Routes.plans);
+                    },
+                    child: Text(
+                      AppLocalKeys.subscribe.tr(),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.newPrimaryColor,
+                            decoration: TextDecoration.underline,
+                          ),
                     ),
-              ),
-              SizedBox(
-                width: 8.w,
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, Routes.plans);
-                },
-                child: Text(
-                  AppLocalKeys.subscribe.tr(),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.newPrimaryColor,
-                        decoration: TextDecoration.underline,
-                      ),
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
           const LoginBlocListener(),
         ],

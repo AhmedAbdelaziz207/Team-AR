@@ -18,29 +18,25 @@ class ManagePlansScreen extends StatefulWidget {
 }
 
 class _ManagePlansScreenState extends State<ManagePlansScreen> {
-
-
   @override
   void initState() {
     getData();
     super.initState();
   }
 
-
   void getData() {
     context.read<UserPlansCubit>().getUserPlans();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar:  AppBar(
+      appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
-        leading:  const AppBarBackButton(),
+        leading: const AppBarBackButton(),
         title: Text(
           AppLocalKeys.managePlans.tr(),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -65,7 +61,6 @@ class _ManagePlansScreenState extends State<ManagePlansScreen> {
                       child: CircularProgressIndicator(),
                     ),
                     plansLoaded: (plans) => Expanded(
-                      /// TODO: fix Delete Bug here
                       child: ListView.builder(
                         itemCount: plans.length,
                         itemBuilder: (context, index) => Dismissible(

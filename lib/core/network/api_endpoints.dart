@@ -5,7 +5,7 @@ class ApiEndPoints {
   static const usersImagesBaseUrl =
       "https://ahmedramadangym.runasp.net/Images/UserImages/";
   static const login = "api/Account/Login";
-  static const isReleased = "api/Account/IsReleased";
+  static const isReleased = "api/Base/IsReleased";
   static const plans = "api/Package";
   static const trainerDataById = "/api/TrainerData/GetById";
   static const trainerData = "/api/TrainerData";
@@ -29,7 +29,7 @@ class ApiEndPoints {
   static const sendMessage = "api/Chat/send";
   static const updateUserPackage = "api/Account/UpdateUserPackage";
   static const fcmToken = "/api/UserDevice";
-  static const deleteUser = "api/Account/DeleteUser";
+  static const deleteUser = "api/Account/RemoeAccount";
   static const trainerDataByAdmin = "api/Account/AdminRegistration";
   static const completeUserData = "api/Account/CompleteRegistration";
   static const updateUserPayment = "/api/Account/UpdateUserPayemnt";
