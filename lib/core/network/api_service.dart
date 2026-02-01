@@ -28,6 +28,9 @@ abstract class ApiService {
     @Body() Map<String, dynamic> body,
   );
 
+  @GET(ApiEndPoints.isReleased)
+  Future<bool> isReleased();
+
   @GET(ApiEndPoints.plans)
   Future<List<UserPlan>> getPlans();
 
@@ -76,14 +79,14 @@ abstract class ApiService {
   );
 
   @PUT(ApiEndPoints.updateUserDiet)
-  Future<void>  updateUserDiet(
+  Future<void> updateUserDiet(
     @Body() Map<String, dynamic> body,
   );
 
 //   @PUT(ApiEndPoints.dietMeals)
 //   Future<DietMealModel> updateDietMeal(
 //   @Query("Id") int id,
-  
+
 //   );
 
   @DELETE(ApiEndPoints.dietMeals)
@@ -103,7 +106,6 @@ abstract class ApiService {
 
   @GET("${ApiEndPoints.exercise}/{Id}")
   Future<WorkoutSystemModel> getWorkout(@Path("Id") int id);
-
 
   @DELETE(ApiEndPoints.exercise)
   Future<void> deleteWorkoutSystem(@Query("Id") int id);

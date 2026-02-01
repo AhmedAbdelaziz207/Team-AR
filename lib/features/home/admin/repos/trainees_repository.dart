@@ -12,7 +12,9 @@ import '../../../../core/network/api_service.dart';
 class TraineesRepository {
   final ApiService apiService;
 
-  TraineesRepository(this.apiService,);
+  TraineesRepository(
+    this.apiService,
+  );
 
   Future<ApiResult<List<TraineeModel>>> getAllTrainees() async {
     try {
@@ -79,9 +81,7 @@ class TraineesRepository {
       final formData = FormData.fromMap({
         'Image': await MultipartFile.fromFile(
           userImage.path,
-          filename: userImage.path
-              .split('/')
-              .last,
+          filename: userImage.path.split('/').last,
         ),
       });
 

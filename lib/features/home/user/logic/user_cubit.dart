@@ -2,7 +2,9 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
+import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/network/api_service.dart';
+import 'package:team_ar/core/network/dio_factory.dart';
 import 'package:team_ar/features/home/admin/data/trainee_model.dart';
 import 'package:team_ar/features/home/admin/repos/trainees_repository.dart';
 import 'package:team_ar/features/home/user/logic/user_state.dart';
@@ -121,21 +123,22 @@ class UserCubit extends Cubit<UserState> {
   }
 
   Future<bool> deleteUser(String id) async {
-    final result = await repo.deleteUser(id);
+    final dio = await DioFactory.getDio();
 
     bool isSuccess = false;
 
     if (isClosed) return false;
 
-    result.when(
-      success: (_) {
+    try {
+      final response =
+          await dio.delete('${ApiEndPoints.baseUrl}api/Account/RemoeAccount');
+      if (response.statusCode == 200) {
         isSuccess = true;
-      },
-      failure: (error) {
-        log("Delete user failed: ${error.getErrorsMessage()}");
-        isSuccess = false;
-      },
-    );
+      }
+    } catch (error) {
+      log("Delete user failed: ${error.toString()}");
+      isSuccess = false;
+    }
 
     return isSuccess;
   }
