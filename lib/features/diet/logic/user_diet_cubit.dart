@@ -39,11 +39,17 @@ class UserDietCubit extends Cubit<UserDietState> {
     result?.when(
       success: (data) {
         // تخزين البيانات محلياً
+        // تخزين البيانات محلياً
         if (data.isNotEmpty) {
-          SharedPreferencesHelper.setString(
-            AppConstants.userDiet,
-            jsonEncode(data.map((diet) => diet.toJson()).toList()),
-          );
+          try {
+            SharedPreferencesHelper.setString(
+              AppConstants.userDiet,
+              jsonEncode(data.map((diet) => diet.toJson()).toList()),
+            );
+          } catch (e) {
+            // Log error but do not crash app
+            print("Error caching user diet: $e");
+          }
         }
         emit(UserDietState.success(data));
       },

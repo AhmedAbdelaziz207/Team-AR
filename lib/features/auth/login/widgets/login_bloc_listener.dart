@@ -11,10 +11,12 @@ import 'package:team_ar/features/auth/login/logic/login_cubit.dart';
 import 'package:team_ar/features/auth/login/logic/login_state.dart';
 import 'package:team_ar/features/auth/login/model/login_response.dart';
 import 'package:team_ar/features/auth/login/model/user_role.dart';
-import 'package:team_ar/features/subscription/screens/subscription_expired_screen.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/features/payment/screens/payment_screen.dart';
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
+import 'package:team_ar/core/network/dio_factory.dart';
 
 class LoginBlocListener extends StatelessWidget {
   const LoginBlocListener({super.key});
@@ -31,12 +33,12 @@ class LoginBlocListener extends StatelessWidget {
               title: AppLocalKeys.loginError.tr(),
               message: apiErrorModel.getErrorsMessage() ?? '',
             );
-          }, 
+          },
           loginSuccess: (loginResponse) {
             navigateToHomeScreen(context, loginResponse);
           },
           navigateToSubscriptionExpired: (loginResponse) {
-          log("navigateToSubscriptionExpired");
+            log("navigateToSubscriptionExpired");
             // If admin, bypass subscription checks and go directly to admin panel
             if (_isAdmin(loginResponse.role)) {
               Navigator.pushNamedAndRemoveUntil(
@@ -55,10 +57,7 @@ class LoginBlocListener extends StatelessWidget {
           },
           navigateToCompleteData: (loginResponse) {
             Navigator.pushNamedAndRemoveUntil(
-              context, 
-              Routes.completeData, 
-              (route) => false
-            );
+                context, Routes.completeData, (route) => false);
           },
         );
       },
@@ -84,6 +83,26 @@ class LoginBlocListener extends StatelessWidget {
       Navigator.pushNamedAndRemoveUntil(
           context, Routes.adminLanding, (route) => false);
       return; // Exit early for admin
+    }
+
+    // CHECK RELEASE STATUS FIRST
+    final isReleased =
+        await SharedPreferencesHelper.getBool(AppConstants.isReleased);
+    if (!isReleased) {
+      // Review Mode: Allow access regardless of payment status
+      // MUST SAVE TOKEN FIRST because LoginCubit didn't save it for unpaid users
+      await SharedPreferencesHelper.setData(
+          AppConstants.token, loginResponse.token);
+      await SharedPreferencesHelper.setData(
+          AppConstants.userId, loginResponse.id);
+      await SharedPreferencesHelper.setData(
+          AppConstants.userRole, loginResponse.role);
+      // Ensure Dio has the token for immediate use
+      DioFactory.setTokenIntoHeaderAfterLogin(loginResponse.token!);
+
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.rootScreen, (route) => false);
+      return;
     }
 
     // USER FLOW:

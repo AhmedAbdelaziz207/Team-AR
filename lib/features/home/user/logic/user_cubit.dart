@@ -130,8 +130,15 @@ class UserCubit extends Cubit<UserState> {
     if (isClosed) return false;
 
     try {
-      final response =
-          await dio.delete('${ApiEndPoints.baseUrl}api/Account/RemoeAccount');
+      log("Attempting to delete user with ID: $id using endpoint: ${ApiEndPoints.deleteUser}");
+      final response = await dio.delete(
+        '${ApiEndPoints.baseUrl}${ApiEndPoints.deleteUser}',
+        queryParameters: {'id': id},
+      );
+
+      log("Delete response status: ${response.statusCode}");
+      log("Delete response data: ${response.data}");
+
       if (response.statusCode == 200) {
         isSuccess = true;
       }

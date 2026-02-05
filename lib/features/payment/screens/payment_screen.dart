@@ -7,7 +7,8 @@ import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
-import 'package:team_ar/features/home/admin/data/trainee_model.dart' as admin_user;
+import 'package:team_ar/features/home/admin/data/trainee_model.dart'
+    as admin_user;
 import 'package:team_ar/features/payment/logic/payment_cubit.dart';
 import 'package:team_ar/features/payment/model/payment_model.dart';
 import 'package:team_ar/features/payment/repository/payment_repository.dart';
@@ -18,6 +19,8 @@ import 'package:team_ar/features/payment/widgets/payment_methods_list.dart';
 import 'package:team_ar/features/payment/widgets/plan_details_card.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String userId;
@@ -72,7 +75,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       debugPrint('فشل في جلب بيانات المستخدم: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -213,7 +215,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
         if (fallbackName.isEmpty || fallbackEmail.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('تعذر الحصول على بيانات العميل. يرجى المحاولة مرة أخرى.'),
+              content: Text(
+                  'تعذر الحصول على بيانات العميل. يرجى المحاولة مرة أخرى.'),
             ),
           );
           return;
@@ -222,7 +225,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }).catchError((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('تعذر الحصول على بيانات العميل. يرجى المحاولة مرة أخرى.'),
+            content:
+                Text('تعذر الحصول على بيانات العميل. يرجى المحاولة مرة أخرى.'),
           ),
         );
       });
@@ -285,29 +289,43 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Widget _buildPaymentButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 50.h,
-      child: ElevatedButton(
-        onPressed: () {
-          debugPrint('=== تم النقر على زر الدفع ===');
-          _paymentCubit.getPaymentMethods();
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.newPrimaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
+    return FutureBuilder<bool>(
+      future: SharedPreferencesHelper.getBool(AppConstants.isReleased),
+      builder: (context, snapshot) {
+        final isReleased = snapshot.data ?? false;
+        if (!isReleased) {
+          return SizedBox(
+              height: 50.h,
+              child: Center(
+                  child: Text('الاشتراك متاح عبر الإدارة فقط',
+                      style: TextStyle(color: Colors.grey, fontSize: 16.sp))));
+          // return const SizedBox.shrink(); // Or strictly hidden
+        }
+        return SizedBox(
+          width: double.infinity,
+          height: 50.h,
+          child: ElevatedButton(
+            onPressed: () {
+              debugPrint('=== تم النقر على زر الدفع ===');
+              _paymentCubit.getPaymentMethods();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.newPrimaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+            ),
+            child: Text(
+              'اختيار طريقة الدفع',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
-        child: Text(
-          'اختيار طريقة الدفع',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -418,9 +436,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
             child: Column(
               children: [
                 InfoRow(
-                    label: 'رقم الفاتورة:', value: paymentData.invoiceId.toString()),
+                    label: 'رقم الفاتورة:',
+                    value: paymentData.invoiceId.toString()),
                 InfoRow(
-                    label: 'المبلغ:', value: '${paymentData.amount} ${paymentData.currency}'),
+                    label: 'المبلغ:',
+                    value: '${paymentData.amount} ${paymentData.currency}'),
                 if (paymentData.expireDate != null)
                   InfoRow(label: 'تنتهي في:', value: paymentData.expireDate!),
               ],
@@ -589,6 +609,4 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ],
     );
   }
-
-
 }

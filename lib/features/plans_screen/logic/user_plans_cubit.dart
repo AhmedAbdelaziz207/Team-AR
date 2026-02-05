@@ -80,15 +80,32 @@ class UserPlansCubit extends Cubit<UserPlansState> {
   }
 
   void deletePlan(int id) async {
+    // 1. Snapshot current state for optimistic update
+    List<UserPlan> oldPlans = [];
+    if (state is UserPlansLoaded) {
+      oldPlans = (state as UserPlansLoaded).plans;
+
+      // 2. Emit new list immediately (Optimistic UI)
+      final newPlans = oldPlans.where((plan) => plan.id != id).toList();
+      emit(UserPlansState.plansLoaded(newPlans));
+    }
+
     final result = await _plansRepository.deletePlan(id);
 
     if (isClosed) return;
 
     result.when(
       success: (data) {
-        // getUserPlans();
+        // Success: List is already updated optimistically.
+        // potentially show a snackbar via listener if needed, but UI is already correct.
       },
-      failure: (error) {},
+      failure: (error) {
+        // Failure: Revert the list and show error
+        if (oldPlans.isNotEmpty) {
+          emit(UserPlansState.plansLoaded(oldPlans));
+        }
+        emit(UserPlansState.plansFailure(error));
+      },
     );
   }
 }

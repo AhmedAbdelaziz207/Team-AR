@@ -92,8 +92,15 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
         child: BlocListener<UserCubit, UserState>(
           listener: (context, state) {
             state.maybeMap(
-              success: (userState) {
+              success: (userState) async {
                 final userData = userState.userData; // TraineeModel
+
+                // CHECK RELEASE STATUS FIRST
+                final isReleased = await SharedPreferencesHelper.getBool(
+                    AppConstants.isReleased);
+                if (!isReleased) {
+                  return; // Review Mode: Do not enforce expiration
+                }
 
                 // التحقق من انتهاء الاشتراك
                 DateTime? endDate = userData.endPackage; // مباشرة DateTime?

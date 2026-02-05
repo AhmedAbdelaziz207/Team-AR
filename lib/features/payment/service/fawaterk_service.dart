@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../model/payment_model.dart';
+import 'package:team_ar/core/config/env_config.dart';
 
 class FawaterkService {
   static const String baseUrl = 'https://staging.fawaterk.com/api/v2';
-  static const String apiKey = 'd83a5d07aaeb8442dcbe259e6dae80a3f2e21a3a581e1a5acd';
+  static const String apiKey = EnvConfig.fawaterkApiKey;
 
   final Dio _dio = Dio();
 
@@ -71,11 +72,13 @@ class FawaterkService {
           'failUrl': request.redirectionUrls.failUrl,
           'pendingUrl': request.redirectionUrls.pendingUrl,
         },
-        'cartItems': request.cartItems.map((item) => {
-          'name': item.name,
-          'price': item.price,
-          'quantity': item.quantity,
-        }).toList(),
+        'cartItems': request.cartItems
+            .map((item) => {
+                  'name': item.name,
+                  'price': item.price,
+                  'quantity': item.quantity,
+                })
+            .toList(),
       };
 
       debugPrint('بيانات الطلب: ${jsonEncode(requestData)}');
@@ -117,9 +120,9 @@ class FawaterkService {
   }
 
   Future<PaymentStatusResponse> checkPaymentStatus(
-      String paymentId, {
-        String keyType = 'InvoiceId',
-      }) async {
+    String paymentId, {
+    String keyType = 'InvoiceId',
+  }) async {
     try {
       debugPrint('=== جاري التحقق من حالة الدفع ===');
       debugPrint('معرف الدفع: $paymentId');
@@ -135,7 +138,6 @@ class FawaterkService {
 
         debugPrint('استجابة حالة الدفع: ${response.data}');
         return PaymentStatusResponse.fromJson(response.data);
-
       } on DioException catch (e) {
         if (e.response?.statusCode == 404) {
           debugPrint('404 Error - جاري تجربة endpoints بديلة...');
@@ -143,7 +145,6 @@ class FawaterkService {
         }
         rethrow;
       }
-
     } on DioException catch (e) {
       debugPrint('خطأ Dio في التحقق من حالة الدفع: ${e.message}');
 
@@ -153,7 +154,6 @@ class FawaterkService {
         message: 'جاري التحقق من حالة الدفع...',
         data: PaymentStatusData(status: 'pending'),
       );
-
     } catch (e) {
       debugPrint('خطأ عام في التحقق من حالة الدفع: $e');
       return PaymentStatusResponse(
@@ -166,9 +166,9 @@ class FawaterkService {
 
   // جرب endpoints بديلة للتحقق من حالة الدفع
   Future<PaymentStatusResponse> _tryAlternativeStatusEndpoints(
-      String paymentId,
-      String keyType,
-      ) async {
+    String paymentId,
+    String keyType,
+  ) async {
     final endpoints = [
       'getPaymentStatus',
       'paymentStatus',
@@ -190,7 +190,6 @@ class FawaterkService {
 
         debugPrint('نجح الـ endpoint: $endpoint');
         return PaymentStatusResponse.fromJson(response.data);
-
       } catch (e) {
         debugPrint('فشل $endpoint: $e');
         continue;
