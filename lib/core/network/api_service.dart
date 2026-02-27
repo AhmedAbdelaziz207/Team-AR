@@ -46,8 +46,8 @@ abstract class ApiService {
   @DELETE("${ApiEndPoints.plans}/{Id}")
   Future<UserPlan> deletePlan(@Path("Id") int id);
 
-  @DELETE(ApiEndPoints.deleteUser)
-  Future<void> deleteUser(@Query("id") String id);
+  @DELETE(ApiEndPoints.removeAccount)
+  Future<void> deleteUser();
 
   @POST(ApiEndPoints.trainerData)
   Future<RegisterResponse> addTrainer(@Body() FormData body);

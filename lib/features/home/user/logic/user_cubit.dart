@@ -122,7 +122,7 @@ class UserCubit extends Cubit<UserState> {
     );
   }
 
-  Future<bool> deleteUser(String id) async {
+  Future<bool> deleteUser() async {
     final dio = await DioFactory.getDio();
 
     bool isSuccess = false;
@@ -130,10 +130,9 @@ class UserCubit extends Cubit<UserState> {
     if (isClosed) return false;
 
     try {
-      log("Attempting to delete user with ID: $id using endpoint: ${ApiEndPoints.deleteUser}");
+      log("Attempting to delete user using endpoint: ${ApiEndPoints.removeAccount}");
       final response = await dio.delete(
-        '${ApiEndPoints.baseUrl}${ApiEndPoints.deleteUser}',
-        queryParameters: {'id': id},
+        '${ApiEndPoints.baseUrl}${ApiEndPoints.removeAccount}',
       );
 
       log("Delete response status: ${response.statusCode}");

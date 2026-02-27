@@ -22,7 +22,9 @@ class SubscribedUserCard extends StatelessWidget {
     return Dismissible(
       key: UniqueKey(),
       onDismissed: (direction) {
-        context.read<UserCubit>().deleteUser(trainer.id!);
+        // FIXME: UserCubit.deleteUser() now deletes the CURRENT user (Admin).
+        // Cannot use it to delete a trainee.
+        // context.read<UserCubit>().deleteUser(trainer.id!);
       },
       background: Container(
         alignment: Alignment.centerRight,

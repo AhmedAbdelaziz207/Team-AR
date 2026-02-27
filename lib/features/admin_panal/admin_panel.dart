@@ -29,10 +29,9 @@ class AdminPanel extends StatelessWidget {
         title: Text(
           AppLocalKeys.adminPanel.tr(),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 21.sp,
-            color:    AppColors.black
-              ),
+              fontWeight: FontWeight.bold,
+              fontSize: 21.sp,
+              color: AppColors.black),
         ),
       ),
       body: SingleChildScrollView(
@@ -88,4 +87,3 @@ class AdminPanel extends StatelessWidget {
     );
   }
 }
-

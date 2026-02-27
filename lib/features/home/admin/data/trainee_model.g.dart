@@ -68,7 +68,6 @@ Map<String, dynamic> _$TraineeModelToJson(TraineeModel instance) =>
       'phoneNumber': instance.phone,
       'PhoneNumber': instance.phoneNumber,
       'reminderOfPackage': instance.remindDays,
-      'password': instance.password,
       'address': instance.address,
       'status': instance.status,
       'packageId': instance.packageId,

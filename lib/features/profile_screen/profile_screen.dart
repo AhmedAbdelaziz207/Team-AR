@@ -460,7 +460,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
 
-    final success = await context.read<UserCubit>().deleteUser(userId);
+    final success = await context.read<UserCubit>().deleteUser();
 
     if (!mounted) return;
 

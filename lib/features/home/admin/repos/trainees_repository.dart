@@ -133,10 +133,10 @@ class TraineesRepository {
     }
   }
 
-  Future<ApiResult<void>> deleteUser(String id) async {
+  Future<ApiResult<void>> deleteUser() async {
     try {
       log("Delete User ");
-      final response = await apiService.deleteUser(id);
+      final response = await apiService.deleteUser();
 
       return ApiResult.success(response);
     } catch (e) {
