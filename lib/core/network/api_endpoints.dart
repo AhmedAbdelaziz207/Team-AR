@@ -1,9 +1,9 @@
 class ApiEndPoints {
-  static const baseUrl = "https://ahmedramadangym.runasp.net/";
+  static const baseUrl = "https://ahmedramadangym.premiumasp.net/";
   static const imagesBaseUrl =
-      "https://ahmedramadangym.runasp.net/Images/FoodImages/";
+      "https://ahmedramadangym.premiumasp.net/Images/FoodImages/";
   static const usersImagesBaseUrl =
-      "https://ahmedramadangym.runasp.net/Images/UserImages/";
+      "https://ahmedramadangym.premiumasp.net/Images/UserImages/";
   static const login = "api/Account/Login";
   static const isReleased = "api/Base/IsReleased";
   static const plans = "api/Package";

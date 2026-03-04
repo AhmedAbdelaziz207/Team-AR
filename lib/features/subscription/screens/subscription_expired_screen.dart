@@ -135,7 +135,7 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
                             SizedBox(height: 30.h),
                             // عنوان رئيسي
                             Text(
-                              'انتهى الاشتراك',
+                              'انتهت العضوية',
                               style: TextStyle(
                                 fontSize: 28.sp,
                                 fontWeight: FontWeight.bold,
@@ -171,7 +171,7 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
                                 ),
                               ),
                               child: Text(
-                                'عذراً، لقد انتهت صلاحية اشتراكك ولن تتمكن من استخدام التطبيق حتى تجديد الاشتراك.',
+                                'عذراً، لقد انتهت صلاحية عضويتك ولن تتمكن من استخدام التطبيق حتى تجديد العضوية.',
                                 style: TextStyle(
                                   fontSize: 16.sp,
                                   color: AppColors.grey,
