@@ -2,7 +2,7 @@ class EnvConfig {
   static const String fawaterkApiKey = String.fromEnvironment(
     'FAWATERK_API_KEY',
     defaultValue:
-        'd83a5d07aaeb8442dcbe259e6dae80a3f2e21a3a581e1a5acd', // Fallback for dev
+        '4926750c5e16ea635aaef184ac72e92b5f89dfe6d30eff8a04', // Fallback for Production
   );
   static const String paymobApiKey = String.fromEnvironment(
     'PAYMOB_API_KEY',
