@@ -1,5 +1,5 @@
 class ApiEndPoints {
-  static const baseUrl = "hhttps://ahmedramadangym.premiumasp.net/";
+  static const baseUrl = "https://ahmedramadangym.premiumasp.net/";
   static const imagesBaseUrl =
       "https://ahmedramadangym.premiumasp.net/Images/FoodImages/";
   static const usersImagesBaseUrl =
