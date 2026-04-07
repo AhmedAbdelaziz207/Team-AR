@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
+import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/services/subscription_service.dart';
 import 'package:team_ar/core/services/logger_service.dart';
@@ -95,7 +96,19 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
 
           final isReleased = snapshot.data ?? false;
           if (!isReleased) {
-            return const SizedBox.shrink();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  Routes.rootScreen,
+                  (route) => false,
+                );
+              }
+            });
+            return const Scaffold(
+              backgroundColor: AppColors.white,
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
 
           return Scaffold(

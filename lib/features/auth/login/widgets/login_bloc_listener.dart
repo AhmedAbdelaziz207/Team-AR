@@ -57,7 +57,10 @@ class LoginBlocListener extends StatelessWidget {
           },
           navigateToCompleteData: (loginResponse) {
             Navigator.pushNamedAndRemoveUntil(
-                context, Routes.completeData, (route) => false);
+              context,
+              Routes.completeData,
+              (route) => false,
+            );
           },
         );
       },
