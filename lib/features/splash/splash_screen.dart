@@ -152,15 +152,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _fetchAndSaveReleaseStatus() async {
     try {
-      final api = getIt<ApiService>();
-      final isReleased = await api.isReleased();
-      log("IsReleased Status: $isReleased");
+      log("Force IsReleased to true");
       await SharedPreferencesHelper.setData(
-          AppConstants.isReleased, isReleased);
+          AppConstants.isReleased, true);
     } catch (e) {
-      log("Failed to fetch IsReleased status: $e");
-      // Default to false (Review Mode) if API fails, for safety
-      await SharedPreferencesHelper.setData(AppConstants.isReleased, false);
+      log("Failed to save IsReleased status: $e");
     }
   }
 }

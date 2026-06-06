@@ -88,6 +88,8 @@ void main() async {
 
   try {
     await EasyLocalization.ensureInitialized();
+    // Force isReleased status to true to enable registration and payment flows
+    await SharedPreferencesHelper.setData(AppConstants.isReleased, true);
 
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
