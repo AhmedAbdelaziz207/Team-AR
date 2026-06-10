@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,8 +69,18 @@ class RegisterBlocListener extends StatelessWidget {
                         .text,
                   ),
                 );
+              } else if (Platform.isIOS) {
+                // iOS: Skip payment screen entirely to comply with Apple IAP policy
+                // Navigate to login screen so user can log in after admin activates their account
+                if (context.mounted) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    Routes.login,
+                    (route) => false,
+                  );
+                }
               } else {
-                // Non-admin: go to payment with userId so PaymentScreen fetches data
+                // Android: go to payment with userId so PaymentScreen fetches data
                 final userId = await SharedPreferencesHelper.getString(
                     AppConstants.userId);
                 if (context.mounted) {
@@ -91,7 +103,9 @@ class RegisterBlocListener extends StatelessWidget {
             iconColor: AppColors.green,
             icon: Icons.check,
             title: AppLocalKeys.success.tr(),
-            message: AppLocalKeys.registerSuccessfully.tr(),
+            message: Platform.isIOS
+                ? '${AppLocalKeys.registerSuccessfully.tr()}\n\nسيتم تفعيل حسابك بعد التواصل مع الإدارة.'
+                : AppLocalKeys.registerSuccessfully.tr(),
           );
         });
       },
@@ -101,3 +115,4 @@ class RegisterBlocListener extends StatelessWidget {
     );
   }
 }
+
