@@ -151,12 +151,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _fetchAndSaveReleaseStatus() async {
-    try {
-      log("Force IsReleased to true");
-      await SharedPreferencesHelper.setData(
-          AppConstants.isReleased, true);
-    } catch (e) {
-      log("Failed to save IsReleased status: $e");
-    }
+    // isReleased is no longer used - iOS/Android distinction handled via Platform.isIOS
   }
 }

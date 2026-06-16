@@ -364,19 +364,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Widget _buildPaymentButton() {
-    return FutureBuilder<bool>(
-      future: SharedPreferencesHelper.getBool(AppConstants.isReleased),
-      builder: (context, snapshot) {
-        final isReleased = snapshot.data ?? false;
-        if (!isReleased) {
-          return SizedBox(
-              height: 50.h,
-              child: Center(
-                  child: Text('الاشتراك متاح عبر الإدارة فقط',
-                      style: TextStyle(color: Colors.grey, fontSize: 16.sp))));
-          // return const SizedBox.shrink(); // Or strictly hidden
-        }
-        return SizedBox(
+    if (Platform.isIOS) {
+      return SizedBox(
+          height: 50.h,
+          child: Center(
+              child: Text('الاشتراك متاح عبر الإدارة فقط',
+                  style: TextStyle(color: Colors.grey, fontSize: 16.sp))));
+    }
+    return SizedBox(
           width: double.infinity,
           height: 50.h,
           child: ElevatedButton(
@@ -397,10 +392,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
               ),
-            ),
-          ),
-        );
-      },
+        ),
+      ),
     );
   }
 

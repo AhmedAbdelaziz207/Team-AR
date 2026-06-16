@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
@@ -84,18 +86,10 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
-      child: FutureBuilder<bool?>(
-        future: SharedPreferencesHelper.getBool(AppConstants.isReleased),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              backgroundColor: AppColors.white,
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          final isReleased = snapshot.data ?? false;
-          if (!isReleased) {
+      child: Builder(
+        builder: (context) {
+          // iOS: Skip expired screen (subscription managed externally)
+          if (Platform.isIOS) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
                 Navigator.pushNamedAndRemoveUntil(

@@ -117,8 +117,9 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
         failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
       );
     } else {
-
-      final result = await repo.addTrainerByAdmin(req);
+      // Non-admin: use regular registration endpoint with full UserModel
+      final user = getUser();
+      final result = await repo.addTrainer(user);
       result.when(
         success: (data) async {
           emit(ConfirmSubscriptionState.success(data));
