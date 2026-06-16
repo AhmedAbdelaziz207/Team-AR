@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -95,11 +97,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               success: (userState) async {
                 final userData = userState.userData; // TraineeModel
 
-                // CHECK RELEASE STATUS FIRST
-                final isReleased = await SharedPreferencesHelper.getBool(
-                    AppConstants.isReleased);
-                if (!isReleased) {
-                  return; // Review Mode: Do not enforce expiration
+                // iOS: Skip subscription expiry check (managed externally)
+                if (Platform.isIOS) {
+                  return;
                 }
 
                 // التحقق من انتهاء الاشتراك

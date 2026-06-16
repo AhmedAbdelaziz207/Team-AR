@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,9 +12,6 @@ import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/app_local_keys.dart';
 import '../logic/login_state.dart';
-
-import 'package:team_ar/core/prefs/shared_pref_manager.dart';
-import 'package:team_ar/core/utils/app_constants.dart';
 
 class LoginForm extends StatelessWidget {
   const LoginForm({super.key});
@@ -68,42 +67,35 @@ class LoginForm extends StatelessWidget {
             );
           }),
           SizedBox(height: 24.h),
-          FutureBuilder<bool>(
-            future: SharedPreferencesHelper.getBool(AppConstants.isReleased),
-            builder: (context, snapshot) {
-              // Default to false (hidden) if loading or null/false
-              final isReleased = snapshot.data ?? false;
-              if (!isReleased) return const SizedBox.shrink();
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    AppLocalKeys.dontHaveAnAccount.tr(),
+          if (!Platform.isIOS)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  AppLocalKeys.dontHaveAnAccount.tr(),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.grey,
+                      ),
+                ),
+                SizedBox(
+                  width: 8.w,
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.plans);
+                  },
+                  child: Text(
+                    AppLocalKeys.subscribe.tr(),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.grey,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.newPrimaryColor,
+                          decoration: TextDecoration.underline,
                         ),
                   ),
-                  SizedBox(
-                    width: 8.w,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, Routes.plans);
-                    },
-                    child: Text(
-                      AppLocalKeys.subscribe.tr(),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.newPrimaryColor,
-                            decoration: TextDecoration.underline,
-                          ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+                ),
+              ],
+            ),
           const LoginBlocListener(),
         ],
       ),

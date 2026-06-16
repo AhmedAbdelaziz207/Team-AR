@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -88,19 +88,16 @@ class LoginBlocListener extends StatelessWidget {
       return; // Exit early for admin
     }
 
-    // CHECK RELEASE STATUS FIRST
-    final isReleased =
-        await SharedPreferencesHelper.getBool(AppConstants.isReleased);
-    if (!isReleased) {
-      // Review Mode: Allow access regardless of payment status
-      // MUST SAVE TOKEN FIRST because LoginCubit didn't save it for unpaid users
+    // CHECK PLATFORM: iOS bypasses payment (external payment model)
+    if (Platform.isIOS) {
+      // iOS: Allow access regardless of payment status
+      // Save credentials so user can use the app
       await SharedPreferencesHelper.setData(
           AppConstants.token, loginResponse.token);
       await SharedPreferencesHelper.setData(
           AppConstants.userId, loginResponse.id);
       await SharedPreferencesHelper.setData(
           AppConstants.userRole, loginResponse.role);
-      // Ensure Dio has the token for immediate use
       DioFactory.setTokenIntoHeaderAfterLogin(loginResponse.token!);
 
       Navigator.pushNamedAndRemoveUntil(
