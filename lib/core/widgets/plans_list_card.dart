@@ -77,80 +77,13 @@ class PlansListCard extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "${plan.newPrice} ${AppLocalKeys.le.tr()}",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    fontSize: 16.sp,
-                                    color: backgroundColor ??
-                                        AppColors.newSecondaryColor,
-                                  ),
-                            ),
-                          ),
-                          SizedBox(width: 12.h),
-                          Expanded(
-                            child: Text(
-                              "${plan.oldPrice} ${AppLocalKeys.le.tr()}",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    fontSize: 16.sp,
-                                    decoration: TextDecoration.lineThrough,
-                                    color: backgroundColor?.withOpacity(.5) ??
-                                        AppColors.newSecondaryColor
-                                            .withOpacity(.5),
-                                  ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 12.h),
+                      // Hide price on iOS to avoid Guideline 3.1.1
                       if (!Platform.isIOS)
-                        TextButton(
-                          onPressed: isSelected
-                              ? null
-                              : () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    Routes.confirmSubscription,
-                                    arguments: plan,
-                                  );
-                                },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(180.w, 40.h),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.r),
-                              side: BorderSide(
-                                color: backgroundColor?.withOpacity(.3) ??
-                                    AppColors.newSecondaryColor
-                                        .withOpacity(.3),
-                              ),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (isSelected)
-                                Icon(
-                                  Icons.check_circle,
-                                  color: backgroundColor ??
-                                      AppColors.newPrimaryColor,
-                                  size: 30,
-                                ),
-                              if (isSelected)
-                                SizedBox(
-                                  width: 16.w,
-                                ),
-                              Text(
-                                isSelected
-                                    ? AppLocalKeys.subscribed.tr()
-                                    : AppLocalKeys.subscribe.tr(),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "${plan.newPrice} ${AppLocalKeys.le.tr()}",
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyLarge
@@ -160,9 +93,79 @@ class PlansListCard extends StatelessWidget {
                                           AppColors.newSecondaryColor,
                                     ),
                               ),
-                            ],
+                            ),
+                            SizedBox(width: 12.h),
+                            Expanded(
+                              child: Text(
+                                "${plan.oldPrice} ${AppLocalKeys.le.tr()}",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      fontSize: 14.sp,
+                                      decorationColor: AppColors.grey,
+                                      color: backgroundColor?.withOpacity(.7) ??
+                                          AppColors.grey,
+                                      decoration: TextDecoration.lineThrough,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      if (!Platform.isIOS) SizedBox(height: 12.h),
+                      TextButton(
+                        onPressed: isSelected
+                            ? null
+                            : () {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.confirmSubscription,
+                                  arguments: plan,
+                                );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(180.w, 40.h),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            side: BorderSide(
+                              color: backgroundColor?.withOpacity(.3) ??
+                                  AppColors.newSecondaryColor
+                                      .withOpacity(.3),
+                            ),
                           ),
                         ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (isSelected)
+                              Icon(
+                                Icons.check_circle,
+                                color: backgroundColor ??
+                                    AppColors.newPrimaryColor,
+                                size: 30,
+                              ),
+                            if (isSelected)
+                              SizedBox(
+                                width: 16.w,
+                              ),
+                            Text(
+                              Platform.isIOS 
+                                  ? 'اختيار' 
+                                  : isSelected
+                                      ? AppLocalKeys.subscribed.tr()
+                                      : AppLocalKeys.subscribe.tr(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    fontSize: 16.sp,
+                                    color: backgroundColor ??
+                                        AppColors.newSecondaryColor,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
                       if (isAdmin)
                         TextButton(
                           onPressed: isSelected

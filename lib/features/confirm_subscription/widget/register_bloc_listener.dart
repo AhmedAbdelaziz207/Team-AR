@@ -71,11 +71,15 @@ class RegisterBlocListener extends StatelessWidget {
                 );
               } else if (Platform.isIOS) {
                 // iOS: Skip payment screen entirely to comply with Apple IAP policy
-                // Navigate to login screen so user can log in after admin activates their account
+                // Navigate directly to rootScreen to auto-login the reviewer/user
+                await SharedPreferencesHelper.setData(
+                    AppConstants.token, registerResponse.token);
+                await SharedPreferencesHelper.setData(
+                    AppConstants.userRole, "Trainee"); // Default role
                 if (context.mounted) {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    Routes.login,
+                    Routes.rootScreen,
                     (route) => false,
                   );
                 }
@@ -104,7 +108,7 @@ class RegisterBlocListener extends StatelessWidget {
             icon: Icons.check,
             title: AppLocalKeys.success.tr(),
             message: Platform.isIOS
-                ? '${AppLocalKeys.registerSuccessfully.tr()}\n\nسيتم تفعيل حسابك بعد التواصل مع الإدارة.'
+                ? 'تم إنشاء حسابك بنجاح!'
                 : AppLocalKeys.registerSuccessfully.tr(),
           );
         });

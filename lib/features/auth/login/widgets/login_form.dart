@@ -67,35 +67,34 @@ class LoginForm extends StatelessWidget {
             );
           }),
           SizedBox(height: 24.h),
-          if (!Platform.isIOS)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  AppLocalKeys.dontHaveAnAccount.tr(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                AppLocalKeys.dontHaveAnAccount.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grey,
+                    ),
+              ),
+              SizedBox(
+                width: 8.w,
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.plans);
+                },
+                child: Text(
+                  Platform.isIOS ? 'إنشاء حساب' : AppLocalKeys.subscribe.tr(),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.grey,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.newPrimaryColor,
+                        decoration: TextDecoration.underline,
                       ),
                 ),
-                SizedBox(
-                  width: 8.w,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, Routes.plans);
-                  },
-                  child: Text(
-                    AppLocalKeys.subscribe.tr(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.newPrimaryColor,
-                          decoration: TextDecoration.underline,
-                        ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
+          ),
           const LoginBlocListener(),
         ],
       ),
