@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
@@ -93,6 +94,15 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkUserSubscription(String? userId) async {
+    if (Platform.isIOS) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        Routes.rootScreen,
+        (route) => false,
+      );
+      return;
+    }
+
     if (userId == null) {
       Navigator.pushNamedAndRemoveUntil(
         context,
