@@ -74,10 +74,10 @@ class RegisterBlocListener extends StatelessWidget {
                 // Navigate directly to rootScreen to auto-login the reviewer/user
                 await SharedPreferencesHelper.setData(
                     AppConstants.token, registerResponse.token);
-                // Use actual role from server (not hardcoded), fallback to Trainee
+                // IMPORTANT: Always save "Trainee" — AdminRegistration endpoint
+                // returns "Admin" for all users but this is a self-registration flow.
                 await SharedPreferencesHelper.setData(
-                    AppConstants.userRole,
-                    registerResponse.role ?? "Trainee");
+                    AppConstants.userRole, "Trainee");
                 await SharedPreferencesHelper.setData(
                     AppConstants.dataCompleted, true);
                 if (context.mounted) {
@@ -88,7 +88,15 @@ class RegisterBlocListener extends StatelessWidget {
                   );
                 }
               } else {
-                // Android: go to payment with userId so PaymentScreen fetches data
+                // Android: Save role as Trainee BEFORE going to payment.
+                // IMPORTANT: AdminRegistration endpoint returns "Admin" for all users,
+                // but this is a self-registration — user should always be Trainee.
+                await SharedPreferencesHelper.setData(
+                    AppConstants.token, registerResponse.token);
+                await SharedPreferencesHelper.setData(
+                    AppConstants.userRole, "Trainee");
+                await SharedPreferencesHelper.setData(
+                    AppConstants.dataCompleted, true);
                 final userId = await SharedPreferencesHelper.getString(
                     AppConstants.userId);
                 if (context.mounted) {

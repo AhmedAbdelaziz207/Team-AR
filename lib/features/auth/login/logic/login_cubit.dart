@@ -41,7 +41,14 @@ class LoginCubit extends Cubit<LoginState> {
             ((loginResponse.isDataCompleted == null) ||
                 (loginResponse.isDataCompleted == false));
 
-        if (loginResponse.role?.toLowerCase() == 'admin'.toLowerCase()) {
+        // IMPORTANT: The AdminRegistration endpoint assigns role="Admin" to ALL
+        // registered users. A real admin has isPaid == null (no subscription package).
+        // A regular subscriber registered via AdminRegistration has isPaid == false.
+        // So we only route to admin panel if role is "admin" AND isPaid is not false.
+        final bool isRealAdmin = loginResponse.role?.toLowerCase() == 'admin' &&
+            loginResponse.isPaid != false;
+
+        if (isRealAdmin) {
           emit(LoginState.loginSuccess(loginResponse));
           saveUserData(loginResponse);
           return;

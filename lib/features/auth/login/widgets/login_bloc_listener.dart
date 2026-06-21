@@ -11,7 +11,6 @@ import 'package:team_ar/core/widgets/custom_dialog.dart';
 import 'package:team_ar/features/auth/login/logic/login_cubit.dart';
 import 'package:team_ar/features/auth/login/logic/login_state.dart';
 import 'package:team_ar/features/auth/login/model/login_response.dart';
-import 'package:team_ar/features/auth/login/model/user_role.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/features/payment/screens/payment_screen.dart';
@@ -41,7 +40,7 @@ class LoginBlocListener extends StatelessWidget {
           navigateToSubscriptionExpired: (loginResponse) {
             log("navigateToSubscriptionExpired");
             // If admin, bypass subscription checks and go directly to admin panel
-            if (_isAdmin(loginResponse.role)) {
+            if (_isAdmin(loginResponse)) {
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 Routes.adminLanding,
@@ -71,19 +70,19 @@ class LoginBlocListener extends StatelessWidget {
     );
   }
 
-  // Robust admin role matcher to handle possible backend typos/variants
-  bool _isAdmin(String? role) {
-    final r = role?.toLowerCase().trim();
-    return r == UserRole.Admin.name.toLowerCase() ||
-        r == 'admin' ||
-        r == 'adimn' || // common typo observed
-        r == 'administrator';
+  // Real admin: role is "admin" AND isPaid is not false.
+  // AdminRegistration gives role="Admin" to all users, so we use isPaid to distinguish.
+  bool _isAdmin(LoginResponse loginResponse) {
+    final r = loginResponse.role?.toLowerCase().trim();
+    final isAdminRole = r == 'admin' || r == 'adimn' || r == 'administrator';
+    // If isPaid == false, this is a regular subscriber (not a real admin)
+    return isAdminRole && loginResponse.isPaid != false;
   }
 
   void navigateToHomeScreen(
       BuildContext context, LoginResponse loginResponse) async {
     // ADMIN FLOW: If user is admin, bypass all checks and go to admin panel
-    if (_isAdmin(loginResponse.role)) {
+    if (_isAdmin(loginResponse)) {
       Navigator.pushNamedAndRemoveUntil(
           context, Routes.adminLanding, (route) => false);
       return; // Exit early for admin
