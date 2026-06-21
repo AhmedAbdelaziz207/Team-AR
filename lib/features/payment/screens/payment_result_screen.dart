@@ -91,6 +91,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
 
       final api = getIt<ApiService>();
       await api.updateUserPayment(userId);
+      await SharedPreferencesHelper.setData('has_completed_payment_$userId', true);
     } catch (e) {
       debugPrint('Failed to update user payment status: $e');
     }

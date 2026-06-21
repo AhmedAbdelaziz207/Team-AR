@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:team_ar/core/network/api_result.dart';
 import 'package:team_ar/core/network/dio_factory.dart';
@@ -34,7 +35,6 @@ class LoginCubit extends Cubit<LoginState> {
 
         log("User token: ${loginResponse.token}");
         // Flags (we do NOT save yet)
-        final bool isUnpaid = (loginResponse.isPaid == false);
         final bool isTrainer =
             loginResponse.role?.toLowerCase() == 'trainer'.toLowerCase();
         final bool isIncomplete = isTrainer &&
@@ -42,11 +42,34 @@ class LoginCubit extends Cubit<LoginState> {
                 (loginResponse.isDataCompleted == false));
 
         // IMPORTANT: The AdminRegistration endpoint assigns role="Admin" to ALL
-        // registered users. A real admin has isPaid == null (no subscription package).
-        // A regular subscriber registered via AdminRegistration has isPaid == false.
-        // So we only route to admin panel if role is "admin" AND isPaid is not false.
-        final bool isRealAdmin = loginResponse.role?.toLowerCase() == 'admin' &&
-            loginResponse.isPaid != false;
+        // registered users and also automatically sets isPaid=true.
+        // We must fetch the user profile to see if they have a packageId.
+        // If they have a packageId, they are a Trainee, NOT a Real Admin.
+        bool isRealAdmin = loginResponse.role?.toLowerCase() == 'admin';
+        bool isUnpaid = (loginResponse.isPaid == false);
+
+        if (loginResponse.id != null) {
+          try {
+            final api = getIt<ApiService>();
+            final user = await api.getLoggedUserData(loginResponse.id!);
+            
+            if (user.packageId != null && user.packageId != 0) {
+              isRealAdmin = false; // They are a Trainee!
+              
+              // Verify if they actually went through the payment screen on Android
+              if (Platform.isAndroid) {
+                final hasPaidLocally = await SharedPreferencesHelper.getBool(
+                        'has_completed_payment_${loginResponse.id}') ??
+                    false;
+                if (!hasPaidLocally) {
+                  isUnpaid = true;
+                }
+              }
+            }
+          } catch (e) {
+            log("Failed to get detailed user data during login check: $e");
+          }
+        }
 
         if (isRealAdmin) {
           emit(LoginState.loginSuccess(loginResponse));

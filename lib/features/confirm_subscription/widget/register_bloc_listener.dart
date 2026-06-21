@@ -80,6 +80,8 @@ class RegisterBlocListener extends StatelessWidget {
                     AppConstants.userRole, "Trainee");
                 await SharedPreferencesHelper.setData(
                     AppConstants.dataCompleted, true);
+                await SharedPreferencesHelper.setData(
+                    'has_completed_payment_${registerResponse.id}', true);
                 if (context.mounted) {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
