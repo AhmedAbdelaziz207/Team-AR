@@ -1,39 +1,63 @@
 import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 
-part 'api_error_model.g.dart';
-
-@JsonSerializable()
 class ApiErrorModel {
   final String? message;
   final int? statusCode;
-  final Map<String, dynamic>? errors; // Change this to Map<String, dynamic>
+  // errors can be a List<dynamic> or Map<String, dynamic> depending on the endpoint
+  final dynamic errors;
 
   ApiErrorModel({this.message, this.statusCode, this.errors});
 
-  factory ApiErrorModel.fromJson(Map<String, dynamic> json) =>
-      _$ApiErrorModelFromJson(json);
+  factory ApiErrorModel.fromJson(Map<String, dynamic> json) {
+    return ApiErrorModel(
+      message: json['message'] as String?,
+      statusCode: (json['statusCode'] as num?)?.toInt(),
+      errors: json['errors'],
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$ApiErrorModelToJson(this);
+  Map<String, dynamic> toJson() => {
+    'message': message,
+    'statusCode': statusCode,
+    'errors': errors,
+  };
 
   String? getErrorsMessage() {
     log("errors: $errors , message: $message");
-    if (errors == null || errors!.isEmpty) {
-      if (message?.toLowerCase() == "Internal Server Error".toLowerCase()) {
-        return  AppLocalKeys.unexpectedError.tr();
+
+    // Handle List<dynamic> errors e.g. ["Username 'x' is already taken."]
+    if (errors is List) {
+      final list = errors as List;
+      if (list.isNotEmpty) {
+        final msg = list.map((e) => e.toString()).join('\n');
+        log("errorMessages (list): $msg");
+        return msg;
       }
-      return message;
     }
 
-    // Convert the map of errors into a single string
-    final errorMessages = errors!.entries
-        .map((entry) => entry.value.join('\n')) // Join list of errors for each field
-        .join('\n'); // Join all field errors into a single string
+    // Handle Map<String, dynamic> errors e.g. {"field": ["error"]}
+    if (errors is Map) {
+      final map = errors as Map;
+      if (map.isNotEmpty) {
+        final errorMessages = map.entries.map((entry) {
+          final val = entry.value;
+          if (val is List) return val.join('\n');
+          return val.toString();
+        }).join('\n');
+        log("errorMessages (map): $errorMessages");
+        return errorMessages == 'Internal Server Error'
+            ? AppLocalKeys.unexpectedError.tr()
+            : errorMessages;
+      }
+    }
 
-    log("errorMessages: $errorMessages , message: $message");
-    return errorMessages == 'Internal Server Error' ? "Some thing went wrong" : errorMessages;
+    // Fallback to message field
+    if (message?.toLowerCase() == "internal server error") {
+      return AppLocalKeys.unexpectedError.tr();
+    }
+    return message;
   }
 }
