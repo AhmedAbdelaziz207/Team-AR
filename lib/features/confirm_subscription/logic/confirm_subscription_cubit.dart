@@ -113,7 +113,6 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
     result.when(
       success: (data) async {
         emit(ConfirmSubscriptionState.success(data));
-        await updateUserPayment(data.id!);
       },
       failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
     );
