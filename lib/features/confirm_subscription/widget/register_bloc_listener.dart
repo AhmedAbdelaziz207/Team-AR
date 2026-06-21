@@ -74,8 +74,12 @@ class RegisterBlocListener extends StatelessWidget {
                 // Navigate directly to rootScreen to auto-login the reviewer/user
                 await SharedPreferencesHelper.setData(
                     AppConstants.token, registerResponse.token);
+                // Use actual role from server (not hardcoded), fallback to Trainee
                 await SharedPreferencesHelper.setData(
-                    AppConstants.userRole, "Trainee"); // Default role
+                    AppConstants.userRole,
+                    registerResponse.role ?? "Trainee");
+                await SharedPreferencesHelper.setData(
+                    AppConstants.dataCompleted, true);
                 if (context.mounted) {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
