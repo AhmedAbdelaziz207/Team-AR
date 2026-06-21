@@ -55,6 +55,9 @@ abstract class ApiService {
   @POST(ApiEndPoints.trainerDataByAdmin)
   Future<RegisterResponse> addTrainerByAdmin(@Body() Map<String, dynamic> body);
 
+  @POST(ApiEndPoints.register)
+  Future<RegisterResponse> registerUser(@Body() Map<String, dynamic> body);
+
   @PUT(ApiEndPoints.completeUserData)
   Future<void> completeUserData(@Body() FormData body);
 

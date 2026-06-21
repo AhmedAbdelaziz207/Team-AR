@@ -24,6 +24,15 @@ class RegisterRepository {
     }
   }
 
+  Future<ApiResult<RegisterResponse>> registerUser(RegisterAdminRequest request) async {
+    try {
+      final response = await apiService.registerUser(request.toJson());
+      return ApiResult.success(response);
+    } catch (e) {
+      return ApiResult.failure(ApiErrorHandler.handle(e));
+    }
+  }
+
   Future<ApiResult<RegisterResponse>> addTrainerByAdmin(
     RegisterAdminRequest request,
   ) async {

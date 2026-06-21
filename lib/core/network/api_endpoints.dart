@@ -33,4 +33,5 @@ class ApiEndPoints {
   static const trainerDataByAdmin = "api/Account/AdminRegistration";
   static const completeUserData = "api/Account/CompleteRegistration";
   static const updateUserPayment = "/api/Account/UpdateUserPayemnt";
+  static const register = "api/Account/Register";
 }
