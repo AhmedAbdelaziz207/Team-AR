@@ -106,27 +106,17 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
       endPackage: end,
       packageId: userPlan.id!,
     );
-    if (isAdmin) {
-
-      final result = await repo.addTrainerByAdmin(req);
-      result.when(
-        success: (data) async {
-          emit(ConfirmSubscriptionState.success(data));
-          await updateUserPayment(data.id!);
-        },
-        failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
-      );
-    } else {
-      // Non-admin: use regular registration endpoint with full UserModel
-      final user = getUser();
-      final result = await repo.addTrainer(user);
-      result.when(
-        success: (data) async {
-          emit(ConfirmSubscriptionState.success(data));
-        },
-        failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
-      );
-    }
+    // Both admin and non-admin users use the same AdminRegistration endpoint
+    // because /api/TrainerData requires a Bearer token which a new user doesn't have.
+    // api/Account/AdminRegistration works without authentication.
+    final result = await repo.addTrainerByAdmin(req);
+    result.when(
+      success: (data) async {
+        emit(ConfirmSubscriptionState.success(data));
+        await updateUserPayment(data.id!);
+      },
+      failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
+    );
   }
 
   @override

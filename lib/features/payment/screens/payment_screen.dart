@@ -85,7 +85,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     if (Platform.isIOS) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('الاشتراك'),
+          title: const Text('إنشاء الحساب'),
           centerTitle: true,
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
@@ -113,7 +113,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  'لتفعيل اشتراكك، يرجى التواصل مع الإدارة.',
+                  'لتفعيل حسابك، يرجى التواصل مع الإدارة.',
                   style: TextStyle(
                     fontSize: 16.sp,
                     color: Colors.grey[600],
