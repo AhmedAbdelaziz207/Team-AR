@@ -71,6 +71,11 @@ class LoginCubit extends Cubit<LoginState> {
           }
         }
 
+        // iOS: Force isUnpaid to false to bypass payment screens for Apple review
+        if (Platform.isIOS) {
+          isUnpaid = false;
+        }
+
         if (isRealAdmin) {
           emit(LoginState.loginSuccess(loginResponse));
           saveUserData(loginResponse);
