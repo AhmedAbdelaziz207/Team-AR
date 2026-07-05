@@ -58,11 +58,16 @@ class LoginCubit extends Cubit<LoginState> {
               
               // Verify if they actually went through the payment screen on Android
               if (Platform.isAndroid) {
-                final hasPaidLocally = await SharedPreferencesHelper.getBool(
-                        'has_completed_payment_${loginResponse.id}') ??
+                final isReleased = await SharedPreferencesHelper.getBool(
+                        AppConstants.isReleased) ??
                     false;
-                if (!hasPaidLocally) {
-                  isUnpaid = true;
+                if (!isReleased) {
+                  final hasPaidLocally = await SharedPreferencesHelper.getBool(
+                          'has_completed_payment_${loginResponse.id}') ??
+                      false;
+                  if (!hasPaidLocally) {
+                    isUnpaid = true;
+                  }
                 }
               }
             }

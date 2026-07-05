@@ -103,6 +103,19 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
+    // Android: isReleased = true → تجاوز فحص الاشتراك مؤقتاً
+    final isReleased =
+        await SharedPreferencesHelper.getBool(AppConstants.isReleased) ?? false;
+    if (isReleased) {
+      log('isReleased=true → تجاوز فحص الاشتراك على Android');
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        Routes.rootScreen,
+        (route) => false,
+      );
+      return;
+    }
+
     if (userId == null) {
       Navigator.pushNamedAndRemoveUntil(
         context,
@@ -141,26 +154,41 @@ class _SplashScreenState extends State<SplashScreen> {
             );
           }
         },
-        failure: (error) {
-          // في حالة الخطأ - الانتقال للشاشة الرئيسية
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            Routes.rootScreen,
-            (route) => false,
-          );
+        failure: (error) async {
+          // في حالة الخطأ (مثل حذف الحساب) - تنظيف البيانات والانتقال لشاشة الدخول
+          await SharedPreferencesHelper.removeAll();
+          if (context.mounted) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.onboarding,
+              (route) => false,
+            );
+          }
         },
       );
     } catch (e) {
-      // في حالة الخطأ - الانتقال للشاشة الرئيسية
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        Routes.rootScreen,
-        (route) => false,
-      );
+      // في حالة الخطأ
+      await SharedPreferencesHelper.removeAll();
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.onboarding,
+          (route) => false,
+        );
+      }
     }
   }
 
   Future<void> _fetchAndSaveReleaseStatus() async {
-    // isReleased is no longer used - iOS/Android distinction handled via Platform.isIOS
+    try {
+      final api = getIt<ApiService>();
+      final released = await api.isReleased();
+      await SharedPreferencesHelper.setData(AppConstants.isReleased, released);
+      log('isReleased from API: $released');
+    } catch (e) {
+      // في حالة فشل الـ API، نعتمد false (الوضع الطبيعي)
+      await SharedPreferencesHelper.setData(AppConstants.isReleased, false);
+      log('فشل جلب isReleased، الافتراضي = false: $e');
+    }
   }
 }

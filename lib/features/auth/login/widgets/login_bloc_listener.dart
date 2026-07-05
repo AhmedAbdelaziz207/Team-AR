@@ -107,7 +107,20 @@ class LoginBlocListener extends StatelessWidget {
 
     // USER FLOW:
     // 1) If user is unpaid, send to payment screen with userId only
-    if (loginResponse.isPaid == false) {
+    bool isUnpaid = loginResponse.isPaid == false;
+    
+    if (Platform.isAndroid) {
+      final isReleased = await SharedPreferencesHelper.getBool(AppConstants.isReleased) ?? false;
+      if (!isReleased && !isUnpaid) {
+        // If not released, enforce local payment check for trainees
+        final hasPaidLocally = await SharedPreferencesHelper.getBool('has_completed_payment_${loginResponse.id}') ?? false;
+        if (!hasPaidLocally) {
+          isUnpaid = true;
+        }
+      }
+    }
+
+    if (isUnpaid) {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
