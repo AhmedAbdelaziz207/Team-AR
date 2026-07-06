@@ -6,7 +6,6 @@ import 'package:team_ar/features/add_workout/model/add_workout_params.dart';
 import 'package:team_ar/features/auth/login/ui/login_screen.dart';
 import 'package:team_ar/features/auth/register/logic/register_cubit.dart';
 import 'package:team_ar/features/auth/register/logic/admin_register_cubit.dart';
-import 'package:team_ar/features/auth/register/model/user_model.dart';
 import 'package:team_ar/features/auth/register/register_screen.dart';
 import 'package:team_ar/features/auth/register/ui/admin_register_screen.dart';
 import 'package:team_ar/features/chat/logic/chat_cubit.dart';

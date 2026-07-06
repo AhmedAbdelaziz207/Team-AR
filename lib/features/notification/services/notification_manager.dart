@@ -98,7 +98,7 @@ class NotificationManager {
         await _storage.markAsRead(notification.id);
       }
 
-      print("Notification tapped and marked as read: ${notification?.id}");
+      print("Notification tapped and marked as read: ${notification.id}");
     } catch (e) {
       print("Error handling notification tap: $e");
     }

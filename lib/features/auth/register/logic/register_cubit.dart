@@ -65,7 +65,7 @@ class RegisterCubit extends Cubit<RegisterState> {
           numberOfDays: 30,
           gender: "Male",
           startPackage: DateTime.now(),
-          endPackage: DateTime.now().add(Duration(days: 30)),
+          endPackage: DateTime.now().add(const Duration(days: 30)),
           packageId: 1,
         );
 

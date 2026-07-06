@@ -140,7 +140,7 @@ class _NaturalSupplementCardState extends State<NaturalSupplementCard> {
                     horizontal: 12,
                     vertical: 8,
                   ),
-                  prefixIcon: Icon(Icons.eco, color: Colors.green),
+                  prefixIcon: const Icon(Icons.eco, color: Colors.green),
                 ),
                 maxLines: 2,
                 onChanged: (value) {

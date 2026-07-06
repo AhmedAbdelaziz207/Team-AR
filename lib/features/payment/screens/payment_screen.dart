@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:team_ar/core/utils/app_constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,8 +21,6 @@ import 'package:team_ar/features/payment/widgets/payment_methods_list.dart';
 import 'package:team_ar/features/payment/widgets/plan_details_card.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:team_ar/core/prefs/shared_pref_manager.dart';
-import 'package:team_ar/core/utils/app_constants.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String userId;
@@ -82,7 +81,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     log("Open Payment Screen");
 
     // iOS guard: prevent external payment gateway from showing on iOS
-    if (Platform.isIOS) {
+    if (AppConstants.isReleasedValue) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('إنشاء الحساب'),
@@ -364,7 +363,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Widget _buildPaymentButton() {
-    if (Platform.isIOS) {
+    if (AppConstants.isReleasedValue) {
       return SizedBox(
           height: 50.h,
           child: Center(

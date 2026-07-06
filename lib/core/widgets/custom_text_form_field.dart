@@ -114,7 +114,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                     : (widget.iconColor ?? Colors.grey),
               ),
               suffixIcon: _hasError
-                  ? Icon(
+                  ? const Icon(
                       Icons.error_outline,
                       color: AppColors.red,
                     )

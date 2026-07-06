@@ -34,9 +34,10 @@ class SignalRService {
         .build();
 
     _connection.on("ReceiveMessage", (args) {
-      String senderId = args?[0] as String;
-      String message = args?[1] as String;
-      String data = args?[2] as String;
+      if (args == null || args.isEmpty) return;
+      String senderId = args[0] as String;
+      String message = args.length > 1 ? args[1] as String : "";
+      String data = args.length > 2 ? args[2] as String : "";
       
       // إرسال إشعار محلي عند استلام رسالة جديدة (فقط إذا كان المستلم هو المستخدم الحالي)
       if (_currentUserId != senderId) {

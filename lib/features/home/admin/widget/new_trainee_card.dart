@@ -5,7 +5,6 @@ import 'package:team_ar/features/home/admin/data/trainee_model.dart';
 import 'package:team_ar/features/home/admin/widget/trainee_button.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../user_info/trainee_info_screen.dart';
 
 class NewTraineeCard extends StatelessWidget {
   const NewTraineeCard({super.key, required this.trainee});

@@ -135,7 +135,6 @@ class FirebaseNotificationsServices {
       // إذا كان الإشعار من نوع دردشة، تأكد من أنه موجه للمستخدم الحالي
       if (notificationType == NotificationType.chatMessage && 
           targetUserId != null && 
-          currentUserId != null && 
           targetUserId != currentUserId) {
         log("Skipping chat notification not intended for current user");
         return;

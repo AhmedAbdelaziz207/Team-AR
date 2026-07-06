@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:team_ar/features/auth/login/model/login_response.dart';
-import 'package:team_ar/features/auth/register/model/user_model.dart';
 import 'package:team_ar/features/chat/model/chat_user_model.dart';
 import 'package:team_ar/features/diet/model/user_diet.dart';
 import '../../features/auth/register/model/register_response.dart';

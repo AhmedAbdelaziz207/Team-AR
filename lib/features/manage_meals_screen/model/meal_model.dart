@@ -24,7 +24,7 @@ class DietMealModel extends Equatable {
   @JsonKey(includeToJson: false, includeFromJson: false)
   final String? usageInstructions;
 
-  DietMealModel({
+  const DietMealModel({
     this.id,
     this.name,
     this.arabicName,

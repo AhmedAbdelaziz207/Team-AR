@@ -56,18 +56,16 @@ class LoginCubit extends Cubit<LoginState> {
             if (user.packageId != null && user.packageId != 0) {
               isRealAdmin = false; // They are a Trainee!
               
-              // Verify if they actually went through the payment screen on Android
-              if (Platform.isAndroid) {
-                final isReleased = await SharedPreferencesHelper.getBool(
-                        AppConstants.isReleased) ??
+              // Verify if they actually went through the payment screen locally
+              final isReleased = await SharedPreferencesHelper.getBool(
+                      AppConstants.isReleased) ??
+                  false;
+              if (!isReleased) {
+                final hasPaidLocally = await SharedPreferencesHelper.getBool(
+                        'has_completed_payment_${loginResponse.id}') ??
                     false;
-                if (!isReleased) {
-                  final hasPaidLocally = await SharedPreferencesHelper.getBool(
-                          'has_completed_payment_${loginResponse.id}') ??
-                      false;
-                  if (!hasPaidLocally) {
-                    isUnpaid = true;
-                  }
+                if (!hasPaidLocally) {
+                  isUnpaid = true;
                 }
               }
             }
@@ -76,8 +74,9 @@ class LoginCubit extends Cubit<LoginState> {
           }
         }
 
-        // iOS: Force isUnpaid to false to bypass payment screens for Apple review
-        if (Platform.isIOS) {
+        // Force isUnpaid to false if in released/review mode
+        final isReleasedMode = await SharedPreferencesHelper.getBool(AppConstants.isReleased) ?? false;
+        if (isReleasedMode) {
           isUnpaid = false;
         }
 

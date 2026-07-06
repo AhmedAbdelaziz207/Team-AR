@@ -30,6 +30,7 @@ class ConfirmSubscriptionForm extends StatelessWidget {
                  if (!regex.hasMatch(value!)) {
                   return '${AppLocalKeys.userName.tr()} ${AppLocalKeys.mustBeAlphanumeric.tr()}';
                 }
+                 return null;
 
             },
           ),

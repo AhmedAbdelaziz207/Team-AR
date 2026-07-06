@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:team_ar/core/utils/app_constants.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
         centerTitle: true,
         leading: const AppBarBackButton(),
         title: Text(
-          Platform.isIOS ? 'إنشاء حساب' : AppLocalKeys.confirmSubscription.tr(),
+          AppConstants.isReleasedValue ? 'إنشاء حساب' : AppLocalKeys.confirmSubscription.tr(),
           style: Theme.of(context)
               .textTheme
               .headlineMedium
@@ -74,7 +75,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                 height: 4.h,
               ),
               Text(
-                Platform.isIOS ? 'لإنشاء حسابك الجديد' : AppLocalKeys.forSubscription.tr(),
+                AppConstants.isReleasedValue ? 'لإنشاء حسابك الجديد' : AppLocalKeys.forSubscription.tr(),
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontSize: 14.sp,
                       color: AppColors.lightGrey,
@@ -136,7 +137,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: Text(
-                              Platform.isIOS ? 'إنشاء حساب' : AppLocalKeys.subscribe.tr(),
+                              AppConstants.isReleasedValue ? 'إنشاء حساب' : AppLocalKeys.subscribe.tr(),
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineMedium

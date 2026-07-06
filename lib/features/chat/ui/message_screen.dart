@@ -43,8 +43,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
         // تسجيل المستخدم في موضوع إشعارات الدردشة
         FirebaseNotificationsServices.subscribeToTopic("chat_$value");
 
-        signalR.connect(currentUserId!, (senderId, messageId, message) {
-          log("Message Content: $senderId, message: $message, messageId: $messageId");
+        signalR.connect(currentUserId!, (senderId, message, data) {
+          log("Message Content: $senderId, message: $message, data: $data");
           final newMsg = ChatMessageModel(
             senderId: senderId,
             receiverId: widget.receiver.id,

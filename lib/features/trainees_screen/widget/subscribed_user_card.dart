@@ -1,8 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
-import 'package:team_ar/features/home/user/logic/user_cubit.dart';
 import '../../../core/network/api_endpoints.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/utils/app_assets.dart';

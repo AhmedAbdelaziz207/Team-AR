@@ -86,7 +86,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                     } catch (e) {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Failed to open link')),
+                          const SnackBar(content: Text('Failed to open link')),
                         );
                       }
                     }
@@ -102,7 +102,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             if (_pdfUrl != url || _webController == null) {
               WidgetsBinding.instance.addPostFrameCallback((_) async {
                 final viewerUrl =
-                    'https://docs.google.com/gview?embedded=1&url=' + Uri.encodeComponent(url);
+                    'https://docs.google.com/gview?embedded=1&url=${Uri.encodeComponent(url)}';
                 final controller = WebViewController()
                   ..setJavaScriptMode(JavaScriptMode.unrestricted)
                   ..setBackgroundColor(Colors.black)

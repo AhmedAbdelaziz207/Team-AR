@@ -153,7 +153,7 @@ class _UserDietScreenState extends State<UserDietScreen> {
                       // Display meal groups
                       ...grouped.entries.map((entry) {
                         return MealsList(userDiet: entry.value);
-                      }).toList(),
+                      }),
                     ],
                   ),
                 );

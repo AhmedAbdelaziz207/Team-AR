@@ -26,7 +26,7 @@ class UserDietRepository {
   Future<ApiResult<void>> removeUserDiet(String userId) async {
     try {
       await _apiService.removeAllUserFoods(userId);
-      return ApiResult.success(null);
+      return const ApiResult.success(null);
     } catch (e) {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }

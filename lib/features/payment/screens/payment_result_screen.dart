@@ -44,8 +44,8 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
 
-  bool _isCreatingAccount = false;
-  bool _accountCreated = false;
+  final bool _isCreatingAccount = false;
+  final bool _accountCreated = false;
   String? _accountCreationError;
 
   @override

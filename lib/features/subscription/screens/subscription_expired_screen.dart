@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:team_ar/core/utils/app_constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,7 +8,6 @@ import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/services/subscription_service.dart';
 import 'package:team_ar/core/services/logger_service.dart';
-import 'package:team_ar/core/utils/app_constants.dart';
 
 class SubscriptionExpiredScreen extends StatefulWidget {
   final String? userEmail;
@@ -89,7 +89,7 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
       child: Builder(
         builder: (context) {
           // iOS: Skip expired screen (subscription managed externally)
-          if (Platform.isIOS) {
+          if (AppConstants.isReleasedValue) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
                 Navigator.pushNamedAndRemoveUntil(

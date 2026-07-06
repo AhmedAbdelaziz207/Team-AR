@@ -4,14 +4,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:team_ar/core/network/dio_factory.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
-import 'package:team_ar/features/auth/register/logic/register_cubit.dart';
-import 'package:team_ar/features/auth/register/logic/register_state.dart';
 import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_cubit.dart';
 import 'package:team_ar/features/confirm_subscription/logic/confirm_subscription_state.dart';
 
@@ -69,8 +66,8 @@ class RegisterBlocListener extends StatelessWidget {
                         .text,
                   ),
                 );
-              } else if (Platform.isIOS) {
-                // iOS: Skip payment screen entirely to comply with Apple IAP policy
+              } else if (AppConstants.isReleasedValue) {
+                // Skip payment screen entirely if released/in-review
                 // Navigate directly to rootScreen to auto-login the reviewer/user
                 await SharedPreferencesHelper.setData(
                     AppConstants.token, registerResponse.token);
@@ -121,7 +118,7 @@ class RegisterBlocListener extends StatelessWidget {
             iconColor: AppColors.green,
             icon: Icons.check,
             title: AppLocalKeys.success.tr(),
-            message: Platform.isIOS
+            message: AppConstants.isReleasedValue
                 ? 'تم إنشاء حسابك بنجاح!'
                 : AppLocalKeys.registerSuccessfully.tr(),
           );

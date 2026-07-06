@@ -97,8 +97,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               success: (userState) async {
                 final userData = userState.userData; // TraineeModel
 
-                // iOS: Skip subscription expiry check (managed externally)
-                if (Platform.isIOS) {
+                // Skip subscription expiry check if released/in-review
+                if (AppConstants.isReleasedValue) {
                   return;
                 }
 

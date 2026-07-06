@@ -32,8 +32,9 @@ class ChatCubit extends Cubit<ChatState> {
       final cachedChats = await _chatStorage.getUsers();
 
       if (cachedChats.isNotEmpty) {
-        if (!isClosed)
+        if (!isClosed) {
           emit(GetChatsSuccess(chats: cachedChats, isFromCache: true));
+        }
       } else {
         final errorMessage = ApiErrorHandler.handle(e).getErrorsMessage();
         emit(GetChatsFailure(message: errorMessage.toString()));
@@ -57,9 +58,10 @@ class ChatCubit extends Cubit<ChatState> {
       final cachedMessages = await _chatStorage.getMessages(id);
 
       if (cachedMessages.isNotEmpty) {
-        if (!isClosed)
+        if (!isClosed) {
           emit(GetChatContentSuccess(
               chatContent: cachedMessages, isFromCache: true));
+        }
       } else {
         final errorMessage = ApiErrorHandler.handle(e).getErrorsMessage();
         emit(GetChatContentFailed(message: errorMessage.toString()));

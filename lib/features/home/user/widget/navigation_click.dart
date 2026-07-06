@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/features/admin_panal/widget/admin_manage_card.dart';
-import 'package:team_ar/features/chat/logic/chat_cubit.dart';
 import 'package:team_ar/features/chat/model/chat_user_model.dart';
-import 'package:team_ar/features/chat/ui/message_screen.dart';
 import 'package:team_ar/features/diet/logic/user_diet_cubit.dart';
 import 'package:team_ar/features/diet/ui/user_diet_screen.dart';
 import 'package:team_ar/features/home/user/logic/user_cubit.dart';

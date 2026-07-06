@@ -262,7 +262,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
         n.createdAt.day == now.day).length;
 
     final thisWeek = notifications.where((n) =>
-        n.createdAt.isAfter(now.subtract(Duration(days: 7)))).length;
+        n.createdAt.isAfter(now.subtract(const Duration(days: 7)))).length;
 
     final byType = <String, int>{};
     for (var n in notifications) {
@@ -304,7 +304,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
     while (true) {
       final count = await getUnreadCount();
       yield count;
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
     }
   }
 

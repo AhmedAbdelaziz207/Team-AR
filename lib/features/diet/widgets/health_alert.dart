@@ -18,7 +18,7 @@ class HealthAlert extends StatelessWidget {
   Widget build(BuildContext context) {
     // Always use green colors and natural supplements styling
     final backgroundColor = Colors.green.shade100;
-    final iconColor = Colors.green;
+    const iconColor = Colors.green;
     final textColor = Colors.green[700];
     final labelText = AppLocalKeys.howToUseNaturalSupplements.tr();
 

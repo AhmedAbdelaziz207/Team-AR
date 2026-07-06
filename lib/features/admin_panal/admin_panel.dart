@@ -9,9 +9,7 @@ import 'package:team_ar/features/admin_panal/widget/change_language_section.dart
 import 'package:team_ar/features/admin_panal/widget/logout_button.dart';
 import 'package:team_ar/features/admin_panal/widget/subscribed_users_section.dart';
 import '../../core/di/dependency_injection.dart';
-import '../../core/prefs/shared_pref_manager.dart';
 import '../../core/routing/routes.dart';
-import '../../core/utils/app_constants.dart';
 import '../home/admin/logic/trainees_cubit.dart';
 import '../home/admin/repos/trainees_repository.dart';
 

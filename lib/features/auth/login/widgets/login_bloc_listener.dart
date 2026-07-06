@@ -88,35 +88,18 @@ class LoginBlocListener extends StatelessWidget {
       return; // Exit early for admin
     }
 
-    // CHECK PLATFORM: iOS bypasses payment (external payment model)
-    if (Platform.isIOS) {
-      // iOS: Allow access regardless of payment status
-      // Save credentials so user can use the app
-      await SharedPreferencesHelper.setData(
-          AppConstants.token, loginResponse.token);
-      await SharedPreferencesHelper.setData(
-          AppConstants.userId, loginResponse.id);
-      await SharedPreferencesHelper.setData(
-          AppConstants.userRole, loginResponse.role);
-      DioFactory.setTokenIntoHeaderAfterLogin(loginResponse.token!);
 
-      Navigator.pushNamedAndRemoveUntil(
-          context, Routes.rootScreen, (route) => false);
-      return;
-    }
 
     // USER FLOW:
     // 1) If user is unpaid, send to payment screen with userId only
     bool isUnpaid = loginResponse.isPaid == false;
     
-    if (Platform.isAndroid) {
-      final isReleased = await SharedPreferencesHelper.getBool(AppConstants.isReleased) ?? false;
-      if (!isReleased && !isUnpaid) {
-        // If not released, enforce local payment check for trainees
-        final hasPaidLocally = await SharedPreferencesHelper.getBool('has_completed_payment_${loginResponse.id}') ?? false;
-        if (!hasPaidLocally) {
-          isUnpaid = true;
-        }
+    final isReleased = await SharedPreferencesHelper.getBool(AppConstants.isReleased) ?? false;
+    if (!isReleased && !isUnpaid) {
+      // If not released, enforce local payment check for trainees
+      final hasPaidLocally = await SharedPreferencesHelper.getBool('has_completed_payment_${loginResponse.id}') ?? false;
+      if (!hasPaidLocally) {
+        isUnpaid = true;
       }
     }
 

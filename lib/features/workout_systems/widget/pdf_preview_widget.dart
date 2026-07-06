@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
-import 'package:team_ar/core/theme/app_theme.dart';
 class PdfPreviewWidget extends StatefulWidget {
   final String pdfUrl;
 

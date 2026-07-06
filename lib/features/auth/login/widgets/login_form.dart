@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:team_ar/core/utils/app_constants.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +86,7 @@ class LoginForm extends StatelessWidget {
                   Navigator.pushNamed(context, Routes.plans);
                 },
                 child: Text(
-                  Platform.isIOS ? 'إنشاء حساب' : AppLocalKeys.subscribe.tr(),
+                  AppConstants.isReleasedValue ? 'إنشاء حساب' : AppLocalKeys.subscribe.tr(),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.newPrimaryColor,

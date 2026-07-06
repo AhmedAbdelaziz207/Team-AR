@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:team_ar/core/utils/app_constants.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -77,8 +78,8 @@ class PlansListCard extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Hide price on iOS to avoid Guideline 3.1.1
-                      if (!Platform.isIOS)
+                      // Hide price if app is in released/review mode
+                      if (!AppConstants.isReleasedValue)
                         Row(
                           children: [
                             Expanded(
@@ -112,7 +113,7 @@ class PlansListCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                      if (!Platform.isIOS) SizedBox(height: 12.h),
+                      if (!AppConstants.isReleasedValue) SizedBox(height: 12.h),
                       TextButton(
                         onPressed: isSelected
                             ? null
@@ -149,7 +150,7 @@ class PlansListCard extends StatelessWidget {
                                 width: 16.w,
                               ),
                             Text(
-                              Platform.isIOS 
+                              AppConstants.isReleasedValue 
                                   ? 'اختيار' 
                                   : isSelected
                                       ? AppLocalKeys.subscribed.tr()

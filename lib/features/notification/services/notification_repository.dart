@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/common/exceptions/notification_exceptions.dart';
 import '../../../core/common/notification_model.dart';
 import '../../../core/common/notification_settings_model.dart';
 import '../../../core/common/notification_type_enum.dart';
-import '../../../core/constants/notification_constants.dart';
 import 'notification_storage.dart';
 
 class NotificationRepository {

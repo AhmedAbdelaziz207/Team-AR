@@ -67,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen> {
       } else {
         // Non-admin: if trainer and data not completed, force complete data first
         if (userRole.toLowerCase() == 'trainer'.toLowerCase()) {
-          if (isDataCompleted == false || isDataCompleted == null) {
+          if (isDataCompleted == false) {
             Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.completeData,
@@ -94,20 +94,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkUserSubscription(String? userId) async {
-    if (Platform.isIOS) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        Routes.rootScreen,
-        (route) => false,
-      );
-      return;
-    }
-
-    // Android: isReleased = true → تجاوز فحص الاشتراك مؤقتاً
+    // isReleased = true → تجاوز فحص الاشتراك مؤقتاً
     final isReleased =
         await SharedPreferencesHelper.getBool(AppConstants.isReleased) ?? false;
+    AppConstants.isReleasedValue = isReleased;
     if (isReleased) {
-      log('isReleased=true → تجاوز فحص الاشتراك على Android');
+      log('isReleased=true → تجاوز فحص الاشتراك');
       Navigator.pushNamedAndRemoveUntil(
         context,
         Routes.rootScreen,
@@ -184,10 +176,12 @@ class _SplashScreenState extends State<SplashScreen> {
       final api = getIt<ApiService>();
       final released = await api.isReleased();
       await SharedPreferencesHelper.setData(AppConstants.isReleased, released);
+      AppConstants.isReleasedValue = released;
       log('isReleased from API: $released');
     } catch (e) {
       // في حالة فشل الـ API، نعتمد false (الوضع الطبيعي)
       await SharedPreferencesHelper.setData(AppConstants.isReleased, false);
+      AppConstants.isReleasedValue = false;
       log('فشل جلب isReleased، الافتراضي = false: $e');
     }
   }

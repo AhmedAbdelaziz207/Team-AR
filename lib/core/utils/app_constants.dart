@@ -10,6 +10,7 @@ class AppConstants {
   static const userId = 'userId';
   static const dataCompleted = 'dataCompleted';
   static const isReleased = 'isReleased';
+  static bool isReleasedValue = false;
 
   // إضافة مفاتيح جديدة لبيانات المستخدم
   static const userName = 'userName';
