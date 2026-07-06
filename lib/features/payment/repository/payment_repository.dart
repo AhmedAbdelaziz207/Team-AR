@@ -72,9 +72,9 @@ class PaymentRepository {
         ),
         redirectionUrls: RedirectionUrls(
           successUrl:
-              'https://dev.fawaterk.com/success?invoice_id=${DateTime.now().millisecondsSinceEpoch}',
-          failUrl: 'https://dev.fawaterk.com/fail',
-          pendingUrl: 'https://dev.fawaterk.com/pending',
+              'https://app.fawaterk.com/success?invoice_id=${DateTime.now().millisecondsSinceEpoch}',
+          failUrl: 'https://app.fawaterk.com/fail',
+          pendingUrl: 'https://app.fawaterk.com/pending',
         ),
         cartItems: [
           CartItem(

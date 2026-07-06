@@ -86,7 +86,7 @@ class LoginForm extends StatelessWidget {
                   Navigator.pushNamed(context, Routes.plans);
                 },
                 child: Text(
-                  AppConstants.isReleasedValue ? 'إنشاء حساب' : AppLocalKeys.subscribe.tr(),
+                  AppConstants.isReleasedValue ? AppLocalKeys.createAccount.tr() : AppLocalKeys.subscribe.tr(),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.newPrimaryColor,

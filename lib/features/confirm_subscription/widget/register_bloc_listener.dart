@@ -76,8 +76,6 @@ class RegisterBlocListener extends StatelessWidget {
                 await SharedPreferencesHelper.setData(
                     AppConstants.userRole, "Trainee");
                 await SharedPreferencesHelper.setData(
-                    AppConstants.dataCompleted, true);
-                await SharedPreferencesHelper.setData(
                     'has_completed_payment_${registerResponse.id}', true);
                 if (context.mounted) {
                   Navigator.pushNamedAndRemoveUntil(
@@ -94,8 +92,10 @@ class RegisterBlocListener extends StatelessWidget {
                     AppConstants.token, registerResponse.token);
                 await SharedPreferencesHelper.setData(
                     AppConstants.userRole, "Trainee");
-                await SharedPreferencesHelper.setData(
-                    AppConstants.dataCompleted, true);
+                
+                // CRITICAL FIX: DO NOT SET 'has_completed_payment_...' here!
+                // The user hasn't paid yet. They are just about to enter the payment screen.
+
                 final userId = await SharedPreferencesHelper.getString(
                     AppConstants.userId);
                 if (context.mounted) {
@@ -119,7 +119,7 @@ class RegisterBlocListener extends StatelessWidget {
             icon: Icons.check,
             title: AppLocalKeys.success.tr(),
             message: AppConstants.isReleasedValue
-                ? 'تم إنشاء حسابك بنجاح!'
+                ? AppLocalKeys.accountCreatedSuccessfully.tr()
                 : AppLocalKeys.registerSuccessfully.tr(),
           );
         });

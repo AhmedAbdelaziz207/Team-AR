@@ -5,7 +5,7 @@ import '../model/payment_model.dart';
 import 'package:team_ar/core/config/env_config.dart';
 
 class FawaterkService {
-  static const String baseUrl = 'https://staging.fawaterk.com/api/v2';
+  static const String baseUrl = 'https://app.fawaterk.com/api/v2';
   static const String apiKey = EnvConfig.fawaterkApiKey;
 
   final Dio _dio = Dio();

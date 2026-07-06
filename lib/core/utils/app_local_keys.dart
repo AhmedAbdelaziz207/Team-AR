@@ -40,6 +40,15 @@ class AppLocalKeys {
   static const subscribe = "subscribe";
   static const le = "le";
   static const enterYourInfo = "enterYourInfo";
+  static const pleaseEnterYourPhone = "pleaseEnterYourPhone";
+  static const personalInfo = "personalInfo";
+  static const activityInfo = "activityInfo";
+  static const healthInfo = "healthInfo";
+  static const abilityOfSystemMoney = "abilityOfSystemMoney";
+  static const yes = "yes";
+  static const no = "no";
+  static const previous = "previous";
+  static const submit = "submit";
   static const forSubscription = "forSubscription";
   static const name = "name";
   static const phone = "phone";
@@ -61,7 +70,6 @@ class AppLocalKeys {
   static const areYouSmoking = "Are You Smoking?";
   static const sendBodyImages =
       "Please Confirm You Send Your Body Images On WhatsApp";
-  static const next = "Next";
   static const address = "Address";
   static const haveInfection = "Have You Ever Had An Infection?";
 
@@ -342,4 +350,42 @@ class AppLocalKeys {
   static const hoursAgo = "hoursAgo";
   static const dayAgo = "dayAgo";
   static const daysAgo = "daysAgo";
+
+  // New keys for payment and profile screens
+  static const planDetails = "planDetails";
+  static const notSpecified = "notSpecified";
+  static const priceLabel = "priceLabel";
+  static const durationLabel = "durationLabel";
+  static const planLabel = "planLabel";
+  static const payment = "payment";
+  static const creatingAccountLoading = "creatingAccountLoading";
+  static const creatingAccountFailed = "creatingAccountFailed";
+  static const paymentSuccessEmoji = "paymentSuccessEmoji";
+  static const paymentFailedEmoji = "paymentFailedEmoji";
+  static const paymentResultTitle = "paymentResultTitle";
+  static const noPlanForPaymentResult = "noPlanForPaymentResult";
+  static const transactionDetails = "transactionDetails";
+  static const paidAmount = "paidAmount";
+  static const transactionId = "transactionId";
+  static const paymentMethodTitle = "paymentMethodTitle";
+  static const continueToHomeButton = "continueToHomeButton";
+  static const tryAgainButton = "tryAgainButton";
+  static const paymentStatusLabel = "paymentStatusLabel";
+  static const unknown = "unknown";
+  static const paymentSuccessCreatingAccount = "paymentSuccessCreatingAccount";
+  static const imageUpdatedSuccessfully = "imageUpdatedSuccessfully";
+  static const imageUpdateFailed = "imageUpdateFailed";
+  static const accountCreatedSuccessfully = "accountCreatedSuccessfully";
+  static const invoiceId = "invoiceId";
+  static const fawryCode = "fawryCode";
+  static const visa = "visa";
+  static const mastercard = "mastercard";
+  static const fawry = "fawry";
+  static const wallet = "wallet";
+  static const backToPlans = "backToPlans";
+  static const retryCreateAccount = "retryCreateAccount";
+  static const contactSupport = "contactSupport";
+  static const createAccount = "createAccount";
+  static const forNewAccountCreation = "forNewAccountCreation";
+  static const contactAdminToActivate = "contactAdminToActivate";
 }

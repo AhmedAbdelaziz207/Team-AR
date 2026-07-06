@@ -1,4 +1,7 @@
 import 'dart:developer';
+import 'dart:math' as math;
+import 'package:easy_localization/easy_localization.dart';
+import 'package:team_ar/core/utils/app_local_keys.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -119,7 +122,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'نتيجة الدفع',
+                      AppLocalKeys.paymentResultTitle.tr(),
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
@@ -244,19 +247,19 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
 
     if (widget.isSuccess) {
       if (widget.shouldCreateAccount && _isCreatingAccount) {
-        title = 'جاري إنشاء حسابك... ⏳';
+        title = AppLocalKeys.creatingAccountLoading.tr();
         titleColor = Colors.orange;
       } else if (widget.shouldCreateAccount && _accountCreationError != null) {
-        title = 'فشل في إنشاء الحساب ❌';
+        title = AppLocalKeys.creatingAccountFailed.tr();
         titleColor = Colors.red;
       } else {
-        title = 'تم الدفع بنجاح! 🎉';
+        title = AppLocalKeys.paymentSuccessEmoji.tr();
         titleColor = Colors.green;
         // Handle is Paid to be true ;
         _updateUserPaymentStatus();
       }
     } else {
-      title = 'فشل في عملية الدفع ❌';
+      title = AppLocalKeys.paymentFailedEmoji.tr();
       titleColor = Colors.red;
     }
 
@@ -300,7 +303,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
             const CircularProgressIndicator(color: Colors.orange),
             SizedBox(height: 8.h),
             Text(
-              'جاري إنشاء حسابك...',
+              AppLocalKeys.creatingAccountLoading.tr(),
               style: TextStyle(fontSize: 14.sp, color: Colors.orange),
             ),
           ],
@@ -339,7 +342,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
               Icon(Icons.check_circle, color: Colors.green, size: 20.w),
               SizedBox(width: 8.w),
               Text(
-                'تم إنشاء حسابك بنجاح!',
+                AppLocalKeys.accountCreatedSuccessfully.tr(),
                 style: TextStyle(fontSize: 14.sp, color: Colors.green[700]),
               ),
             ],
@@ -353,52 +356,82 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
   Widget _buildPaymentDetails(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.newPrimaryColor.withOpacity(0.05), Colors.white],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.newPrimaryColor.withValues(alpha: 0.1),
+            blurRadius: 20,
+            spreadRadius: 2,
+            offset: const Offset(0, 5),
+          ),
+        ],
+        border: Border.all(
+          color: AppColors.newPrimaryColor.withValues(alpha: 0.3),
+          width: 1.5,
         ),
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.newPrimaryColor.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.receipt_long,
-                color: AppColors.newPrimaryColor,
-                size: 24.w,
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            decoration: BoxDecoration(
+              color: AppColors.newPrimaryColor.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(18.r),
+                topRight: Radius.circular(18.r),
               ),
-              SizedBox(width: 8.w),
-              Text(
-                'تفاصيل الدفع',
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.receipt_long,
                   color: AppColors.newPrimaryColor,
+                  size: 24.w,
                 ),
-              ),
-            ],
+                SizedBox(width: 10.w),
+                Text(
+                  AppLocalKeys.transactionDetails.tr(),
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.newPrimaryColor,
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 16.h),
-          _buildDetailRow(
-              'رقم الفاتورة:', widget.paymentData!.invoiceId.toString()),
-          _buildDetailRow('الباقة:', widget.plan.name ?? 'غير محدد'),
-          _buildDetailRow('المبلغ:',
-              '${widget.paymentData!.amount} ${widget.paymentData!.currency}'),
-          _buildDetailRow('طريقة الدفع:', _getPaymentMethodName()),
-          _buildDetailRow('التاريخ:',
-              DateFormat('dd/MM/yyyy HH:mm', 'ar').format(DateTime.now())),
-          _buildDetailRow('المدة:', '${widget.plan.duration} يوم'),
-          if (widget.paymentData!.fawryCode != null) ...[
-            Divider(height: 20.h),
-            _buildDetailRow('كود فوري:', widget.paymentData!.fawryCode!,
-                isHighlight: true),
-          ],
+          Padding(
+            padding: EdgeInsets.all(20.w),
+            child: Column(
+              children: [
+                _buildDetailRow(
+                    AppLocalKeys.invoiceId.tr(), widget.paymentData!.invoiceId.toString()),
+                _buildDetailRow(AppLocalKeys.planLabel.tr(), widget.plan.name ?? AppLocalKeys.notSpecified.tr()),
+                _buildDetailRow(AppLocalKeys.paidAmount.tr(),
+                    '${widget.paymentData!.amount} ${widget.paymentData!.currency}'),
+                _buildDetailRow(AppLocalKeys.paymentMethodTitle.tr(), _getPaymentMethodName()),
+                _buildDetailRow(AppLocalKeys.date.tr(),
+                    DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())),
+                _buildDetailRow(AppLocalKeys.durationLabel.tr(), '${widget.plan.duration} ${AppLocalKeys.daysAgo.tr()}'),
+                if (widget.paymentData!.fawryCode != null) ...[
+                  Divider(height: 20.h),
+                  Container(
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.shade50,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(color: Colors.amber.shade200),
+                    ),
+                    child: _buildDetailRow(AppLocalKeys.fawryCode.tr(), widget.paymentData!.fawryCode!,
+                        isHighlight: true),
+                  ),
+                ],
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -407,15 +440,15 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
   String _getPaymentMethodName() {
     switch (widget.paymentData!.methodType) {
       case PaymentMethodType.visa:
-        return 'فيزا';
+        return AppLocalKeys.visa.tr();
       case PaymentMethodType.mastercard:
-        return 'ماستركارد';
+        return AppLocalKeys.mastercard.tr();
       case PaymentMethodType.fawry:
-        return 'فوري';
+        return AppLocalKeys.fawry.tr();
       case PaymentMethodType.wallet:
-        return 'المحفظة الإلكترونية';
+        return AppLocalKeys.wallet.tr();
       default:
-        return 'غير محدد';
+        return AppLocalKeys.notSpecified.tr();
     }
   }
 
@@ -476,7 +509,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
                   Icon(Icons.login, size: 20.w),
                   SizedBox(width: 8.w),
                   Text(
-                    'تسجيل الدخول',
+                    AppLocalKeys.login.tr(),
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
@@ -493,7 +526,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
           TextButton(
             onPressed: () => _navigateToPlans(context),
             child: Text(
-              'العودة للباقات',
+              AppLocalKeys.backToPlans.tr(),
               style: TextStyle(
                 fontSize: 14.sp,
                 color: Colors.grey[600],
@@ -523,7 +556,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
                   Icon(Icons.refresh, size: 20.w),
                   SizedBox(width: 8.w),
                   Text(
-                    'إعادة المحاولة لإنشاء الحساب',
+                    AppLocalKeys.retryCreateAccount.tr(),
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
@@ -542,7 +575,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
               // يمكن إضافة وظيفة الاتصال بالدعم هنا
             },
             child: Text(
-              'الاتصال بالدعم',
+              AppLocalKeys.contactSupport.tr(),
               style: TextStyle(
                 fontSize: 14.sp,
                 color: Colors.grey[600],
@@ -571,7 +604,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
                   Icon(Icons.refresh, size: 20.w),
                   SizedBox(width: 8.w),
                   Text(
-                    'إعادة المحاولة',
+                    AppLocalKeys.tryAgainButton.tr(),
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
@@ -588,7 +621,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
           TextButton(
             onPressed: () => _navigateToPlans(context),
             child: Text(
-              'العودة للباقات',
+              AppLocalKeys.backToPlans.tr(),
               style: TextStyle(
                 fontSize: 14.sp,
                 color: Colors.grey[600],

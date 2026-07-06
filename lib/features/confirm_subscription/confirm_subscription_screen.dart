@@ -45,7 +45,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
         centerTitle: true,
         leading: const AppBarBackButton(),
         title: Text(
-          AppConstants.isReleasedValue ? 'إنشاء حساب' : AppLocalKeys.confirmSubscription.tr(),
+          AppConstants.isReleasedValue ? AppLocalKeys.createAccount.tr() : AppLocalKeys.confirmSubscription.tr(),
           style: Theme.of(context)
               .textTheme
               .headlineMedium
@@ -75,7 +75,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                 height: 4.h,
               ),
               Text(
-                AppConstants.isReleasedValue ? 'لإنشاء حسابك الجديد' : AppLocalKeys.forSubscription.tr(),
+                AppConstants.isReleasedValue ? AppLocalKeys.forNewAccountCreation.tr() : AppLocalKeys.forSubscription.tr(),
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontSize: 14.sp,
                       color: AppColors.lightGrey,
@@ -137,7 +137,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             child: Text(
-                              AppConstants.isReleasedValue ? 'إنشاء حساب' : AppLocalKeys.subscribe.tr(),
+                              AppConstants.isReleasedValue ? AppLocalKeys.createAccount.tr() : AppLocalKeys.subscribe.tr(),
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineMedium

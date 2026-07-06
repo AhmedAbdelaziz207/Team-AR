@@ -12,19 +12,25 @@ class PaymentMethodsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(20.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'اختر طريقة الدفع',
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: AppColors.newPrimaryColor,
-            ),
+          Row(
+            children: [
+              Icon(Icons.payment_rounded, color: AppColors.newPrimaryColor, size: 28.sp),
+              SizedBox(width: 10.w),
+              Text(
+                'اختر طريقة الدفع',
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey.shade800,
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 20.h),
           ...methods.map(
               (m) => _PaymentMethodCard(method: m, onTap: () => onSelect(m)))
         ],
@@ -43,47 +49,77 @@ class _PaymentMethodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: EdgeInsets.symmetric(vertical: 8.h),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12.r),
-        child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Row(
-            children: [
-              _buildIcon(),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      method.name,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if (method.redirect)
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withValues(alpha: 0.1),
+            blurRadius: 10,
+            spreadRadius: 1,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: Colors.grey.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16.r),
+          splashColor: AppColors.newPrimaryColor.withValues(alpha: 0.1),
+          highlightColor: AppColors.newPrimaryColor.withValues(alpha: 0.05),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+            child: Row(
+              children: [
+                _buildIcon(),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        'يتطلب إعادة توجيه',
+                        method.name,
                         style: TextStyle(
-                          fontSize: 12.sp,
-                          color: Colors.grey[600],
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
                       ),
-                  ],
+                      if (method.redirect)
+                        Padding(
+                          padding: EdgeInsets.only(top: 4.h),
+                          child: Text(
+                            'سيتم توجيهك لصفحة الدفع',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 20.w,
-                color: Colors.grey,
-              ),
-            ],
+                Container(
+                  padding: EdgeInsets.all(8.w),
+                  decoration: BoxDecoration(
+                    color: AppColors.newPrimaryColor.withValues(alpha: 0.05),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16.w,
+                    color: AppColors.newPrimaryColor,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -91,23 +127,31 @@ class _PaymentMethodCard extends StatelessWidget {
   }
 
   Widget _buildIcon() {
-    if (method.logo != null && method.logo!.isNotEmpty) {
-      return Image.network(
-        method.logo!,
-        width: 40.w,
-        height: 40.h,
-        errorBuilder: (context, error, stackTrace) {
-          return Icon(
-            Icons.payment,
-            size: 40.w,
-            color: AppColors.newPrimaryColor,
-          );
-        },
-      );
-    }
+    return Container(
+      padding: EdgeInsets.all(8.w),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: method.logo != null && method.logo!.isNotEmpty
+          ? Image.network(
+              method.logo!,
+              width: 32.w,
+              height: 32.h,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return _defaultIcon();
+              },
+            )
+          : _defaultIcon(),
+    );
+  }
+
+  Widget _defaultIcon() {
     return Icon(
-      Icons.payment,
-      size: 40.w,
+      Icons.credit_card,
+      size: 32.w,
       color: AppColors.newPrimaryColor,
     );
   }

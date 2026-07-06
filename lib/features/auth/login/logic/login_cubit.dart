@@ -53,20 +53,23 @@ class LoginCubit extends Cubit<LoginState> {
             final api = getIt<ApiService>();
             final user = await api.getLoggedUserData(loginResponse.id!);
             
+            bool isTrainee = false;
             if (user.packageId != null && user.packageId != 0) {
+              isTrainee = true;
+            } else {
+              // Fallback to check local role if packageId hasn't synced yet
+              final localRole = await SharedPreferencesHelper.getString(AppConstants.userRole);
+              if (localRole == "Trainee") {
+                isTrainee = true;
+              }
+            }
+
+            if (isTrainee) {
               isRealAdmin = false; // They are a Trainee!
               
-              // Verify if they actually went through the payment screen locally
-              final isReleased = await SharedPreferencesHelper.getBool(
-                      AppConstants.isReleased) ??
-                  false;
-              if (!isReleased) {
-                final hasPaidLocally = await SharedPreferencesHelper.getBool(
-                        'has_completed_payment_${loginResponse.id}') ??
-                    false;
-                if (!hasPaidLocally) {
-                  isUnpaid = true;
-                }
+              // Verify if they actually paid according to the server FIRST
+              if (loginResponse.isPaid == false) {
+                 isUnpaid = true;
               }
             }
           } catch (e) {

@@ -90,15 +90,17 @@ class TraineeModel {
 
   double getPackageProgress() {
     if (startPackage == null || endPackage == null || remindDays == null) {
-      return 0;
+      return 0.0;
     }
 
     int? totalDays = endPackage?.difference(startPackage!).inDays;
     if (totalDays == null || totalDays <= 0) {
-      return 0;
+      return 0.0;
     }
 
     double remainingRatio = remindDays! / totalDays;
-    return (remainingRatio * 10).clamp(0.0, 10.0);
+    // For a progress bar that shows how much time has passed vs remaining:
+    // 1.0 means full (started), 0.0 means empty (expired)
+    return remainingRatio.clamp(0.0, 1.0);
   }
 }

@@ -4,9 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-// Removed heavy in-app PDF renderer for performance
-// import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
@@ -28,8 +26,6 @@ class ExerciseScreen extends StatefulWidget {
 
 class _ExerciseScreenState extends State<ExerciseScreen> {
   String? _pdfUrl;
-  WebViewController? _webController;
-  bool _isLoading = true;
   @override
   void initState() {
     loadData();
@@ -97,45 +93,25 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
       body: BlocBuilder<WorkoutCubit, WorkoutState>(
         builder: (context, state) {
           if (state is WorkoutSuccess) {
-            final url = '${ApiEndPoints.baseUrl}/Exercises/${state.url}';
-            // Update current URL to enable the download button and (re)configure WebView.
-            if (_pdfUrl != url || _webController == null) {
-              WidgetsBinding.instance.addPostFrameCallback((_) async {
-                final viewerUrl =
-                    'https://docs.google.com/gview?embedded=1&url=${Uri.encodeComponent(url)}';
-                final controller = WebViewController()
-                  ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                  ..setBackgroundColor(Colors.black)
-                  ..setNavigationDelegate(
-                    NavigationDelegate(
-                      onPageStarted: (_) {
-                        if (mounted) setState(() => _isLoading = true);
-                      },
-                      onPageFinished: (_) {
-                        if (mounted) setState(() => _isLoading = false);
-                      },
-                      onWebResourceError: (_) {
-                        if (mounted) setState(() => _isLoading = false);
-                      },
-                    ),
-                  );
-                await controller.loadRequest(Uri.parse(viewerUrl));
+            final String cleanBaseUrl = ApiEndPoints.baseUrl.endsWith('/') 
+                ? ApiEndPoints.baseUrl.substring(0, ApiEndPoints.baseUrl.length - 1) 
+                : ApiEndPoints.baseUrl;
+            final url = '$cleanBaseUrl/Exercises/${state.url}';
+            
+            if (_pdfUrl != url) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (mounted) {
                   setState(() {
                     _pdfUrl = url;
-                    _webController = controller;
                   });
                 }
               });
             }
 
-            return Stack(
-              children: [
-                if (_webController != null)
-                  WebViewWidget(controller: _webController!),
-                if (_isLoading)
-                  const Center(child: CircularProgressIndicator()),
-              ],
+            return SfPdfViewer.network(
+              url,
+              canShowScrollHead: false,
+              canShowScrollStatus: false,
             );
           }
 

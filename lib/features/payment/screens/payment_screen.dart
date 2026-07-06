@@ -1,7 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
-
+import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -84,7 +85,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     if (AppConstants.isReleasedValue) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('إنشاء الحساب'),
+          title: Text(AppLocalKeys.createAccount.tr()),
           centerTitle: true,
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
@@ -103,7 +104,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
                 SizedBox(height: 24.h),
                 Text(
-                  'تم إنشاء حسابك بنجاح!',
+                  AppLocalKeys.accountCreatedSuccessfully.tr(),
                   style: TextStyle(
                     fontSize: 22.sp,
                     fontWeight: FontWeight.bold,
@@ -112,7 +113,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  'لتفعيل حسابك، يرجى التواصل مع الإدارة.',
+                  AppLocalKeys.contactAdminToActivate.tr(),
                   style: TextStyle(
                     fontSize: 16.sp,
                     color: Colors.grey[600],
@@ -158,7 +159,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       create: (context) => _paymentCubit,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('الدفع'),
+          title: Text(AppLocalKeys.payment.tr()),
           centerTitle: true,
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
@@ -188,7 +189,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     } else if (state is PaymentSuccessWithData) {
       _navigateToPaymentResult(
         isSuccess: true,
-        message: 'تم الدفع بنجاح! جاري إنشاء حسابك...',
+        message: AppLocalKeys.paymentSuccessCreatingAccount.tr(),
         paymentData: state.paymentData,
         plan: state.plan,
       );
@@ -328,13 +329,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Widget _buildLoadingWidget() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
-          Text('جاري معالجة الدفع...'),
+          const CircularProgressIndicator(),
+          SizedBox(height: 16.h),
+          Text(
+            'جاري معالجة الدفع...',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -345,17 +352,34 @@ class _PaymentScreenState extends State<PaymentScreen> {
     final String name = _userData?.name ?? _userData?.userName ?? '';
     final String email = _userData?.email ?? '';
     return SingleChildScrollView(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            'مراجعة الطلب',
+            style: TextStyle(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade800,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            'يرجى مراجعة تفاصيل الاشتراك قبل المتابعة للدفع',
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          SizedBox(height: 32.h),
           if (effectivePlan != null) PlanDetailsCard(plan: effectivePlan),
           SizedBox(height: 24.h),
           CustomerInfoCard(
             customerName: name,
             customerEmail: email,
           ),
-          SizedBox(height: 32.h),
+          SizedBox(height: 48.h),
           _buildPaymentButton(),
         ],
       ),
@@ -364,33 +388,71 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   Widget _buildPaymentButton() {
     if (AppConstants.isReleasedValue) {
-      return SizedBox(
-          height: 50.h,
-          child: Center(
-              child: Text('الاشتراك متاح عبر الإدارة فقط',
-                  style: TextStyle(color: Colors.grey, fontSize: 16.sp))));
-    }
-    return SizedBox(
-          width: double.infinity,
-          height: 50.h,
-          child: ElevatedButton(
-            onPressed: () {
-              debugPrint('=== تم النقر على زر الدفع ===');
-              _paymentCubit.getPaymentMethods();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.newPrimaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
-              ),
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 16.h),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Center(
+          child: Text(
+            'الاشتراك متاح عبر الإدارة فقط',
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
             ),
-            child: Text(
-              'اختيار طريقة الدفع',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.newPrimaryColor.withValues(alpha: 0.3),
+            blurRadius: 20,
+            spreadRadius: 2,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 56.h,
+        child: ElevatedButton(
+          onPressed: () {
+            debugPrint('=== تم النقر على زر الدفع ===');
+            _paymentCubit.getPaymentMethods();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.newPrimaryColor,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'اختيار طريقة الدفع',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              SizedBox(width: 12.w),
+              Icon(
+                Icons.payment,
+                color: Colors.white,
+                size: 24.sp,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -646,31 +708,69 @@ class _PaymentScreenState extends State<PaymentScreen> {
       children: [
         Text(
           'توجه إلى أقرب نقطة فوري واستخدم الكود التالي:',
-          style: TextStyle(fontSize: 16.sp),
+          style: TextStyle(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade800,
+          ),
           textAlign: TextAlign.center,
         ),
         SizedBox(height: 16.h),
         Container(
-          padding: EdgeInsets.all(16.w),
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.newPrimaryColor),
-            borderRadius: BorderRadius.circular(8.r),
+            color: Colors.amber.shade50,
+            border: Border.all(color: Colors.amber.shade400, width: 2),
+            borderRadius: BorderRadius.circular(16.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.amber.withValues(alpha: 0.1),
+                blurRadius: 10,
+                spreadRadius: 2,
+              )
+            ],
           ),
-          child: Text(
-            paymentData.fawryCode!,
-            style: TextStyle(
-              fontSize: 24.sp,
-              fontWeight: FontWeight.bold,
-              color: AppColors.newPrimaryColor,
-            ),
+          child: Column(
+            children: [
+              Text(
+                'كود الدفع (Fawry)',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.amber.shade800,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                paymentData.fawryCode!,
+                style: TextStyle(
+                  fontSize: 32.sp,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
           ),
         ),
         if (paymentData.expireDate != null)
           Padding(
-            padding: EdgeInsets.only(top: 8.h),
-            child: Text(
-              'ينتهي في: ${paymentData.expireDate}',
-              style: TextStyle(fontSize: 14.sp, color: Colors.red),
+            padding: EdgeInsets.only(top: 16.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.timer_outlined, color: Colors.redAccent, size: 20.sp),
+                SizedBox(width: 8.w),
+                Text(
+                  'ينتهي في: ${paymentData.expireDate}',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
       ],
