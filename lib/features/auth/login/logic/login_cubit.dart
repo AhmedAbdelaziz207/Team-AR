@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:team_ar/core/network/api_result.dart';
 import 'package:team_ar/core/network/dio_factory.dart';
@@ -28,10 +27,10 @@ class LoginCubit extends Cubit<LoginState> {
       success: (data) async {
         final loginResponse = data as LoginResponse;
         DioFactory.setTokenIntoHeaderAfterLogin(loginResponse.token!);
-          await  SharedPreferencesHelper.setString(
-            AppConstants.userId,
-            loginResponse.id!,
-          );
+        await SharedPreferencesHelper.setString(
+          AppConstants.userId,
+          loginResponse.id!,
+        );
 
         log("User token: ${loginResponse.token}");
         // Flags (we do NOT save yet)
@@ -52,13 +51,14 @@ class LoginCubit extends Cubit<LoginState> {
           try {
             final api = getIt<ApiService>();
             final user = await api.getLoggedUserData(loginResponse.id!);
-            
+
             bool isTrainee = false;
             if (user.packageId != null && user.packageId != 0) {
               isTrainee = true;
             } else {
               // Fallback to check local role if packageId hasn't synced yet
-              final localRole = await SharedPreferencesHelper.getString(AppConstants.userRole);
+              final localRole = await SharedPreferencesHelper.getString(
+                  AppConstants.userRole);
               if (localRole == "Trainee") {
                 isTrainee = true;
               }
@@ -66,10 +66,10 @@ class LoginCubit extends Cubit<LoginState> {
 
             if (isTrainee) {
               isRealAdmin = false; // They are a Trainee!
-              
+
               // Verify if they actually paid according to the server FIRST
               if (loginResponse.isPaid == false) {
-                 isUnpaid = true;
+                isUnpaid = true;
               }
             }
           } catch (e) {
@@ -78,7 +78,9 @@ class LoginCubit extends Cubit<LoginState> {
         }
 
         // Force isUnpaid to false if in released/review mode
-        final isReleasedMode = await SharedPreferencesHelper.getBool(AppConstants.isReleased) ?? false;
+        final isReleasedMode =
+            await SharedPreferencesHelper.getBool(AppConstants.isReleased) ??
+                false;
         if (isReleasedMode) {
           isUnpaid = false;
         }
@@ -100,7 +102,6 @@ class LoginCubit extends Cubit<LoginState> {
         try {
           final userId = loginResponse.id;
           if (userId != null && userId.isNotEmpty) {
-     
             DioFactory.setTokenIntoHeaderAfterLogin(loginResponse.token!);
             final api = getIt<ApiService>();
 

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
-import 'package:team_ar/features/payment/widgets/info_row.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
 
 class PlanDetailsCard extends StatelessWidget {
@@ -43,7 +42,8 @@ class PlanDetailsCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.star_rounded, color: AppColors.newPrimaryColor, size: 28.sp),
+                Icon(Icons.star_rounded,
+                    color: AppColors.newPrimaryColor, size: 28.sp),
                 SizedBox(width: 10.w),
                 Text(
                   AppLocalKeys.planDetails.tr(),
@@ -60,11 +60,21 @@ class PlanDetailsCard extends StatelessWidget {
             padding: EdgeInsets.all(20.w),
             child: Column(
               children: [
-                _buildModernInfoRow(Icons.card_membership, AppLocalKeys.planLabel.tr(), plan.name ?? AppLocalKeys.notSpecified.tr()),
+                _buildModernInfoRow(
+                    Icons.card_membership,
+                    AppLocalKeys.planLabel.tr(),
+                    plan.name ?? AppLocalKeys.notSpecified.tr()),
                 SizedBox(height: 12.h),
-                _buildModernInfoRow(Icons.access_time_filled, AppLocalKeys.durationLabel.tr(), '${plan.duration} ${AppLocalKeys.daysAgo.tr()}'),
+                _buildModernInfoRow(
+                    Icons.access_time_filled,
+                    AppLocalKeys.durationLabel.tr(),
+                    '${plan.duration} ${AppLocalKeys.daysAgo.tr()}'),
                 SizedBox(height: 12.h),
-                _buildModernInfoRow(Icons.payments, AppLocalKeys.priceLabel.tr(), '${plan.newPrice} ${AppLocalKeys.le.tr()}', isHighlight: true),
+                _buildModernInfoRow(
+                    Icons.payments,
+                    AppLocalKeys.priceLabel.tr(),
+                    '${plan.newPrice} ${AppLocalKeys.le.tr()}',
+                    isHighlight: true),
               ],
             ),
           ),
@@ -73,7 +83,8 @@ class PlanDetailsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildModernInfoRow(IconData icon, String label, String value, {bool isHighlight = false, Color? color}) {
+  Widget _buildModernInfoRow(IconData icon, String label, String value,
+      {bool isHighlight = false, Color? color}) {
     return Row(
       children: [
         Icon(icon, color: color ?? Colors.grey.shade500, size: 20.sp),
@@ -92,7 +103,8 @@ class PlanDetailsCard extends StatelessWidget {
           style: TextStyle(
             fontSize: isHighlight ? 18.sp : 15.sp,
             fontWeight: isHighlight ? FontWeight.w900 : FontWeight.bold,
-            color: color ?? (isHighlight ? AppColors.newPrimaryColor : Colors.black87),
+            color: color ??
+                (isHighlight ? AppColors.newPrimaryColor : Colors.black87),
           ),
         ),
       ],

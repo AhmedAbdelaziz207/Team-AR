@@ -1,21 +1,17 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:dio/dio.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'local_notification_service.dart';
 import 'notification_storage.dart';
 
 import '../../../core/common/notification_model.dart';
-import 'package:team_ar/core/common/notification_model.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/features/home/admin/repos/trainees_repository.dart';
 import '../../../core/common/notification_type_enum.dart';
 import '../../../core/prefs/shared_pref_manager.dart';
 import '../../../core/utils/app_constants.dart';
-import '../../../firebase_options.dart';
 
 class FirebaseNotificationsServices {
   static FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -130,11 +126,12 @@ class FirebaseNotificationsServices {
       // التحقق من نوع الإشعار وهوية المستلم
       final notificationType = _getNotificationTypeFromData(message.data);
       final targetUserId = message.data['targetUserId'];
-      final currentUserId = SharedPreferencesHelper.getString(AppConstants.userId);
-      
+      final currentUserId =
+          SharedPreferencesHelper.getString(AppConstants.userId);
+
       // إذا كان الإشعار من نوع دردشة، تأكد من أنه موجه للمستخدم الحالي
-      if (notificationType == NotificationType.chatMessage && 
-          targetUserId != null && 
+      if (notificationType == NotificationType.chatMessage &&
+          targetUserId != null &&
           targetUserId != currentUserId) {
         log("Skipping chat notification not intended for current user");
         return;

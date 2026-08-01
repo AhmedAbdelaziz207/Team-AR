@@ -1,11 +1,9 @@
 import 'dart:developer';
-import 'dart:math' as math;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
@@ -94,7 +92,8 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
 
       final api = getIt<ApiService>();
       await api.updateUserPayment(userId);
-      await SharedPreferencesHelper.setData('has_completed_payment_$userId', true);
+      await SharedPreferencesHelper.setData(
+          'has_completed_payment_$userId', true);
     } catch (e) {
       debugPrint('Failed to update user payment status: $e');
     }
@@ -407,15 +406,18 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
             padding: EdgeInsets.all(20.w),
             child: Column(
               children: [
-                _buildDetailRow(
-                    AppLocalKeys.invoiceId.tr(), widget.paymentData!.invoiceId.toString()),
-                _buildDetailRow(AppLocalKeys.planLabel.tr(), widget.plan.name ?? AppLocalKeys.notSpecified.tr()),
+                _buildDetailRow(AppLocalKeys.invoiceId.tr(),
+                    widget.paymentData!.invoiceId.toString()),
+                _buildDetailRow(AppLocalKeys.planLabel.tr(),
+                    widget.plan.name ?? AppLocalKeys.notSpecified.tr()),
                 _buildDetailRow(AppLocalKeys.paidAmount.tr(),
                     '${widget.paymentData!.amount} ${widget.paymentData!.currency}'),
-                _buildDetailRow(AppLocalKeys.paymentMethodTitle.tr(), _getPaymentMethodName()),
+                _buildDetailRow(AppLocalKeys.paymentMethodTitle.tr(),
+                    _getPaymentMethodName()),
                 _buildDetailRow(AppLocalKeys.date.tr(),
                     DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())),
-                _buildDetailRow(AppLocalKeys.durationLabel.tr(), '${widget.plan.duration} ${AppLocalKeys.daysAgo.tr()}'),
+                _buildDetailRow(AppLocalKeys.durationLabel.tr(),
+                    '${widget.plan.duration} ${AppLocalKeys.daysAgo.tr()}'),
                 if (widget.paymentData!.fawryCode != null) ...[
                   Divider(height: 20.h),
                   Container(
@@ -425,7 +427,8 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
                       borderRadius: BorderRadius.circular(12.r),
                       border: Border.all(color: Colors.amber.shade200),
                     ),
-                    child: _buildDetailRow(AppLocalKeys.fawryCode.tr(), widget.paymentData!.fawryCode!,
+                    child: _buildDetailRow(AppLocalKeys.fawryCode.tr(),
+                        widget.paymentData!.fawryCode!,
                         isHighlight: true),
                   ),
                 ],

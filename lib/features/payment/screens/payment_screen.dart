@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
@@ -760,7 +759,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.timer_outlined, color: Colors.redAccent, size: 20.sp),
+                Icon(Icons.timer_outlined,
+                    color: Colors.redAccent, size: 20.sp),
                 SizedBox(width: 8.w),
                 Text(
                   'ينتهي في: ${paymentData.expireDate}',

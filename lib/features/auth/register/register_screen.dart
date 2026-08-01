@@ -53,6 +53,8 @@ class RegisterScreen extends StatelessWidget {
                   height: 21.h,
                 ),
                 CustomTextFormField(
+                  key: const ValueKey('email'),
+                  controller: context.read<RegisterCubit>().emailController,
                   hintText: AppLocalKeys.email.tr(),
                   suffixIcon: Icons.email,
                 ),
@@ -60,6 +62,8 @@ class RegisterScreen extends StatelessWidget {
                   height: 21.h,
                 ),
                 CustomTextFormField(
+                  key: const ValueKey('password'),
+                  controller: context.read<RegisterCubit>().passwordController,
                   hintText: AppLocalKeys.password.tr(),
                   suffixIcon: Icons.lock,
                 ),
@@ -67,6 +71,8 @@ class RegisterScreen extends StatelessWidget {
                   height: 21.h,
                 ),
                 CustomTextFormField(
+                  key: const ValueKey('confirmPassword'),
+                  controller: context.read<RegisterCubit>().confirmPasswordController,
                   hintText: AppLocalKeys.confirmPassword.tr(),
                   suffixIcon: Icons.lock,
                 ),

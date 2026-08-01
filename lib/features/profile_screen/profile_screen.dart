@@ -9,7 +9,6 @@ import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/features/admin_panal/widget/change_language_section.dart';
-import 'package:team_ar/features/admin_panal/widget/logout_button.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/features/auth/login/model/user_role.dart';
 import 'package:team_ar/features/home/user/logic/user_cubit.dart';
@@ -183,7 +182,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           // Header Background & Avatar Stack
           SizedBox(
-            height: 160.h + 50.h, // Total height to include the overhanging avatar
+            height:
+                160.h + 50.h, // Total height to include the overhanging avatar
             child: Stack(
               alignment: Alignment.topCenter,
               children: [
@@ -192,7 +192,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: double.infinity,
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [AppColors.newPrimaryColor, AppColors.copperColor],
+                      colors: [
+                        AppColors.newPrimaryColor,
+                        AppColors.copperColor
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -236,83 +239,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 Positioned(
-                  bottom: 0, // Sit exactly at the bottom of the 210.h Stack bounds
+                  bottom:
+                      0, // Sit exactly at the bottom of the 210.h Stack bounds
                   child: BlocConsumer<UserCubit, UserState>(
-                  listener: (context, state) {
-                    if (state is UpdateUserImageSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(AppLocalKeys.imageUpdatedSuccessfully.tr()),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    } else if (state is UpdateUserImageFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(AppLocalKeys.imageUpdateFailed.tr()),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  },
-                  builder: (context, state) {
-                    return InkWell(
-                      onTap: () => pickImage(),
-                      child: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 4),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.15),
-                                  spreadRadius: 2,
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: CircleAvatar(
-                              radius: 50.r,
-                              backgroundColor:
-                                  AppColors.grey.withValues(alpha: 0.1),
-                              backgroundImage: image != null
-                                  ? FileImage(image!)
-                                  : userImagePath != null
-                                      ? NetworkImage(
-                                          ApiEndPoints.usersImagesBaseUrl +
-                                              userImagePath)
-                                      : null,
-                              child: image != null || userImagePath != null
-                                  ? null
-                                  : Icon(
-                                      Icons.person,
-                                      size: 50.r,
-                                      color: AppColors.newPrimaryColor,
-                                    ),
-                            ),
+                    listener: (context, state) {
+                      if (state is UpdateUserImageSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                AppLocalKeys.imageUpdatedSuccessfully.tr()),
+                            backgroundColor: Colors.green,
                           ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: CircleAvatar(
-                              radius: 16.r,
-                              backgroundColor: AppColors.newPrimaryColor,
-                              child: Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                                size: 18.sp,
+                        );
+                      } else if (state is UpdateUserImageFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(AppLocalKeys.imageUpdateFailed.tr()),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      return InkWell(
+                        onTap: () => pickImage(),
+                        child: Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.white, width: 4),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.15),
+                                    spreadRadius: 2,
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: CircleAvatar(
+                                radius: 50.r,
+                                backgroundColor:
+                                    AppColors.grey.withValues(alpha: 0.1),
+                                backgroundImage: image != null
+                                    ? FileImage(image!)
+                                    : userImagePath != null
+                                        ? NetworkImage(
+                                            ApiEndPoints.usersImagesBaseUrl +
+                                                userImagePath)
+                                        : null,
+                                child: image != null || userImagePath != null
+                                    ? null
+                                    : Icon(
+                                        Icons.person,
+                                        size: 50.r,
+                                        color: AppColors.newPrimaryColor,
+                                      ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: CircleAvatar(
+                                radius: 16.r,
+                                backgroundColor: AppColors.newPrimaryColor,
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 18.sp,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           SizedBox(height: 10.h),
 

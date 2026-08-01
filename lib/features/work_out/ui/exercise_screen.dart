@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
@@ -71,11 +70,13 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                       final uri = Uri.parse(_pdfUrl!);
                       final can = await canLaunchUrl(uri);
                       if (can) {
-                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                        await launchUrl(uri,
+                            mode: LaunchMode.externalApplication);
                       } else {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(AppLocalKeys.noWorkouts.tr())),
+                            SnackBar(
+                                content: Text(AppLocalKeys.noWorkouts.tr())),
                           );
                         }
                       }
@@ -97,7 +98,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                 ? ApiEndPoints.baseUrl.substring(0, ApiEndPoints.baseUrl.length - 1) 
                 : ApiEndPoints.baseUrl;
             final url = '$cleanBaseUrl/Exercises/${state.url}';
-            
+
             if (_pdfUrl != url) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (mounted) {
