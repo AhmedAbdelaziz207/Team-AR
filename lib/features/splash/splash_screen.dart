@@ -146,24 +146,41 @@ class _SplashScreenState extends State<SplashScreen> {
           }
         },
         failure: (error) async {
-          // في حالة الخطأ (مثل حذف الحساب) - تنظيف البيانات والانتقال لشاشة الدخول
-          await SharedPreferencesHelper.removeAll();
-          if (context.mounted) {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              Routes.onboarding,
-              (route) => false,
-            );
+          // فقط نظف البيانات واخرج إذا كان الخطأ يدل على مشكلة في الحساب (مثل 401، 404)
+          // وإلا فهو مجرد خطأ في الاتصال بالشبكة أو الخادم (مثل Timeout)، ونريد أن نمرر المستخدم
+          // إلى الشاشة الرئيسية حتى يتمكن من تصفح بياناته المخزنة محلياً.
+          final isAuthError = error.statusCode == 401 ||
+              error.statusCode == 403 ||
+              error.statusCode == 404 ||
+              (error.message?.toLowerCase().contains('unauthorized') ?? false);
+
+          if (isAuthError) {
+            await SharedPreferencesHelper.removeAll();
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                Routes.onboarding,
+                (route) => false,
+              );
+            }
+          } else {
+            // خطأ في الشبكة أو السيرفر، انتقل للشاشة الرئيسية واستخدم الكاش
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                Routes.rootScreen,
+                (route) => false,
+              );
+            }
           }
         },
       );
     } catch (e) {
-      // في حالة الخطأ
-      await SharedPreferencesHelper.removeAll();
+      // في حالة وجود خطأ استثنائي، نمرر المستخدم للشاشة الرئيسية للاعتماد على الكاش بدلاً من مسح بياناته
       if (context.mounted) {
         Navigator.pushNamedAndRemoveUntil(
           context,
-          Routes.onboarding,
+          Routes.rootScreen,
           (route) => false,
         );
       }
