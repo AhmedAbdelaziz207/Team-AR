@@ -48,6 +48,7 @@ class AppLocalKeys {
   static const yes = "yes";
   static const no = "no";
   static const previous = "previous";
+  static const next = "next";
   static const submit = "submit";
   static const forSubscription = "forSubscription";
   static const name = "name";

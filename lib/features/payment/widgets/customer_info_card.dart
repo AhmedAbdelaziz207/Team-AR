@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
-import 'package:team_ar/features/payment/widgets/info_row.dart';
 
 class CustomerInfoCard extends StatelessWidget {
   final String customerName;
   final String customerEmail;
-  const CustomerInfoCard({super.key, required this.customerName, required this.customerEmail});
+  const CustomerInfoCard(
+      {super.key, required this.customerName, required this.customerEmail});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,8 @@ class CustomerInfoCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.person_pin, color: Colors.grey.shade700, size: 28.sp),
+                Icon(Icons.person_pin,
+                    color: Colors.grey.shade700, size: 28.sp),
                 SizedBox(width: 10.w),
                 Text(
                   'معلومات العميل',
@@ -59,9 +60,11 @@ class CustomerInfoCard extends StatelessWidget {
             padding: EdgeInsets.all(20.w),
             child: Column(
               children: [
-                _buildModernInfoRow(Icons.person_outline, 'الاسم:', customerName),
+                _buildModernInfoRow(
+                    Icons.person_outline, 'الاسم:', customerName),
                 SizedBox(height: 12.h),
-                _buildModernInfoRow(Icons.email_outlined, 'البريد الإلكتروني:', customerEmail),
+                _buildModernInfoRow(
+                    Icons.email_outlined, 'البريد الإلكتروني:', customerEmail),
               ],
             ),
           ),
@@ -73,7 +76,9 @@ class CustomerInfoCard extends StatelessWidget {
   Widget _buildModernInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.newPrimaryColor.withValues(alpha: 0.8), size: 20.sp),
+        Icon(icon,
+            color: AppColors.newPrimaryColor.withValues(alpha: 0.8),
+            size: 20.sp),
         SizedBox(width: 10.w),
         Text(
           label,

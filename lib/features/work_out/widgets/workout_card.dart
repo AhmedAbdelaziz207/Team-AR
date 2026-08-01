@@ -13,14 +13,22 @@ class WorkoutCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(15.0.sp),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.teal,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
           borderRadius: BorderRadius.circular(20),
-        ),
-        width: double.infinity,
-        height: 180,
-        child: Stack(
+          onTap: () {
+            Navigator.pushNamed(context, Routes.exercise);
+          },
+          child: Ink(
+            decoration: BoxDecoration(
+              color: AppColors.teal,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            width: double.infinity,
+            height: 180,
+            child: Stack(
           children: [
             Positioned(
               right: 20.sp,
@@ -111,6 +119,8 @@ class WorkoutCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+  ),
+);
   }
 }

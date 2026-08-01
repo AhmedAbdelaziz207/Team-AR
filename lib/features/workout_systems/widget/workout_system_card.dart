@@ -44,136 +44,107 @@ class WorkoutSystemCard extends StatelessWidget {
         ),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: IntrinsicHeight(
-          // Makes both children adapt to the tallest one
-          child: Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 20.sp, horizontal: 20.sp),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadiusDirectional.only(
-                      topStart: Radius.circular(16.sp),
-                      bottomStart: Radius.circular(16.sp),
-                    ),
-                    color: AppColors.primaryColor.withOpacity(.3),
-                  ),
-                  child: Center(
-                    child: Image.asset(
-                      AppAssets.dumbbell,
-                      height: 30.h,
-                      width: 30.w,
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 26.sp, horizontal: 20.sp),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(16.sp),
-                      bottomEnd: Radius.circular(16.sp),
-                    ),
-                    color: AppColors.primaryColor.withOpacity(.17),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            name ?? "",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.black,
-                                  fontSize: 16.sp,
-                                ),
-                          ),
-                          const Spacer(),
-                          InkWell(
-                            onTap: () {
-                              if (workout?.url != null && workout!.url!.isNotEmpty) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PdfPreviewWidget(
-                                      pdfUrl: workout!.url!,
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('No PDF available for preview'),
-                                  ),
-                                );
-                              }
-                            },
-                            child: Icon(
-                              Icons.visibility_outlined,
-                              color: AppColors.primaryColor,
-                              size: 20.sp,
-                            ),
-                          ),
-                          SizedBox(width: 8.w),
-                       
-                        ],
+      child: GestureDetector(
+        onTap: () => _openPdf(context),
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: IntrinsicHeight(
+            // Makes both children adapt to the tallest one
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 20.sp, horizontal: 20.sp),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topStart: Radius.circular(16.sp),
+                        bottomStart: Radius.circular(16.sp),
                       ),
-
-                      // Row(
-                      //   children: [
-                      //     Row(
-                      //       children: [
-                      //         Icon(
-                      //           Icons.timer_outlined,
-                      //           color: AppColors.grey,
-                      //           size: 20.sp,
-                      //         ),
-                      //         SizedBox(width: 8.w),
-                      //
-                      //       ],
-                      //     ),
-                      //     const Spacer(),
-                      //     // Row(
-                      //     //   children: [
-                      //     //     const Icon(
-                      //     //       Icons.snowshoeing_sharp,
-                      //     //       color: AppColors.grey,
-                      //     //     ),
-                      //     //     Text(
-                      //     //       "14 sets",
-                      //     //       style: Theme.of(context)
-                      //     //           .textTheme
-                      //     //           .headlineMedium
-                      //     //           ?.copyWith(
-                      //     //             color: AppColors.grey,
-                      //     //             fontSize: 12.sp,
-                      //     //           ),
-                      //     //     ),
-                      //     //   ],
-                      //     // ),
-                      //   ],
-                      // ),
-                    ],
+                      color: AppColors.primaryColor.withOpacity(.3),
+                    ),
+                    child: Center(
+                      child: Image.asset(
+                        AppAssets.dumbbell,
+                        height: 30.h,
+                        width: 30.w,
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 26.sp, horizontal: 20.sp),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topEnd: Radius.circular(16.sp),
+                        bottomEnd: Radius.circular(16.sp),
+                      ),
+                      color: AppColors.primaryColor.withOpacity(.17),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              name ?? "",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.black,
+                                    fontSize: 16.sp,
+                                  ),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              onPressed: () => _openPdf(context),
+                              icon: Icon(
+                                Icons.visibility_outlined,
+                                color: AppColors.primaryColor,
+                                size: 20.sp,
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                         
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void _openPdf(BuildContext context) {
+    if (workout?.url != null && workout!.url!.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PdfPreviewWidget(
+            pdfUrl: workout!.url!,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No PDF available for preview'),
+        ),
+      );
+    }
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -14,9 +13,6 @@ import 'package:team_ar/features/auth/login/model/login_response.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/features/payment/screens/payment_screen.dart';
-import 'package:team_ar/core/prefs/shared_pref_manager.dart';
-import 'package:team_ar/core/utils/app_constants.dart';
-import 'package:team_ar/core/network/dio_factory.dart';
 
 class LoginBlocListener extends StatelessWidget {
   const LoginBlocListener({super.key});
@@ -87,8 +83,6 @@ class LoginBlocListener extends StatelessWidget {
           context, Routes.adminLanding, (route) => false);
       return; // Exit early for admin
     }
-
-
 
     // USER FLOW:
     // 1) If user is unpaid, send to payment screen with userId only

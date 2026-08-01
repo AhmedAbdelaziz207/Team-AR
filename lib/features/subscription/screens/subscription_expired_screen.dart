@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:team_ar/core/utils/app_constants.dart';
 
 import 'package:flutter/material.dart';
@@ -20,7 +19,8 @@ class SubscriptionExpiredScreen extends StatefulWidget {
   });
 
   @override
-  State<SubscriptionExpiredScreen> createState() => _SubscriptionExpiredScreenState();
+  State<SubscriptionExpiredScreen> createState() =>
+      _SubscriptionExpiredScreenState();
 }
 
 class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
@@ -34,7 +34,8 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
   @override
   void initState() {
     super.initState();
-    _logger.info('Subscription expired screen opened for user: ${widget.userEmail ?? "unknown"}');
+    _logger.info(
+        'Subscription expired screen opened for user: ${widget.userEmail ?? "unknown"}');
     _setupAnimations();
   }
 
@@ -152,7 +153,8 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
                               textAlign: TextAlign.center,
                             ),
                             // عرض تاريخ الانتهاء إن وُجد
-                            if (widget.endDate != null && widget.endDate!.isNotEmpty) ...[
+                            if (widget.endDate != null &&
+                                widget.endDate!.isNotEmpty) ...[
                               SizedBox(height: 8.h),
                               Text(
                                 _getFormattedEndDate(),
@@ -199,7 +201,8 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
                                   _showCloseConfirmationDialog();
                                 },
                                 style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: AppColors.grey, width: 1.w),
+                                  side: BorderSide(
+                                      color: AppColors.grey, width: 1.w),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.r),
                                   ),
@@ -231,7 +234,8 @@ class _SubscriptionExpiredScreenState extends State<SubscriptionExpiredScreen>
                             Container(
                               padding: EdgeInsets.all(16.w),
                               decoration: BoxDecoration(
-                                color: AppColors.newPrimaryColor.withValues(alpha : 0.1),
+                                color: AppColors.newPrimaryColor
+                                    .withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10.r),
                               ),
                               child: Column(

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +35,7 @@ class RegisterBlocListener extends StatelessWidget {
         }, success: (registerResponse) async {
           DioFactory.setTokenIntoHeaderAfterLogin(registerResponse.token!);
           // save user Id
-        await  SharedPreferencesHelper.setString(
+          await SharedPreferencesHelper.setString(
             AppConstants.userId,
             registerResponse.id!,
           );
@@ -92,7 +90,7 @@ class RegisterBlocListener extends StatelessWidget {
                     AppConstants.token, registerResponse.token);
                 await SharedPreferencesHelper.setData(
                     AppConstants.userRole, "Trainee");
-                
+
                 // CRITICAL FIX: DO NOT SET 'has_completed_payment_...' here!
                 // The user hasn't paid yet. They are just about to enter the payment screen.
 
@@ -130,4 +128,3 @@ class RegisterBlocListener extends StatelessWidget {
     );
   }
 }
-

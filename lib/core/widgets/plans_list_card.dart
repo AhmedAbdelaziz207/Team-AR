@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:team_ar/core/utils/app_constants.dart';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -130,8 +129,7 @@ class PlansListCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12.r),
                             side: BorderSide(
                               color: backgroundColor?.withOpacity(.3) ??
-                                  AppColors.newSecondaryColor
-                                      .withOpacity(.3),
+                                  AppColors.newSecondaryColor.withOpacity(.3),
                             ),
                           ),
                         ),
@@ -150,8 +148,8 @@ class PlansListCard extends StatelessWidget {
                                 width: 16.w,
                               ),
                             Text(
-                              AppConstants.isReleasedValue 
-                                  ? 'اختيار' 
+                              AppConstants.isReleasedValue
+                                  ? 'اختيار'
                                   : isSelected
                                       ? AppLocalKeys.subscribed.tr()
                                       : AppLocalKeys.subscribe.tr(),
