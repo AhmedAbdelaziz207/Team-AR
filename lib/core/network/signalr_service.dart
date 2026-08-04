@@ -89,12 +89,12 @@ class SignalRService {
 
   Future<void> sendMessage(
       String senderId, String receiverId, String message) async {
-    if (_connection.state != HubConnectionState.Connected) {
-      print(
-          "🚫 SignalR not connected yet. Current state: ${_connection.state}");
-      return;
-    }
     try {
+      if (_connection.state != HubConnectionState.Connected) {
+        log("🚫 SignalR not connected yet. Attempting start... Current state: ${_connection.state}");
+        await _connection.start();
+      }
+
       await _connection.invoke(
         "SendMessageToUser",
         args: [senderId, receiverId, message],
@@ -102,7 +102,7 @@ class SignalRService {
 
       log("📩 Message sent successfully. $senderId -> $receiverId: $message");
     } catch (e) {
-      print("🚫 SignalR : $e");
+      log("🚫 SignalR sendMessage error: $e");
     }
   }
 
