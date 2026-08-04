@@ -36,126 +36,81 @@ class _AdminLandingScreenState extends State<AdminLandingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: screens[selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: selectedIndex,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        unselectedLabelStyle: const TextStyle(
-          color: AppColors.grey,
-          fontWeight: FontWeight.bold,
+      body: IndexedStack(
+        index: selectedIndex,
+        children: screens,
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 15,
+              offset: const Offset(0, -4),
+            ),
+          ],
         ),
-        selectedLabelStyle: const TextStyle(
-          color: AppColors.primaryColor,
-          fontWeight: FontWeight.bold,
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(0, Icons.home_outlined, Icons.home, "الرئيسية"),
+                _buildNavItem(1, Icons.chat_bubble_outline_rounded, Icons.chat_bubble_rounded, "الرسائل"),
+                _buildNavItem(2, Icons.people_outline_rounded, Icons.people_rounded, "الأعضاء"),
+                _buildNavItem(3, Icons.fitness_center_outlined, Icons.fitness_center, "التمارين"),
+                _buildNavItem(4, Icons.manage_accounts_outlined, Icons.manage_accounts, "الإدارة"),
+              ],
+            ),
+          ),
         ),
-        onTap: (value) {
-          selectedIndex = value;
-          setState(() {});
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Column(
-              children: [
-                Icon(
-                  Icons.home_outlined,
-                  color: AppColors.primaryColor,
-                  size: 30.sp,
-                ),
-                if (selectedIndex == 0)
-                  Divider(
-                    color: AppColors.primaryColor,
-                    height: 4.h,
-                    thickness: 2.sp,
-                    indent: 35.w,
-                    endIndent: 35.w,
-                  )
-              ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, IconData activeIcon, String label) {
+    final isSelected = selectedIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedIndex = index;
+        });
+      },
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        padding: EdgeInsets.symmetric(
+          horizontal: isSelected ? 14.w : 10.w,
+          vertical: 8.h,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primaryColor.withOpacity(0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isSelected ? activeIcon : icon,
+              color: isSelected ? AppColors.primaryColor : AppColors.grey,
+              size: isSelected ? 26.sp : 24.sp,
             ),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Column(
-              children: [
-                Icon(
-                  Icons.message_outlined,
-                  color: AppColors.primaryColor,
-                  size: 25.sp,
-                ),
-                if (selectedIndex == 1)
-                  Divider(
-                    color: AppColors.primaryColor,
-                    height: 4.h,
-                    thickness: 2.sp,
-                    indent: 35.w,
-                    endIndent: 35.w,
-                  )
-              ],
+            SizedBox(height: 4.h),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? AppColors.primaryColor : AppColors.grey,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontSize: 11.sp,
+              ),
             ),
-            label: "Chat",
-          ),
-          BottomNavigationBarItem(
-            icon: Column(
-              children: [
-                Icon(
-                  Icons.person_outline,
-                  color: AppColors.primaryColor,
-                  size: 30.sp,
-                ),
-                if (selectedIndex == 2)
-                  Divider(
-                    color: AppColors.primaryColor,
-                    height: 4.h,
-                    thickness: 2.sp,
-                    indent: 35.w,
-                    endIndent: 35.w,
-                  )
-              ],
-            ),
-            label: "New User",
-          ),
-          BottomNavigationBarItem(
-            icon: Column(
-              children: [
-                Icon(
-                  Icons.fitness_center,
-                  color: AppColors.primaryColor,
-                  size: 30.sp,
-                ),
-                if (selectedIndex == 3)
-                  Divider(
-                    color: AppColors.primaryColor,
-                    height: 4.h,
-                    thickness: 2.sp,
-                    indent: 35.w,
-                    endIndent: 35.w,
-                  )
-              ],
-            ),
-            label: "Exercises",
-          ),
-          BottomNavigationBarItem(
-            icon: Column(
-              children: [
-                Icon(
-                  Icons.manage_accounts_rounded,
-                  color: AppColors.primaryColor,
-                  size: 30.sp,
-                ),
-                if (selectedIndex ==4)
-                  Divider(
-                    color: AppColors.primaryColor,
-                    height: 4.h,
-                    thickness: 2.sp,
-                    indent: 35.w,
-                    endIndent: 35.w,
-                  )
-              ],
-            ),
-            label: "Manage",
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -66,11 +66,8 @@ class RegisterBlocListener extends StatelessWidget {
                 );
               } else if (AppConstants.isReleasedValue) {
                 // Skip payment screen entirely if released/in-review
-                // Navigate directly to rootScreen to auto-login the reviewer/user
                 await SharedPreferencesHelper.setData(
                     AppConstants.token, registerResponse.token);
-                // IMPORTANT: Always save "Trainee" — AdminRegistration endpoint
-                // returns "Admin" for all users but this is a self-registration flow.
                 await SharedPreferencesHelper.setData(
                     AppConstants.userRole, "Trainee");
                 await SharedPreferencesHelper.setData(
@@ -83,19 +80,14 @@ class RegisterBlocListener extends StatelessWidget {
                   );
                 }
               } else {
-                // Android: Save role as Trainee BEFORE going to payment.
-                // IMPORTANT: AdminRegistration endpoint returns "Admin" for all users,
-                // but this is a self-registration — user should always be Trainee.
-                await SharedPreferencesHelper.setData(
-                    AppConstants.token, registerResponse.token);
+                // Save userRole as Trainee and userId only (Do NOT save token to disk yet)
+                // This ensures if the user exits payment, they are NOT logged in automatically on restart.
                 await SharedPreferencesHelper.setData(
                     AppConstants.userRole, "Trainee");
+                await SharedPreferencesHelper.setData(
+                    AppConstants.userId, registerResponse.id);
 
-                // CRITICAL FIX: DO NOT SET 'has_completed_payment_...' here!
-                // The user hasn't paid yet. They are just about to enter the payment screen.
-
-                final userId = await SharedPreferencesHelper.getString(
-                    AppConstants.userId);
+                final userId = registerResponse.id;
                 if (context.mounted) {
                   if (userId != null && userId.isNotEmpty) {
                     Navigator.pushReplacement(
@@ -107,7 +99,6 @@ class RegisterBlocListener extends StatelessWidget {
                       ),
                     );
                   } else {
-                    // Fallback to home if userId not available
                     Navigator.pushNamed(context, Routes.rootScreen);
                   }
                 }

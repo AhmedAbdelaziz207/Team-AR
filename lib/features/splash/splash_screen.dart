@@ -58,6 +58,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (token != null && userRole != null && context.mounted) {
       if (userRole.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
+        // Double-check if this is a real admin vs a self-registered trainee
+        if (userId != null && userId.isNotEmpty) {
+          final hasPaidLocally =
+              await SharedPreferencesHelper.getBool('has_completed_payment_$userId') ?? false;
+          if (!hasPaidLocally) {
+            // Check subscription to verify if they are trainee
+            await _checkUserSubscription(userId);
+            return;
+          }
+        }
         Navigator.pushNamedAndRemoveUntil(
           context,
           Routes.adminLanding,
@@ -93,21 +103,11 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkUserSubscription(String? userId) async {
-    // isReleased = true → تجاوز فحص الاشتراك مؤقتاً
     final isReleased =
         await SharedPreferencesHelper.getBool(AppConstants.isReleased) ?? false;
     AppConstants.isReleasedValue = isReleased;
-    if (isReleased) {
-      log('isReleased=true → تجاوز فحص الاشتراك');
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        Routes.rootScreen,
-        (route) => false,
-      );
-      return;
-    }
 
-    if (userId == null) {
+    if (userId == null || userId.isEmpty) {
       Navigator.pushNamedAndRemoveUntil(
         context,
         Routes.onboarding,

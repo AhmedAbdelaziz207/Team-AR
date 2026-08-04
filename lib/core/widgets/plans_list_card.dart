@@ -25,188 +25,171 @@ class PlansListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(8.0),
+    final cardColor = backgroundColor ?? AppColors.newSecondaryColor;
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16.r),
         child: IntrinsicHeight(
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 flex: 2,
                 child: Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
                   decoration: BoxDecoration(
-                    // color: AppColors.secondaryColor,
-                    color: backgroundColor?.withOpacity(.3) ??
-                        AppColors.newSecondaryColor.withOpacity(.28),
-                    borderRadius: BorderRadiusDirectional.only(
-                        bottomStart: Radius.circular(12.r),
-                        topStart: Radius.circular(12.r)),
-                  ),
-                  child: Center(
-                    child: Text(
-                      plan.name ?? "",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.w400,
-                            color:
-                                backgroundColor ?? AppColors.newSecondaryColor,
-                          ),
+                    color: backgroundColor?.withOpacity(.25) ?? AppColors.newSecondaryColor.withOpacity(.15),
+                    border: BorderDirectional(
+                      top: BorderSide(color: cardColor.withOpacity(0.3)),
+                      bottom: BorderSide(color: cardColor.withOpacity(0.3)),
+                      start: BorderSide(color: cardColor.withOpacity(0.3)),
                     ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.stars_rounded, size: 28.sp, color: cardColor),
+                      SizedBox(height: 8.h),
+                      Text(
+                        plan.name ?? "",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w800,
+                              color: cardColor,
+                            ),
+                      ),
+                    ],
                   ),
                 ),
               ),
               Expanded(
                 flex: 3,
                 child: Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                   decoration: BoxDecoration(
-                    // color: AppColors.secondaryColor,
-                    color: backgroundColor?.withOpacity(.2) ??
-                        AppColors.dustyGreyColor.withOpacity(.3),
-                    borderRadius: BorderRadiusDirectional.only(
-                        bottomEnd: Radius.circular(12.r),
-                        topEnd: Radius.circular(12.r)),
+                    color: Colors.white,
+                    border: Border.all(color: cardColor.withOpacity(0.2)),
                   ),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Hide price if app is in released/review mode
                       if (!AppConstants.isReleasedValue)
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Expanded(
-                              child: Text(
-                                "${plan.newPrice} ${AppLocalKeys.le.tr()}",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      fontSize: 16.sp,
-                                      color: backgroundColor ??
-                                          AppColors.newSecondaryColor,
-                                    ),
-                              ),
+                            Text(
+                              "${plan.newPrice} ${AppLocalKeys.le.tr()}",
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.black,
+                                  ),
                             ),
-                            SizedBox(width: 12.h),
-                            Expanded(
-                              child: Text(
+                            if (plan.oldPrice != null && plan.oldPrice.toString() != "0" && plan.oldPrice != plan.newPrice) ...[
+                              SizedBox(width: 10.w),
+                              Text(
                                 "${plan.oldPrice} ${AppLocalKeys.le.tr()}",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                      fontSize: 14.sp,
-                                      decorationColor: AppColors.grey,
-                                      color: backgroundColor?.withOpacity(.7) ??
-                                          AppColors.grey,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      fontSize: 13.sp,
+                                      color: AppColors.grey,
                                       decoration: TextDecoration.lineThrough,
                                     ),
                               ),
-                            ),
+                            ],
                           ],
                         ),
-                      if (!AppConstants.isReleasedValue) SizedBox(height: 12.h),
-                      TextButton(
-                        onPressed: isSelected
-                            ? null
-                            : () {
-                                Navigator.pushNamed(
-                                  context,
-                                  Routes.confirmSubscription,
-                                  arguments: plan,
-                                );
-                              },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size(180.w, 40.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                            side: BorderSide(
-                              color: backgroundColor?.withOpacity(.3) ??
-                                  AppColors.newSecondaryColor.withOpacity(.3),
-                            ),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (isSelected)
-                              Icon(
-                                Icons.check_circle,
-                                color: backgroundColor ??
-                                    AppColors.newPrimaryColor,
-                                size: 30,
-                              ),
-                            if (isSelected)
-                              SizedBox(
-                                width: 16.w,
-                              ),
-                            Text(
-                              AppConstants.isReleasedValue
-                                  ? 'اختيار'
-                                  : isSelected
-                                      ? AppLocalKeys.subscribed.tr()
-                                      : AppLocalKeys.subscribe.tr(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    fontSize: 16.sp,
-                                    color: backgroundColor ??
-                                        AppColors.newSecondaryColor,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (isAdmin)
-                        TextButton(
+                      if (!AppConstants.isReleasedValue) SizedBox(height: 16.h),
+                      if (!isAdmin)
+                        ElevatedButton(
                           onPressed: isSelected
                               ? null
                               : () {
-                                  showPlanDialog(
+                                  Navigator.pushNamed(
                                     context,
-                                    plan: plan,
-                                    isForEdit: true,
+                                    Routes.confirmSubscription,
+                                    arguments: plan,
                                   );
                                 },
                           style: ElevatedButton.styleFrom(
-                            minimumSize: Size(180.w, 40.h),
+                            backgroundColor: isSelected ? Colors.green[50] : cardColor,
+                            foregroundColor: isSelected ? Colors.green : Colors.white,
+                            elevation: isSelected ? 0 : 2,
+                            minimumSize: Size(double.infinity, 42.h),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12.r),
-                              side: BorderSide(
-                                color: AppColors.grey.withOpacity(.3),
-                              ),
                             ),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              if (isSelected) ...[
+                                Icon(Icons.check_circle, color: Colors.green, size: 20.sp),
+                                SizedBox(width: 8.w),
+                              ],
                               Text(
-                                AppLocalKeys.edit.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      fontSize: 16.sp,
-                                      color: AppColors.primaryColor,
-                                    ),
+                                AppConstants.isReleasedValue
+                                    ? 'اختيار الباقة'
+                                    : isSelected
+                                        ? AppLocalKeys.subscribed.tr()
+                                        : AppLocalKeys.subscribe.tr(),
+                                style: TextStyle(
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ],
                           ),
-                        )
+                        ),
+                      if (isAdmin)
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            showPlanDialog(
+                              context,
+                              plan: plan,
+                              isForEdit: true,
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor.withOpacity(0.12),
+                            foregroundColor: AppColors.primaryColor,
+                            elevation: 0,
+                            minimumSize: Size(double.infinity, 42.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                          ),
+                          icon: Icon(Icons.edit_rounded, size: 18.sp, color: AppColors.primaryColor),
+                          label: Text(
+                            AppLocalKeys.edit.tr(),
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

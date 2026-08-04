@@ -47,82 +47,74 @@ class WorkoutSystemCard extends StatelessWidget {
       child: GestureDetector(
         onTap: () => _openPdf(context),
         behavior: HitTestBehavior.opaque,
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: IntrinsicHeight(
-            // Makes both children adapt to the tallest one
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 20.sp, horizontal: 20.sp),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadiusDirectional.only(
-                        topStart: Radius.circular(16.sp),
-                        bottomStart: Radius.circular(16.sp),
-                      ),
-                      color: AppColors.primaryColor.withOpacity(.3),
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        AppAssets.dumbbell,
-                        height: 30.h,
-                        width: 30.w,
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 26.sp, horizontal: 20.sp),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadiusDirectional.only(
-                        topEnd: Radius.circular(16.sp),
-                        bottomEnd: Radius.circular(16.sp),
-                      ),
-                      color: AppColors.primaryColor.withOpacity(.17),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              name ?? "",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.black,
-                                    fontSize: 16.sp,
-                                  ),
-                            ),
-                            const Spacer(),
-                            IconButton(
-                              onPressed: () => _openPdf(context),
-                              icon: Icon(
-                                Icons.visibility_outlined,
-                                color: AppColors.primaryColor,
-                                size: 20.sp,
-                              ),
-                            ),
-                            SizedBox(width: 8.w),
-                         
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          padding: EdgeInsets.all(16.r),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(
+              color: AppColors.primaryColor.withOpacity(0.15),
+              width: 1.5,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryColor.withOpacity(0.06),
+                spreadRadius: 2,
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(12.r),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(14.r),
+                ),
+                child: Image.asset(
+                  AppAssets.dumbbell,
+                  height: 28.h,
+                  width: 28.w,
+                  color: AppColors.primaryColor,
+                ),
+              ),
+              SizedBox(width: 14.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      name ?? "",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.black.withOpacity(0.85),
+                            fontSize: 16.sp,
+                            height: 1.3,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Container(
+                padding: EdgeInsets.all(8.r),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor.withOpacity(0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.visibility_outlined,
+                  color: AppColors.primaryColor,
+                  size: 20.sp,
+                ),
+              ),
+            ],
           ),
         ),
       ),

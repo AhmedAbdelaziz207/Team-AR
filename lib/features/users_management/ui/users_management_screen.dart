@@ -28,16 +28,27 @@ class UsersManagementScreen extends StatelessWidget {
         ),
         leading: const SizedBox.shrink(),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: 40.0.h,
-          horizontal: 16.w,
-        ),
-        child: SafeArea(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: 24.0.h,
+            horizontal: 16.w,
+          ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                "إدارة شؤون الأعضاء والاشتراكات",
+                style: TextStyle(
+                  fontSize: 15.sp,
+                  color: AppColors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 20.h),
               AdminManageCard(
                 title: AppLocalKeys.addNewUser.tr(),
+                cardColor: AppColors.primaryColor,
                 onTap: () {
                   Navigator.pushNamed(
                     context,
@@ -45,12 +56,10 @@ class UsersManagementScreen extends StatelessWidget {
                   );
                 },
               ),
-              SizedBox(
-                height: 12.h,
-              ),
+              SizedBox(height: 20.h),
               AdminManageCard(
                 title: AppLocalKeys.usersAboutToExpire.tr(),
-                cardColor: AppColors.newPrimaryColor,
+                cardColor: Colors.orange[700] ?? AppColors.newPrimaryColor,
                 onTap: () {
                   Navigator.pushNamed(context, Routes.usersAboutToExpire);
                 },

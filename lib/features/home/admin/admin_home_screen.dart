@@ -62,13 +62,27 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   SizedBox(height: 12.h),
                   Container(
                     width: double.infinity,
+                    margin: EdgeInsets.symmetric(horizontal: 16.w),
                     decoration: BoxDecoration(
-                      color: AppColors.secondaryColor.withOpacity(.4),
-                      borderRadius: BorderRadius.circular(20.sp),
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.primaryColor,
+                          AppColors.primaryColor.withOpacity(0.85),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(24.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primaryColor.withOpacity(0.25),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 21.0, vertical: 21.0),
+                      padding: EdgeInsets.all(22.r),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -77,58 +91,66 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                             children: [
                               Text(
                                 AppLocalKeys.totalRequests.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineMedium
-                                    ?.copyWith(
-                                      color: AppColors.primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18.sp,
-                                    ),
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16.sp,
+                                ),
                               ),
-                              Icon(
-                                Icons.more_horiz,
-                                color: AppColors.primaryColor,
-                                size: 25.sp,
+                              Container(
+                                padding: EdgeInsets.all(8.r),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.15),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.insights_rounded,
+                                  color: Colors.white,
+                                  size: 20.sp,
+                                ),
                               ),
                             ],
                           ),
-                          SizedBox(
-                            height: 21.h,
-                          ),
+                          SizedBox(height: 12.h),
                           isLoading
                               ? const CircularProgressIndicator(
-                                  color: AppColors.lightBlue,
+                                  color: Colors.white,
                                 )
                               : Text(
                                   totalTrainees.toString(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium
-                                      ?.copyWith(
-                                        color: AppColors.primaryColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18.sp,
-                                      ),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 34.sp,
+                                  ),
                                 ),
-                          SizedBox(
-                            height: 12.h,
+                          SizedBox(height: 8.h),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: ColorFiltered(
+                              colorFilter: const ColorFilter.mode(
+                                Colors.white,
+                                BlendMode.srcIn,
+                              ),
+                              child: Image.asset(
+                                AppAssets.progressWave,
+                                height: 45.h,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
-                          Image.asset(
-                            AppAssets.progressWave,
-                            height: 60.h,
-                          )
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(height: 12.h),
+                  SizedBox(height: 16.h),
                   const UserInfoSection(),
 
                   state.whenOrNull(
                         loading: () => const Center(
                           child: CircularProgressIndicator(
-                            color: AppColors.lightBlue,
+                            color: AppColors.primaryColor,
                           ),
                         ),
                         failure: (errorMessage) => Center(
@@ -146,15 +168,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           if (trainees.isEmpty) {
                             return Expanded(
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Image.asset(
                                     AppAssets.emptyPageEmpty,
-                                    height: 200.h,
-                                    width: 200.w,
+                                    height: 180.h,
+                                    width: 180.w,
                                   ),
-                                  SizedBox(
-                                    height: 12.h,
-                                  ),
+                                  SizedBox(height: 16.h),
                                   Text(
                                     AppLocalKeys.noTrainees.tr(),
                                     style: Theme.of(context)
@@ -162,7 +183,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                                         .bodyMedium
                                         ?.copyWith(
                                             color: AppColors.black
-                                                .withOpacity(.7)),
+                                                .withOpacity(.6),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16.sp),
                                   ),
                                 ],
                               ),
@@ -170,19 +193,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           }
 
                           return Expanded(
-                            child: ListView.separated(
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
                               itemCount: trainees.length,
+                              padding: EdgeInsets.only(top: 4.h, bottom: 20.h),
                               itemBuilder: (context, index) => NewTraineeCard(
                                 trainee: trainees[index],
-                              ),
-                              separatorBuilder: (context, index) => Column(
-                                children: [
-                                  SizedBox(height: 21.h),
-                                  const Divider(
-                                    color: AppColors.grey,
-                                    thickness: .1,
-                                  ),
-                                ],
                               ),
                             ),
                           );

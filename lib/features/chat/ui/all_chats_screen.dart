@@ -67,50 +67,134 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
           });
 
           return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 12.h),
-                  CustomTextFormField(
-                    hintText: AppLocalKeys.searchByName.tr(),
-                    suffixIcon: Icons.search,
-                    isAdmin: true,
-                    iconColor: AppColors.primaryColor,
-                    onChanged: (value) {
-                      setState(() {
-                        searchQuery = value.toLowerCase();
-                      });
-                    },
-                  ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    AppLocalKeys.chats.tr(),
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.sp,
-                          color: AppColors.primaryColor,
-                        ),
-                  ),
-                  SizedBox(height: 20.h),
-                  Expanded(
-                    child: RefreshIndicator(
-                      onRefresh: () async {
-                        context.read<ChatCubit>().getAllChats();
-                      },
-                      child: ListView.builder(
-                        itemCount: filteredChats.length,
-                        itemBuilder: (context, index) {
-                          return ChatsListItem(
-                            user: filteredChats[index],
-                          );
-                        },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 12.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.forum_rounded,
+                            color: AppColors.newSecondaryColor,
+                            size: 26.sp,
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            AppLocalKeys.chats.tr(),
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 22.sp,
+                                  color: AppColors.newSecondaryColor,
+                                ),
+                          ),
+                        ],
                       ),
+                      if (allChats.isNotEmpty)
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color: AppColors.newSecondaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          child: Text(
+                            "${allChats.length} ${allChats.length == 1 ? 'محادثة' : 'محادثات'}",
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.newSecondaryColor,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 14.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: CustomTextFormField(
+                      hintText: AppLocalKeys.searchByName.tr(),
+                      suffixIcon: Icons.search_rounded,
+                      isAdmin: true,
+                      iconColor: AppColors.newSecondaryColor,
+                      onChanged: (value) {
+                        setState(() {
+                          searchQuery = value.toLowerCase();
+                        });
+                      },
                     ),
                   ),
-                ],
-              ),
+                ),
+                SizedBox(height: 12.h),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<ChatCubit>().getAllChats();
+                    },
+                    child: filteredChats.isEmpty
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              SizedBox(height: 80.h),
+                              Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(20.r),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.newSecondaryColor.withOpacity(0.06),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.chat_bubble_outline_rounded,
+                                        size: 60.sp,
+                                        color: AppColors.grey,
+                                      ),
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    Text(
+                                      searchQuery.isNotEmpty
+                                          ? "لا توجد نتائج بحث مطابقة"
+                                          : "لا توجد محادثات حالياً",
+                                      style: TextStyle(
+                                        color: AppColors.black.withOpacity(0.7),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        : ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            padding: EdgeInsets.only(bottom: 20.h, top: 4.h),
+                            itemCount: filteredChats.length,
+                            itemBuilder: (context, index) {
+                              return ChatsListItem(
+                                user: filteredChats[index],
+                              );
+                            },
+                          ),
+                  ),
+                ),
+              ],
             ),
           );
         },

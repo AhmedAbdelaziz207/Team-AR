@@ -61,64 +61,71 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    getData();
     return Scaffold(
       backgroundColor: AppColors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          AppLocalKeys.manageFoods.tr(),
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.black,
+                fontSize: 21.sp,
+              ),
+        ),
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           log("refreshed");
-          _initOrder().then((_) => getData());
+          await _initOrder();
           getData();
         },
         child: SafeArea(
           child: Column(
             children: [
-              SizedBox(height: 16.h),
-
-              // 🔹 Tab Row
+              SizedBox(height: 8.h),
               SizedBox(
-                height: 48.h,
-                child: ListView.builder(
+                height: 44.h,
+                child: ListView.separated(
+                  physics: const BouncingScrollPhysics(),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
                   scrollDirection: Axis.horizontal,
                   itemCount: categories.length,
+                  separatorBuilder: (context, index) => SizedBox(width: 8.w),
                   itemBuilder: (context, index) {
                     final isSelected = selectedTab == index;
                     return GestureDetector(
                       onTap: () {
-                        setState(
-                          () => selectedTab = index,
-                        );
+                        setState(() => selectedTab = index);
                       },
-                      child: Card(
-                        elevation: isSelected ? 4 : 1,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(
-                            color: isSelected
-                                ? AppColors.lightBlue
-                                : Colors.grey.shade300,
-                            width: 1.5,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: isSelected ? AppColors.lightBlue : Colors.grey[100],
+                          borderRadius: BorderRadius.circular(22.r),
+                          border: Border.all(
+                            color: isSelected ? AppColors.lightBlue : Colors.transparent,
                           ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: AppColors.lightBlue.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  )
+                                ]
+                              : null,
                         ),
-                        color: isSelected
-                            ? AppColors.lightBlue.withOpacity(0.85)
-                            : Colors.white,
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 6),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(20),
-                          onTap: () => setState(() => selectedTab = index),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                            child: Text(
-                              categories[index],
-                              style: TextStyle(
-                                color:
-                                    isSelected ? Colors.white : AppColors.grey,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                        child: Text(
+                          categories[index],
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : AppColors.grey,
+                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                            fontSize: 14.sp,
                           ),
                         ),
                       ),
@@ -126,19 +133,16 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                   },
                 ),
               ),
-
-              SizedBox(height: 16.h),
-
-              // 🔹 Meals List
+              SizedBox(height: 12.h),
               Expanded(
                 child: BlocBuilder<MealCubit, MealState>(
                   builder: (context, state) {
                     return state.maybeMap(
                       loading: (_) =>
-                          const Center(child: CircularProgressIndicator()),
+                          const Center(child: CircularProgressIndicator(color: AppColors.lightBlue)),
                       failure: (value) => Center(
                         child: Text(value.message,
-                            style: const TextStyle(color: Colors.red)),
+                            style: TextStyle(color: Colors.red, fontSize: 16.sp, fontWeight: FontWeight.bold)),
                       ),
                       loaded: (value) {
                         final filteredMeals = value.meals
@@ -146,33 +150,39 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                             .toList();
                         if (filteredMeals.isEmpty) {
                           return Center(
-                              child: Text(
-                            AppLocalKeys.noMealsFound.tr(),
-                            style: TextStyle(
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "Cairo",
-                              fontSize: 21.sp,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.restaurant_menu_rounded, size: 70.sp, color: Colors.grey[300]),
+                                SizedBox(height: 12.h),
+                                Text(
+                                  AppLocalKeys.noMealsFound.tr(),
+                                  style: TextStyle(
+                                    color: AppColors.grey,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "Cairo",
+                                    fontSize: 18.sp,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ));
+                          );
                         }
 
                         if (_isLoadingOrder) {
-                          return const Center(
-                              child: CircularProgressIndicator());
+                          return const Center(child: CircularProgressIndicator(color: AppColors.lightBlue));
                         }
 
-                        // Sort meals based on saved order for this category
                         final categoryOrder = _mealOrders[selectedTab] ?? {};
                         filteredMeals.sort((a, b) {
-                          final orderA = categoryOrder[a.id.toString()] ??
-                              filteredMeals.length;
-                          final orderB = categoryOrder[b.id.toString()] ??
-                              filteredMeals.length;
+                          final orderA = categoryOrder[a.id.toString()] ?? filteredMeals.length;
+                          final orderB = categoryOrder[b.id.toString()] ?? filteredMeals.length;
                           return orderA.compareTo(orderB);
                         });
 
                         return ReorderableListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          padding: EdgeInsets.only(top: 4.h, bottom: 90.h),
                           itemCount: filteredMeals.length,
                           itemBuilder: (context, index) => MealCard(
                             key: Key('meal_${filteredMeals[index].id}'),
@@ -184,13 +194,9 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                               final item = filteredMeals.removeAt(oldIndex);
                               filteredMeals.insert(newIndex, item);
 
-                              // Save the new order for this category
-                              final order = filteredMeals
-                                  .map((m) => m.id.toString())
-                                  .toList();
+                              final order = filteredMeals.map((m) => m.id.toString()).toList();
                               _saveMealOrder(selectedTab, order);
 
-                              // Update local order cache for this category
                               _mealOrders[selectedTab] = {};
                               for (int i = 0; i < order.length; i++) {
                                 _mealOrders[selectedTab]![order[i]] = i;

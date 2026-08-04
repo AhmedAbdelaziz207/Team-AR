@@ -19,6 +19,7 @@ import 'package:team_ar/features/notification/services/subscription_monitor_serv
 import 'features/auth/login/model/user_role.dart';
 import 'core/common/notification_model.dart';
 import 'core/common/notification_type_enum.dart';
+import 'core/services/shorebird_update_service.dart';
 import 'firebase_options.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -82,9 +83,12 @@ NotificationType _getNotificationTypeFromData(Map data) {
       return NotificationType.system;
   }
 }
-
+ 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Shorebird Code Push for Team-AR
+  await ShorebirdUpdateService().initialize();
 
   try {
     await EasyLocalization.ensureInitialized();

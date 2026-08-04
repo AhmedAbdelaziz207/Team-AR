@@ -67,22 +67,17 @@ class LoginCubit extends Cubit<LoginState> {
             if (isTrainee) {
               isRealAdmin = false; // They are a Trainee!
 
-              // Verify if they actually paid according to the server FIRST
-              if (loginResponse.isPaid == false) {
+              // Verify if they actually paid according to the server OR have no endPackage/active days
+              if (loginResponse.isPaid == false ||
+                  user.endPackage == null ||
+                  user.remindDays == null ||
+                  user.remindDays! <= 0) {
                 isUnpaid = true;
               }
             }
           } catch (e) {
             log("Failed to get detailed user data during login check: $e");
           }
-        }
-
-        // Force isUnpaid to false if in released/review mode
-        final isReleasedMode =
-            await SharedPreferencesHelper.getBool(AppConstants.isReleased) ??
-                false;
-        if (isReleasedMode) {
-          isUnpaid = false;
         }
 
         if (isRealAdmin) {

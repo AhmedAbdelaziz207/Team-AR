@@ -40,49 +40,97 @@ class _TraineesScreenState extends State<TraineesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: const Color(0xffF8F9FD),
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: AppColors.white,
+        elevation: 1,
+        shadowColor: Colors.black.withOpacity(0.08),
+        backgroundColor: Colors.white,
         leading: const AppBarBackButton(),
+        centerTitle: false,
         title: Text(
           AppLocalKeys.subscribedUsers.tr(),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontSize: 21.sp,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
-                color: AppColors.black,
+                color: AppColors.newSecondaryColor,
               ),
         ),
       ),
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Padding(
-          padding: EdgeInsets.all(16.sp),
-          child: Column(
-            children: [
-              CustomTextFormField(
-                controller: searchController,
-                hintText: AppLocalKeys.searchByName.tr(),
-                suffixIcon: Icons.search,
-                iconColor: AppColors.primaryColor,
-                onChanged: _filterTrainees,
+        child: Column(
+          children: [
+            SizedBox(height: 12.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: CustomTextFormField(
+                  controller: searchController,
+                  hintText: AppLocalKeys.searchByName.tr(),
+                  suffixIcon: Icons.search_rounded,
+                  iconColor: AppColors.newSecondaryColor,
+                  onChanged: _filterTrainees,
+                ),
               ),
-              SizedBox(height: 30.h),
-              const UsersTableHeader(),
-              SizedBox(height: 12.h),
-              Expanded(
-                child: filteredTrainees.isEmpty
-                    ? Center(child: Text(AppLocalKeys.noResultsFounds.tr()))
-                    : ListView.separated(
-                        itemBuilder: (context, index) => SubscribedUserCard(
-                            trainer: filteredTrainees[index]),
-                        itemCount: filteredTrainees.length,
-                        separatorBuilder: (context, index) =>
-                            SizedBox(height: 30.h),
+            ),
+            SizedBox(height: 14.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: UsersTableHeader(totalCount: filteredTrainees.length),
+            ),
+            SizedBox(height: 10.h),
+            Expanded(
+              child: filteredTrainees.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(20.r),
+                            decoration: BoxDecoration(
+                              color: AppColors.newSecondaryColor.withOpacity(0.06),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.group_off_rounded,
+                              size: 60.sp,
+                              color: AppColors.grey,
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            searchController.text.isNotEmpty
+                                ? "لا توجد نتائج بحث مطابقة"
+                                : AppLocalKeys.noResultsFounds.tr(),
+                            style: TextStyle(
+                              color: AppColors.black.withOpacity(0.7),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
+                            ),
+                          ),
+                        ],
                       ),
-              ),
-            ],
-          ),
+                    )
+                  : ListView.separated(
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 20.h, top: 4.h),
+                      itemCount: filteredTrainees.length,
+                      itemBuilder: (context, index) => SubscribedUserCard(
+                        trainer: filteredTrainees[index],
+                      ),
+                      separatorBuilder: (context, index) => SizedBox(height: 10.h),
+                    ),
+            ),
+          ],
         ),
       ),
     );

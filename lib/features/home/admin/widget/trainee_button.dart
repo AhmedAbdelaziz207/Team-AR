@@ -15,6 +15,7 @@ class TraineeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      borderRadius: BorderRadius.circular(20.r),
       onTap: () {
         Navigator.pushNamed(context, Routes.selectUserMeals,
             arguments: SelectMealParams(
@@ -23,21 +24,30 @@ class TraineeButton extends StatelessWidget {
             ));
       },
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
+        padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 12.w),
         decoration: BoxDecoration(
-          color: AppColors.lightBlue.withOpacity(.15),
-          borderRadius: BorderRadius.circular(20.sp),
+          color: AppColors.primaryColor.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: AppColors.primaryColor.withOpacity(0.3), width: 1),
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Icon(
+              Icons.add_rounded,
+              color: AppColors.primaryColor,
+              size: 16.sp,
+            ),
+            SizedBox(width: 4.w),
             Text(
               AppLocalKeys.add.tr(),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold, color: AppColors.lightBlue),
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 12.sp,
+                color: AppColors.primaryColor,
+              ),
             ),
-            Icon(Icons.arrow_forward_ios,
-                color: AppColors.lightBlue, size: 18.sp),
           ],
         ),
       ),
