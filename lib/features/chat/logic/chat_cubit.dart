@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' show Cubit;
 import 'package:team_ar/features/chat/model/chat_user_model.dart';
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
 import '../../../core/di/dependency_injection.dart';
 import '../../../core/network/api_error_handler.dart';
 import '../../../core/network/api_service.dart';
@@ -73,12 +75,18 @@ class ChatCubit extends Cubit<ChatState> {
     emit(SendMessageLoading());
 
     try {
+      final currentUserId =
+          await SharedPreferencesHelper.getString(AppConstants.userId);
+
       await apiService.sendMessage({
-        "message": message,
+        "senderId": currentUserId,
         "receiverId": receiverId,
+        "message": message,
+        "timestamp": DateTime.now().toIso8601String(),
       });
       if (!isClosed) emit(SendMessageSuccess());
     } catch (e) {
+      log("SendMessage Error: $e");
       final errorMessage = ApiErrorHandler.handle(e).getErrorsMessage();
       if (!isClosed) emit(SendMessageFailed(message: errorMessage.toString()));
     }

@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/features/chat/model/chat_user_model.dart';
@@ -23,39 +24,44 @@ class _MessagesScreenState extends State<MessagesScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<ChatMessageModel> _historyMessages = [];
   final List<ChatMessageModel> _liveMessages = [];
-  // bool? isUser = false;
 
   String? currentUserId;
-
-  final signalR = SignalRService();
-  final adminId = "8c5eda71-1ede-4394-80eb-de412d8f5ba3";
+  late final SignalRService signalR;
 
   @override
   void initState() {
     super.initState();
+    signalR = getIt<SignalRService>();
 
     SharedPreferencesHelper.getString(AppConstants.userId).then(
       (value) {
-        setState(() {
-          currentUserId = value;
-        });
-
-        // تسجيل المستخدم في موضوع إشعارات الدردشة
-        FirebaseNotificationsServices.subscribeToTopic("chat_$value");
-
-        signalR.connect(currentUserId!, (senderId, message, data) {
-          log("Message Content: $senderId, message: $message, data: $data");
-          final newMsg = ChatMessageModel(
-            senderId: senderId,
-            receiverId: widget.receiver.id,
-            message: message,
-            timestamp: DateTime.now().toIso8601String(),
-          );
-
+        if (value != null && mounted) {
           setState(() {
-            _liveMessages.add(newMsg);
+            currentUserId = value;
           });
-        });
+
+          // تسجيل المستخدم في موضوع إشعارات الدردشة
+          FirebaseNotificationsServices.subscribeToTopic("chat_$value");
+
+          signalR.connect(value, (senderId, message, data) {
+            log("SignalR ReceiveMessage: sender=$senderId, msg=$message");
+            // إضافة الرسالة المباشرة فقط إذا كانت من الشخص المتحدث معه في هذه الشاشة
+            if (senderId == widget.receiver.id) {
+              final newMsg = ChatMessageModel(
+                senderId: senderId,
+                receiverId: value,
+                message: message,
+                timestamp: DateTime.now().toIso8601String(),
+              );
+
+              if (mounted) {
+                setState(() {
+                  _liveMessages.add(newMsg);
+                });
+              }
+            }
+          });
+        }
       },
     );
 
