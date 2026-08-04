@@ -53,125 +53,139 @@ class MealCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        showDietMealSheet(context, isForEdit: true, meal: meal);
-      },
-      onDoubleTap: () {
-        _showDeleteDialog(context);
-      },
+    final mealName = (() {
+      final isAr = context.locale.languageCode == 'ar';
+      final arName = meal?.arabicName;
+      final enName = meal?.name;
+      if (isAr) {
+        return (arName != null && arName.isNotEmpty)
+            ? arName
+            : (enName ?? "");
+      }
+      return enName ?? arName ?? "";
+    })();
 
-      child: InkWell(
-        onTap: () {
-          showDietMealSheet(context, isForEdit: true, meal: meal);
-        },
-        child: Container(
-          padding: EdgeInsets.all(16.r),
-          margin: EdgeInsets.all(8.r),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(20.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 2,
-                offset: const Offset(0, 3),
-              ),
-            ],
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: AppColors.softGrey, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          child: SingleChildScrollView(
-            physics: const NeverScrollableScrollPhysics(),
-            scrollDirection: Axis.horizontal,
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20.r),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20.r),
+          onTap: () {
+            showDietMealSheet(context, isForEdit: true, meal: meal);
+          },
+          onDoubleTap: () {
+            _showDeleteDialog(context);
+          },
+          child: Padding(
+            padding: EdgeInsets.all(14.r),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4.r),
-                  child: CachedNetworkImage(
-                    imageUrl: ApiEndPoints.imagesBaseUrl + meal!.imageURL!,
-                    width: 100.w,
-                    height: 100.h,
-                    placeholder: (context, url) => Container(
-                      color: Colors.grey[200],
-                      width: 100.w,
-                      height: 100.h,
-                      child: const Center(child: CircularProgressIndicator()),
-                    ),
-                    errorWidget: (context, error, stackTrace) => Container(
-                      color: Colors.grey[200],
-                      child: Column(
+                Container(
+                  width: 85.w,
+                  height: 85.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14.r),
+                    color: Colors.grey[100],
+                    border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(14.r),
+                    child: CachedNetworkImage(
+                      imageUrl: ApiEndPoints.imagesBaseUrl + (meal?.imageURL ?? ""),
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                      errorWidget: (context, error, stackTrace) => Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
-                            Icons.broken_image,
-                            color: Colors.grey,
-                            size: 50,
-                          ),
-                          Text(
-                            AppLocalKeys.noImage.tr(),
-                            style: const TextStyle(color: Colors.grey),
-                          ),
+                          Icon(Icons.fastfood_rounded, color: Colors.grey[400], size: 30.sp),
                         ],
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 8.w),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      (() {
-                        final isAr = context.locale.languageCode == 'ar';
-                        final arName = meal?.arabicName;
-                        final enName = meal?.name;
-                        if (isAr) {
-                          return (arName != null && arName.isNotEmpty)
-                              ? arName
-                              : (enName ?? "");
-                        }
-                        return enName ?? arName ?? "";
-                      })(),
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
+                SizedBox(width: 14.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              mealName,
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.black,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () => _showDeleteDialog(context),
+                            borderRadius: BorderRadius.circular(20),
+                            child: Padding(
+                              padding: EdgeInsets.all(4.r),
+                              child: Icon(
+                                Icons.delete_outline_rounded,
+                                color: Colors.red[400],
+                                size: 20.sp,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Wrap(
-                      children: [
-                        Column(
-                          children: [
-                            buildDetailsItem(
-                              AppLocalKeys.calories,
-                              (meal!.numOfCalories!*100).toStringAsFixed(1),
-                            ),
-                            SizedBox(height: 12.h),
-                            buildDetailsItem(
-                              AppLocalKeys.proteins,
-                              (meal!.numOfProtein!*100).toStringAsFixed(1),
-                            )
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            buildDetailsItem(
-                              AppLocalKeys.carbs,
-                              meal?.numOfCarbs == null
-                                  ? "0"
-                                  : (meal!.numOfCarbs!*100).toStringAsFixed(1),
-                            ),
-                            SizedBox(height: 12.h),
-                            buildDetailsItem(
-                              AppLocalKeys.fats,
-                              (meal!.numOfFats!*100).toStringAsFixed(1),
-                            ),
-                          ],
-                        )
-                      ],
-                    )
-                  ],
+                      SizedBox(height: 10.h),
+                      Wrap(
+                        spacing: 6.w,
+                        runSpacing: 6.h,
+                        children: [
+                          buildNutritionPill(
+                            AppLocalKeys.calories.tr(),
+                            ((meal?.numOfCalories ?? 0) * 100).toStringAsFixed(1),
+                            Colors.orange,
+                          ),
+                          buildNutritionPill(
+                            AppLocalKeys.proteins.tr(),
+                            ((meal?.numOfProtein ?? 0) * 100).toStringAsFixed(1),
+                            Colors.blue,
+                          ),
+                          buildNutritionPill(
+                            AppLocalKeys.carbs.tr(),
+                            ((meal?.numOfCarbs ?? 0) * 100).toStringAsFixed(1),
+                            Colors.purple,
+                          ),
+                          buildNutritionPill(
+                            AppLocalKeys.fats.tr(),
+                            ((meal?.numOfFats ?? 0) * 100).toStringAsFixed(1),
+                            Colors.teal,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -181,20 +195,20 @@ class MealCard extends StatelessWidget {
     );
   }
 
-  buildDetailsItem(String title, String value) {
+  Widget buildNutritionPill(String title, String value, MaterialColor color) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-      margin: EdgeInsets.only(right: 8.w),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
       decoration: BoxDecoration(
-        color: AppColors.lightBlue,
-        borderRadius: BorderRadius.circular(20.r),
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: color.withOpacity(0.3), width: 0.8),
       ),
       child: Text(
         "$value $title",
         style: TextStyle(
-          color: AppColors.white,
-          fontSize: 12.sp,
-          fontWeight: FontWeight.bold,
+          color: color[800],
+          fontSize: 11.sp,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

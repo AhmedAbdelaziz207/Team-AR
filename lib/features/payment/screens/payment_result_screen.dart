@@ -85,7 +85,7 @@ class _PaymentResultScreenState extends State<PaymentResultScreen>
     try {
       final String? userId =
           await SharedPreferencesHelper.getString(AppConstants.userId);
-      log("Upadte user payment status $userId");
+      log("Update user payment status $userId");
       if (userId == null || userId.isEmpty) {
         return;
       }

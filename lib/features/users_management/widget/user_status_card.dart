@@ -20,92 +20,114 @@ class UserStatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double progressRatio = (currentDays / maxDays).clamp(0.0, 1.0);
+    final isUrgency = currentDays <= 3 || !isActive;
+    final statusColor = !isActive
+        ? Colors.red
+        : (currentDays <= 3 ? Colors.orange : Colors.green);
+    final initials = firstName.trim().split(' ').map((e) => e.isNotEmpty ? e[0].toUpperCase() : '').take(2).join();
 
     return Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+      padding: EdgeInsets.all(16.r),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(
+          color: isUrgency ? statusColor.withOpacity(0.4) : AppColors.softGrey,
+          width: isUrgency ? 1.5 : 1,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // User Name
-            Expanded(
-              child: Text(
-                firstName,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.black,
-                ),
-              ),
-            ),
-
-            // Active Status
-            Expanded(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        boxShadow: [
+          BoxShadow(
+            color: statusColor.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44.w,
+                height: 44.w,
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? Colors.green.withOpacity(0.1)
-                      : Colors.red.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
+                  color: statusColor.withOpacity(0.12),
+                  shape: BoxShape.circle,
                 ),
-                child: Align(
-                  alignment: AlignmentDirectional.center,
-                  child: Text(
-                    isActive ? 'Active' : 'Expired',
-                    style: TextStyle(
-                      color: isActive ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
+                alignment: Alignment.center,
+                child: Text(
+                  initials.isEmpty ? "U" : initials,
+                  style: TextStyle(
+                    color: statusColor,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16.sp,
                   ),
                 ),
               ),
-            ),
-
-            const SizedBox(width: 16),
-
-            // Progress and time
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // Background bar
-                  Container(
-                    width: 60,
-                    height: 6,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(3),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      firstName.isEmpty ? "مستخدم" : firstName,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.black,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: FractionallySizedBox(
-                        widthFactor: progressRatio, // dynamic width
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.circular(3),
+                    SizedBox(height: 4.h),
+                    Row(
+                      children: [
+                        Icon(Icons.timer_outlined, size: 14.sp, color: statusColor),
+                        SizedBox(width: 4.w),
+                        Text(
+                          '$currentDays أيام متبقية',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: statusColor,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$currentDays Day',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Text(
+                  !isActive ? 'منتهي' : (currentDays <= 3 ? 'قريب الانتهاء' : 'نشط'),
+                  style: TextStyle(
+                    color: statusColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12.sp,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 14.h),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6.r),
+            child: LinearProgressIndicator(
+              value: progressRatio,
+              minHeight: 6.h,
+              backgroundColor: Colors.grey.withOpacity(0.15),
+              valueColor: AlwaysStoppedAnimation<Color>(statusColor),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }

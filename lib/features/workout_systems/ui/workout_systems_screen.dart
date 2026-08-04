@@ -61,10 +61,32 @@ class _WorkoutSystemsScreenState extends State<WorkoutSystemsScreen> {
             }
 
             if (state is WorkoutSystemLoadSuccess) {
+              if (state.data.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.fitness_center_outlined,
+                        size: 80.sp,
+                        color: AppColors.grey.withOpacity(0.4),
+                      ),
+                      SizedBox(height: 16.h),
+                      Text(
+                        "لا توجد أنظمة تمارين مسجلة حالياً",
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.grey,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.sp,
+                            ),
+                      ),
+                    ],
+                  ),
+                );
+              }
               return ListView.builder(
                 itemCount: state.data.length,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                padding: EdgeInsets.only(top: 8.h, bottom: 100.h),
                 itemBuilder: (context, index) => WorkoutSystemCard(
                   name: state.data[index].name,
                   workout: state.data[index],
@@ -76,7 +98,7 @@ class _WorkoutSystemsScreenState extends State<WorkoutSystemsScreen> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await Navigator.push(
             context,
@@ -94,12 +116,24 @@ class _WorkoutSystemsScreenState extends State<WorkoutSystemsScreen> {
                 log("then")
               });
         },
+        elevation: 4,
         backgroundColor: AppColors.primaryColor,
-        child: Image.asset(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        icon: Image.asset(
           AppAssets.dumbbell,
-          height: 25.h,
-          width: 25.w,
+          height: 24.h,
+          width: 24.w,
           color: AppColors.white,
+        ),
+        label: Text(
+          "إضافة نظام",
+          style: TextStyle(
+            color: AppColors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16.sp,
+          ),
         ),
       ),
     );

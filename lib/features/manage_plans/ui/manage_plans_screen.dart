@@ -53,42 +53,113 @@ class _ManagePlansScreenState extends State<ManagePlansScreen> {
           },
           child: Column(
             children: [
-              SizedBox(height: 12.h),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                padding: EdgeInsets.all(12.r),
+                decoration: BoxDecoration(
+                  color: AppColors.newPrimaryColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: AppColors.newPrimaryColor.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline_rounded, color: AppColors.newPrimaryColor, size: 24.sp),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: Text(
+                        "يمكنك تعديل الأسعار وتفاصيل الباقة بالنقر على زر التعديل، أو اسحب الكارت يمنياً/يساراً لحذف الباقة نهائياً.",
+                        style: TextStyle(
+                          color: AppColors.black.withOpacity(0.8),
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 4.h),
               BlocBuilder<UserPlansCubit, UserPlansState>(
                 builder: (context, state) {
                   return state.maybeWhen(
-                    plansLoading: () => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                    plansLoaded: (plans) => Expanded(
-                      child: ListView.builder(
-                        itemCount: plans.length,
-                        itemBuilder: (context, index) => Dismissible(
-                          onDismissed: (direction) {
-                            context.read<UserPlansCubit>().deletePlan(
-                                  plans[index].id!,
-                                );
-                            // plans.removeAt(index);
-                          },
-                          key: Key(plans[index].id.toString()),
-                          child: PlansListCard(
-                            plan: plans[index],
-                            isAdmin: true,
-                          ),
-                        ),
+                    plansLoading: () => const Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(color: AppColors.mediumLavender),
                       ),
                     ),
-                    plansFailure: (messageModel) => Center(
+                    plansLoaded: (plans) {
+                      if (plans.isEmpty) {
+                        return Expanded(
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.card_membership_rounded, size: 70.sp, color: Colors.grey[300]),
+                                SizedBox(height: 12.h),
+                                Text(
+                                  "لا توجد باقات مضافة حالياً",
+                                  style: TextStyle(
+                                    color: AppColors.grey,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      return Expanded(
+                        child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          padding: EdgeInsets.only(bottom: 90.h, top: 4.h),
+                          itemCount: plans.length,
+                          itemBuilder: (context, index) => Dismissible(
+                            key: Key(plans[index].id.toString()),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                              decoration: BoxDecoration(
+                                color: Colors.red[600],
+                                borderRadius: BorderRadius.circular(16.r),
+                              ),
+                              alignment: AlignmentDirectional.centerEnd,
+                              padding: EdgeInsets.symmetric(horizontal: 24.w),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    AppLocalKeys.delete.tr(),
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.sp),
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Icon(Icons.delete_sweep_rounded, color: Colors.white, size: 28.sp),
+                                ],
+                              ),
+                            ),
+                            onDismissed: (direction) {
+                              context.read<UserPlansCubit>().deletePlan(
+                                    plans[index].id!,
+                                  );
+                            },
+                            child: PlansListCard(
+                              plan: plans[index],
+                              isAdmin: true,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    plansFailure: (messageModel) => Expanded(
                       child: Center(
                         child: Text(
                           messageModel.message.toString(),
-                          style: const TextStyle(color: AppColors.red),
+                          style: TextStyle(color: AppColors.red, fontSize: 16.sp, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
-                    orElse: () {
-                      return const SizedBox();
-                    },
+                    orElse: () => const SizedBox(),
                   );
                 },
               )
@@ -96,12 +167,22 @@ class _ManagePlansScreenState extends State<ManagePlansScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showPlanDialog(context),
         backgroundColor: AppColors.mediumLavender,
-        child: const Icon(
-          Icons.add,
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.r)),
+        icon: const Icon(
+          Icons.add_circle_outline_rounded,
           color: AppColors.white,
+        ),
+        label: Text(
+          "إضافة باقة جديدة",
+          style: TextStyle(
+            color: AppColors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 14.sp,
+          ),
         ),
       ),
     );

@@ -12,6 +12,7 @@ import 'package:team_ar/features/auth/login/logic/login_state.dart';
 import 'package:team_ar/features/auth/login/model/login_response.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
+import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/features/payment/screens/payment_screen.dart';
 
 class LoginBlocListener extends StatelessWidget {
@@ -77,28 +78,32 @@ class LoginBlocListener extends StatelessWidget {
 
   void navigateToHomeScreen(
       BuildContext context, LoginResponse loginResponse) async {
-    // ADMIN FLOW: If user is admin, bypass all checks and go to admin panel
-    if (_isAdmin(loginResponse)) {
-      Navigator.pushNamedAndRemoveUntil(
-          context, Routes.adminLanding, (route) => false);
-      return; // Exit early for admin
-    }
-
-    // USER FLOW:
-    // 1) If user is unpaid, send to payment screen with userId only
+    // 1) USER FLOW: Check if user hasn't paid or completed payment FIRST
     bool isUnpaid = loginResponse.isPaid == false;
+    final userId = loginResponse.id ?? '';
 
-    if (isUnpaid) {
+    final hasPaidLocally = userId.isNotEmpty
+        ? (await SharedPreferencesHelper.getBool('has_completed_payment_$userId') ?? false)
+        : false;
+
+    if (isUnpaid && !hasPaidLocally) {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
           builder: (_) => PaymentScreen(
-            userId: (loginResponse.id ?? '').toString(),
+            userId: userId,
           ),
         ),
         (route) => false,
       );
       return;
+    }
+
+    // 2) ADMIN FLOW: If user is real admin and paid, proceed to admin landing
+    if (_isAdmin(loginResponse)) {
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.adminLanding, (route) => false);
+      return; // Exit early for admin
     }
 
     // 2) If paid, check if subscription expired (endPackage <= today)
