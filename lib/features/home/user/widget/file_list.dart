@@ -22,6 +22,13 @@ class FilesList extends StatelessWidget {
     final List<Map<String, String>> items = [
       {
         "title": AppLocalKeys.diet.tr(),
+        "description": "كتيب طرق الأكل",
+        "icon": "assets/images/dish.png",
+        "url":
+            "https://drive.google.com/file/d/1WyNvaEzsEUpmy5U0RwTmGqzIRytxsgwa/view?usp=sharing"
+      },
+      {
+        "title": AppLocalKeys.diet.tr(),
         "description": "كتيب الطعام الصحي",
         "icon": "assets/images/dish.png",
         "url":
