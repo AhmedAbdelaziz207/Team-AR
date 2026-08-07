@@ -26,6 +26,8 @@ class ExerciseScreen extends StatefulWidget {
 
 class _ExerciseScreenState extends State<ExerciseScreen> {
   String? _pdfUrl;
+  bool _isPdfError = false;
+
   @override
   void initState() {
     loadData();
@@ -33,70 +35,72 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   }
 
   void loadData() async {
-    log("Get Workout with Id ${await SharedPreferencesHelper.getInt(AppConstants.exerciseId)}");
+    setState(() {
+      _isPdfError = false;
+    });
+    final exerciseId = await SharedPreferencesHelper.getInt(AppConstants.exerciseId);
+    log("Get Workout with Id $exerciseId");
+    if (mounted) {
+      context.read<WorkoutCubit>().getWorkout(exerciseId);
+    }
+  }
 
-    await SharedPreferencesHelper.getInt(AppConstants.exerciseId).then(
-      (value) {
-        context.read<WorkoutCubit>().getWorkout(value);
-      },
-    );
+  Future<void> _openPdfExternally() async {
+    if (_pdfUrl == null) return;
+    try {
+      final uri = Uri.parse(_pdfUrl!);
+      final can = await canLaunchUrl(uri);
+      if (can) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalKeys.noWorkouts.tr())),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to open link')),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
+        backgroundColor: const Color(0xFF102E50),
+        elevation: 2,
         leading: const AppBarBackButton(
           color: AppColors.white,
         ),
         title: Text(
           AppLocalKeys.workouts.tr(),
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
+            fontSize: 18.sp,
           ),
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            tooltip: 'Download',
-            icon: const Icon(Icons.download_rounded, color: Colors.white),
-            onPressed: _pdfUrl == null
-                ? null
-                : () async {
-                    try {
-                      final uri = Uri.parse(_pdfUrl!);
-                      final can = await canLaunchUrl(uri);
-                      if (can) {
-                        await launchUrl(uri,
-                            mode: LaunchMode.externalApplication);
-                      } else {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text(AppLocalKeys.noWorkouts.tr())),
-                          );
-                        }
-                      }
-                    } catch (e) {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Failed to open link')),
-                        );
-                      }
-                    }
-                  },
-          ),
+          if (_pdfUrl != null)
+            IconButton(
+              tooltip: 'Download',
+              icon: const Icon(Icons.download_rounded, color: Colors.white),
+              onPressed: _openPdfExternally,
+            ),
         ],
       ),
       body: BlocBuilder<WorkoutCubit, WorkoutState>(
         builder: (context, state) {
           if (state is WorkoutSuccess) {
-            final String cleanBaseUrl = ApiEndPoints.baseUrl.endsWith('/') 
-                ? ApiEndPoints.baseUrl.substring(0, ApiEndPoints.baseUrl.length - 1) 
+            final String cleanBaseUrl = ApiEndPoints.baseUrl.endsWith('/')
+                ? ApiEndPoints.baseUrl.substring(0, ApiEndPoints.baseUrl.length - 1)
                 : ApiEndPoints.baseUrl;
             final url = '$cleanBaseUrl/Exercises/${state.url}';
 
@@ -105,33 +109,150 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                 if (mounted) {
                   setState(() {
                     _pdfUrl = url;
+                    _isPdfError = false;
                   });
                 }
               });
+            }
+
+            if (_isPdfError) {
+              return _buildErrorStateView();
             }
 
             return SfPdfViewer.network(
               url,
               canShowScrollHead: false,
               canShowScrollStatus: false,
+              onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
+                log("PDF Load Failed: ${details.description}");
+                if (mounted) {
+                  setState(() {
+                    _isPdfError = true;
+                  });
+                }
+              },
             );
           }
 
           if (state is WorkoutFailure) {
-            return Center(
-              child: Text(
-                AppLocalKeys.noWorkouts.tr(),
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 20.sp,
-                  fontFamily: "Cairo",
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            );
+            return _buildErrorStateView();
           }
-          return const Center(child: CircularProgressIndicator());
+
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(
+                  color: Color(0xFF102E50),
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  "جاري تحميل تمارين النظام...",
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontFamily: "Cairo",
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+          );
         },
+      ),
+    );
+  }
+
+  Widget _buildErrorStateView() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(24.0.sp),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(20.sp),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.picture_as_pdf_rounded,
+                size: 56.sp,
+                color: Colors.red[400],
+              ),
+            ),
+            SizedBox(height: 20.h),
+            Text(
+              AppLocalKeys.noWorkouts.tr(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 18.sp,
+                fontFamily: "Cairo",
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              "تعذر عرض ملف التمارين حالياً، يرجى التأكد من الاتصال بالشبكة وإعادة المحاولة",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 13.sp,
+                fontFamily: "Cairo",
+              ),
+            ),
+            SizedBox(height: 24.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: loadData,
+                  icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                  label: Text(
+                    "إعادة المحاولة",
+                    style: TextStyle(
+                      fontFamily: "Cairo",
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF102E50),
+                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                ),
+                if (_pdfUrl != null) ...[
+                  SizedBox(width: 12.w),
+                  OutlinedButton.icon(
+                    onPressed: _openPdfExternally,
+                    icon: const Icon(Icons.open_in_new_rounded, color: Color(0xFF102E50)),
+                    label: Text(
+                      "فتح خارجي",
+                      style: TextStyle(
+                        fontFamily: "Cairo",
+                        fontSize: 14.sp,
+                        color: const Color(0xFF102E50),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                      side: const BorderSide(color: Color(0xFF102E50)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

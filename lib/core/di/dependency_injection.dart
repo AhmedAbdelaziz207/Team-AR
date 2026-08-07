@@ -22,6 +22,7 @@ import '../../features/notification/services/notification_storage.dart';
 import '../../features/work_out/logic/workout_cubit.dart';
 import '../network/api_service.dart';
 import '../network/dio_factory.dart';
+import '../network/signalr_service.dart';
 import '../services/notification_service.dart';
 
 final getIt = GetIt.instance;
@@ -111,6 +112,11 @@ Future<void> setupServiceLocator() async {
         localNotificationService: getIt<LocalNotificationService>(),
         repository: getIt<NotificationRepository>(),
       ),
+    );
+
+    // SignalR Service
+    getIt.registerLazySingleton<SignalRService>(
+      () => SignalRService(),
     );
 
     // Login
