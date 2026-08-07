@@ -7,13 +7,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
+import 'package:team_ar/core/services/pdf_protection_service.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/features/work_out/logic/workout_cubit.dart';
 import 'package:team_ar/features/work_out/logic/workout_state.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ExerciseScreen extends StatefulWidget {
   const ExerciseScreen({
@@ -30,8 +30,15 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
 
   @override
   void initState() {
-    loadData();
     super.initState();
+    PdfProtectionService.enable();
+    loadData();
+  }
+
+  @override
+  void dispose() {
+    PdfProtectionService.disable();
+    super.dispose();
   }
 
   void loadData() async {
@@ -42,29 +49,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     log("Get Workout with Id $exerciseId");
     if (mounted) {
       context.read<WorkoutCubit>().getWorkout(exerciseId);
-    }
-  }
-
-  Future<void> _openPdfExternally() async {
-    if (_pdfUrl == null) return;
-    try {
-      final uri = Uri.parse(_pdfUrl!);
-      final can = await canLaunchUrl(uri);
-      if (can) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalKeys.noWorkouts.tr())),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to open link')),
-        );
-      }
     }
   }
 
@@ -87,14 +71,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          if (_pdfUrl != null)
-            IconButton(
-              tooltip: 'Download',
-              icon: const Icon(Icons.download_rounded, color: Colors.white),
-              onPressed: _openPdfExternally,
-            ),
-        ],
+        actions: const [],
       ),
       body: BlocBuilder<WorkoutCubit, WorkoutState>(
         builder: (context, state) {
@@ -172,7 +149,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             Container(
               padding: EdgeInsets.all(20.sp),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.08),
+                color: Colors.red.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -203,10 +180,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
               ),
             ),
             SizedBox(height: 24.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
+            ElevatedButton.icon(
                   onPressed: loadData,
                   icon: const Icon(Icons.refresh_rounded, color: Colors.white),
                   label: Text(
@@ -226,31 +200,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                     ),
                   ),
                 ),
-                if (_pdfUrl != null) ...[
-                  SizedBox(width: 12.w),
-                  OutlinedButton.icon(
-                    onPressed: _openPdfExternally,
-                    icon: const Icon(Icons.open_in_new_rounded, color: Color(0xFF102E50)),
-                    label: Text(
-                      "فتح خارجي",
-                      style: TextStyle(
-                        fontFamily: "Cairo",
-                        fontSize: 14.sp,
-                        color: const Color(0xFF102E50),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                      side: const BorderSide(color: Color(0xFF102E50)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
           ],
         ),
       ),

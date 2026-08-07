@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:team_ar/features/guide_files/ui/protected_pdf_viewer_screen.dart';
 
 class FilesList extends StatelessWidget {
   const FilesList({super.key});
 
-  Future<void> _downloadPDF(pdfUrl) async {
-    final Uri url = Uri.parse(pdfUrl);
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      debugPrint("Could not launch $pdfUrl");
-    }
+  void _openProtected(BuildContext context, String url, String title) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProtectedPdfViewerScreen(url: url, title: title),
+      ),
+    );
   }
 
   @override
@@ -109,14 +109,18 @@ class FilesList extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = items[index];
               return InkWell(
-                onTap: () {
-                  _downloadPDF(item["url"]);
+              onTap: () {
+                  _openProtected(
+                    context,
+                    item["url"]!,
+                    item["description"]!,
+                  );
                 },
                 child: Container(
                   margin: EdgeInsets.only(bottom: 12.h),
                   padding: EdgeInsets.all(6.sp),
                   decoration: BoxDecoration(
-                    color: AppColors.lightGrey.withOpacity(.1),
+                    color: AppColors.lightGrey.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16.sp),
                   ),
                   child: Row(
@@ -156,7 +160,7 @@ class FilesList extends StatelessWidget {
                       ),
                       Icon(
                         Icons.arrow_circle_right_outlined,
-                        color: AppColors.black.withOpacity(.9),
+                        color: AppColors.black.withValues(alpha: 0.9),
                         size: 25.sp,
                       ),
                     ],
