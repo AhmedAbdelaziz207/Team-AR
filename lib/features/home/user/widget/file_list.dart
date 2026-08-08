@@ -21,28 +21,28 @@ class FilesList extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, String>> items = [
       {
-        "title": AppLocalKeys.diet.tr(),
+        "title": AppLocalKeys.importantInstructions.tr(),
         "description": "كتيب طرق الأكل",
         "icon": "assets/images/dish.png",
         "url":
             "https://drive.google.com/file/d/1WyNvaEzsEUpmy5U0RwTmGqzIRytxsgwa/view?usp=sharing"
       },
       {
-        "title": AppLocalKeys.diet.tr(),
+        "title": AppLocalKeys.importantInstructions.tr(),
         "description": "كتيب الطعام الصحي",
         "icon": "assets/images/dish.png",
         "url":
             "https://drive.google.com/file/d/1t01CH-81j3M1iN6ti67s6DG76MiScNvr/view?usp=sharing"
       },
       {
-        "title": AppLocalKeys.diet.tr(),
+        "title": AppLocalKeys.importantInstructions.tr(),
         "description": "كتيب بدائل الطعام ",
         "icon": "assets/images/dish.png",
         "url":
             "https://drive.google.com/file/d/1HuFY2yZ_hcHPyaw5zNst1xG6WF7tBkH-/view?usp=sharing"
       },
       {
-        "title": AppLocalKeys.diet.tr(),
+        "title": AppLocalKeys.importantInstructions.tr(),
         "description": "2 كتيب بدائل الطعام ",
         "icon": "assets/images/dish.png",
         "url":
