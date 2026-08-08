@@ -39,8 +39,10 @@ class SelectMealCard extends StatelessWidget {
           ],
           border: Border.all(color: Colors.grey.shade200),
         ),
-        child: Row(
+        child: Column(
           children: [
+            Row(
+              children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: CachedNetworkImage(

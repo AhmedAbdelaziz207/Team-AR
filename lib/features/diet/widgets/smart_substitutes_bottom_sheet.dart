@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
-import 'package:team_ar/features/diet/logic/user_diet_cubit.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
+import 'package:team_ar/core/network/api_service.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
+import 'package:team_ar/features/manage_meals_screen/repos/diet_meal_repository.dart';
 
 class SmartSubstitutesBottomSheet extends StatefulWidget {
   final DietMealModel originalMeal;
@@ -48,8 +50,8 @@ class _SmartSubstitutesBottomSheetState
 
   Future<void> _loadSubstitutes() async {
     try {
-      // Fetch meals using the repository inside UserDietCubit
-      final repo = context.read<UserDietCubit>().mealRepository; 
+      // Fetch meals using the repository directly
+      final repo = DietMealRepository(getIt<ApiService>()); 
       final result = await repo.getDietMeals();
       
       result.when(
