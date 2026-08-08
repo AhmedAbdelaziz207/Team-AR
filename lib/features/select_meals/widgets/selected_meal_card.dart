@@ -117,6 +117,45 @@ class SelectMealCard extends StatelessWidget {
             ),
           ],
         ),
+        if (meal.isSelected == true) ...[
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.lightbulb_outline, size: 20, color: Colors.orange.shade700),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextField(
+                    controller: context.read<MealCubit>().getItemNoteController(meal.id!),
+                    decoration: InputDecoration(
+                      hintText: context.locale.languageCode == 'ar'
+                          ? 'ملاحظة أو بديل مخصص (اختياري)'
+                          : 'Custom note or alternative (optional)',
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                      hintStyle: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: Colors.black87,
+                    ),
+                    maxLines: null,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

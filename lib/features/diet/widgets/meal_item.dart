@@ -5,15 +5,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
+import 'package:team_ar/features/diet/widgets/smart_substitutes_bottom_sheet.dart';
 
 class MealItem extends StatelessWidget {
   final DietMealModel? mealModel;
   final int? grams;
+  final String? coachNote;
 
   const MealItem({
     super.key,
     this.mealModel,
     this.grams,
+    this.coachNote,
   });
 
   @override
@@ -128,6 +131,72 @@ class MealItem extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: _buildMacroNutrients(),
+                  ),
+                ],
+                if (coachNote != null && coachNote!.isNotEmpty) ...[
+                  SizedBox(height: 10.h),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(6.sp),
+                      border: Border.all(color: Colors.orange.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.lightbulb, size: 14.sp, color: Colors.orange.shade800),
+                        SizedBox(width: 6.w),
+                        Expanded(
+                          child: Text(
+                            coachNote!,
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.orange.shade900,
+                              fontFamily: "Cairo",
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                // Add smart substitutes button if it's not a natural supplement
+                if (mealModel?.foodCategory != null && mealModel?.foodCategory != 4) ...[
+                  SizedBox(height: 12.h),
+                  SizedBox(
+                    height: 32.h,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (mealModel != null) {
+                          SmartSubstitutesBottomSheet.show(
+                            context,
+                            mealModel!,
+                            grams ?? mealModel!.numOfGrams?.toInt() ?? 0,
+                          );
+                        }
+                      },
+                      icon: Icon(Icons.calculate, size: 16.sp, color: Colors.blue.shade700),
+                      label: Text(
+                        context.locale.languageCode == 'ar' ? 'البدائل الذكية' : 'Smart Substitutes',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Cairo",
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade50,
+                        elevation: 0,
+                        padding: EdgeInsets.symmetric(horizontal: 12.w),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.sp),
+                          side: BorderSide(color: Colors.blue.shade200),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ],
