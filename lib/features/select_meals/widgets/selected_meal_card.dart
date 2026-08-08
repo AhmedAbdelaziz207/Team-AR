@@ -158,7 +158,9 @@ class SelectMealCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
+      ],
+    ),
+  ),
+);
   }
 }
