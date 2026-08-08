@@ -27,4 +27,8 @@ subprojects {
             jvmTarget = "17"
         }
     }
+    tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
+    }
 }
