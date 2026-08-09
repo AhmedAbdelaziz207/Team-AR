@@ -1,8 +1,8 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:team_ar/core/services/pdf_protection_service.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
-// Protected PDF viewer screen using internal WebView
+// Protected PDF viewer screen using native SfPdfViewer
 // No download, no share, no external access
 class ProtectedPdfViewerScreen extends StatefulWidget {
   final String url;
@@ -20,14 +20,13 @@ class ProtectedPdfViewerScreen extends StatefulWidget {
 }
 
 class _ProtectedPdfViewerScreenState extends State<ProtectedPdfViewerScreen> {
-  late final WebViewController _controller;
-  bool _isLoading = true;
+  late String _pdfUrl;
 
   @override
   void initState() {
     super.initState();
     PdfProtectionService.enable();
-    _initWebView();
+    _initUrl();
   }
 
   @override
@@ -36,43 +35,18 @@ class _ProtectedPdfViewerScreenState extends State<ProtectedPdfViewerScreen> {
     super.dispose();
   }
 
-  void _initWebView() {
-    // Convert Google Drive share link to direct embed link
-    String viewUrl = widget.url;
+  void _initUrl() {
+    // Convert Google Drive share link to direct download link for native rendering
+    _pdfUrl = widget.url;
     final driveRegex = RegExp(
       r'https://drive\.google\.com/file/d/([^/]+)',
     );
     final match = driveRegex.firstMatch(widget.url);
     if (match != null) {
       final fileId = match.group(1);
-      // Use Google Drive preview (no download button, no share)
-      viewUrl = 'https://drive.google.com/file/d/$fileId/preview';
+      // Use Google Drive direct download (uc?export=download)
+      _pdfUrl = 'https://drive.google.com/uc?export=download&id=$fileId';
     }
-
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (_) {
-            if (mounted) setState(() => _isLoading = true);
-          },
-          onPageFinished: (_) {
-            if (mounted) setState(() => _isLoading = false);
-          },
-          // Block any navigation to external links or downloads
-          onNavigationRequest: (request) {
-            final url = request.url;
-            // Allow only Google Drive preview URLs
-            if (url.contains('drive.google.com') &&
-                url.contains('preview')) {
-              return NavigationDecision.navigate;
-            }
-            // Block everything else (download links, external sites)
-            return NavigationDecision.prevent;
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(viewUrl));
   }
 
   @override
@@ -99,29 +73,10 @@ class _ProtectedPdfViewerScreenState extends State<ProtectedPdfViewerScreen> {
         // No actions - no download, no share, no menu
         actions: const [],
       ),
-      body: Stack(
-        children: [
-          WebViewWidget(controller: _controller),
-          if (_isLoading)
-            const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(
-                    color: Color(0xFF102E50),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'جاري تحميل الكتيب...',
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-        ],
+      body: SfPdfViewer.network(
+        _pdfUrl,
+        canShowScrollHead: false,
+        canShowScrollStatus: false,
       ),
     );
   }

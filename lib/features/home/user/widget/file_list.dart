@@ -158,11 +158,6 @@ class FilesList extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Icon(
-                        Icons.arrow_circle_right_outlined,
-                        color: AppColors.black.withValues(alpha: 0.9),
-                        size: 25.sp,
-                      ),
                     ],
                   ),
                 ),
