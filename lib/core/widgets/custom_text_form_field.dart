@@ -99,8 +99,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
               });
               return result;
             },
-            textDirection: ui.TextDirection.ltr,
-            textAlign: TextAlign.left,
+            textAlign: TextAlign.start,
             decoration: InputDecoration(
               hintText: widget.hintText,
               hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(

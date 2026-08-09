@@ -24,7 +24,7 @@ class ConfirmSubscriptionForm extends StatelessWidget {
             suffixIcon: Icons.person,
             hintText: AppLocalKeys.userName.tr(),
             validator: (value) {
-              final regex = RegExp(r'^[a-zA-Z0-9]+$');
+              final regex = RegExp(r'^[\w\u0621-\u064A0-9_ ]+$');
               if (!regex.hasMatch(value!)) {
                 return '${AppLocalKeys.userName.tr()} ${AppLocalKeys.mustBeAlphanumeric.tr()}';
               }

@@ -130,7 +130,7 @@ class _NotificationScreenState extends State<NotificationScreen>
             color: Colors.white,
           ),
         ),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: AppColors.newPrimaryColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
@@ -177,7 +177,7 @@ class _NotificationScreenState extends State<NotificationScreen>
                   icon: const Icon(Icons.refresh),
                   label: Text(AppLocalKeys.retry.tr()),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
+                    backgroundColor: AppColors.newPrimaryColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 12),
@@ -200,7 +200,7 @@ class _NotificationScreenState extends State<NotificationScreen>
           color: Colors.white,
         ),
       ),
-      backgroundColor: AppColors.primaryColor,
+      backgroundColor: AppColors.newPrimaryColor,
       elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -258,7 +258,7 @@ class _NotificationScreenState extends State<NotificationScreen>
                           value: 'mark_all_read',
                           child: Row(
                             children: [
-                              const Icon(Icons.done_all, color: Colors.blue),
+                              const Icon(Icons.done_all, color: AppColors.newPrimaryColor),
                               const SizedBox(width: 8),
                               Text(AppLocalKeys.markAllAsRead.tr()),
                             ],
@@ -356,7 +356,7 @@ class _NotificationScreenState extends State<NotificationScreen>
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppColors.primaryColor),
+                borderSide: const BorderSide(color: AppColors.newPrimaryColor),
               ),
             ),
             onChanged: (value) {
@@ -402,15 +402,15 @@ class _NotificationScreenState extends State<NotificationScreen>
           _selectedFilter = selected ? type : null;
         });
       },
-      selectedColor: AppColors.primaryColor.withOpacity(0.2),
-      checkmarkColor: AppColors.primaryColor,
+      selectedColor: AppColors.newPrimaryColor.withOpacity(0.2),
+      checkmarkColor: AppColors.newPrimaryColor,
     );
   }
 
   Widget _buildLoadingState() {
     return const Center(
       child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation(AppColors.primaryColor),
+        valueColor: AlwaysStoppedAnimation(AppColors.newPrimaryColor),
       ),
     );
   }
@@ -454,7 +454,7 @@ class _NotificationScreenState extends State<NotificationScreen>
               icon: const Icon(Icons.refresh),
               label: Text(AppLocalKeys.retry.tr()),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
+                backgroundColor: AppColors.newPrimaryColor,
                 foregroundColor: Colors.white,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -515,7 +515,7 @@ class _NotificationScreenState extends State<NotificationScreen>
     }
 
     return RefreshIndicator(
-      color: AppColors.primaryColor,
+      color: AppColors.newPrimaryColor,
       onRefresh: () async {
         _notificationCubit?.loadNotifications();
       },
@@ -573,7 +573,7 @@ class _NotificationScreenState extends State<NotificationScreen>
               icon: const Icon(Icons.refresh),
               label: Text(AppLocalKeys.update.tr()),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
+                backgroundColor: AppColors.newPrimaryColor,
                 foregroundColor: Colors.white,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

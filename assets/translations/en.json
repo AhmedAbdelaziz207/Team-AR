@@ -285,5 +285,6 @@
   "no": "No",
   "next": "Next",
   "previous": "Previous",
-  "submit": "Submit"
+  "submit": "Submit",
+  "pleaseEnterAllRequiredFields": "Please enter all required fields"
 }

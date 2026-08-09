@@ -293,5 +293,6 @@
     "no": "لا",
     "next": "التالي",
     "previous": "السابق",
-    "submit": "إرسال"
+    "submit": "إرسال",
+    "pleaseEnterAllRequiredFields": "يرجى إدخال جميع الحقول المطلوبة"
 }

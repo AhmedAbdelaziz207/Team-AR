@@ -41,6 +41,7 @@ class AppLocalKeys {
   static const le = "le";
   static const enterYourInfo = "enterYourInfo";
   static const pleaseEnterYourPhone = "pleaseEnterYourPhone";
+  static const pleaseEnterAllRequiredFields = "pleaseEnterAllRequiredFields";
   static const personalInfo = "personalInfo";
   static const activityInfo = "activityInfo";
   static const healthInfo = "healthInfo";

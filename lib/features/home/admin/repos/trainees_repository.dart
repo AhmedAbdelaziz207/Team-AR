@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:http_parser/http_parser.dart';
 
 import 'package:dio/dio.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
@@ -82,6 +83,7 @@ class TraineesRepository {
         'Image': await MultipartFile.fromFile(
           userImage.path,
           filename: userImage.path.split('/').last,
+          contentType: MediaType('image', 'jpeg'),
         ),
       });
 

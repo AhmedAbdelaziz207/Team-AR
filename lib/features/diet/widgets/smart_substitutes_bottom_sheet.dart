@@ -1,11 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
-import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/features/manage_meals_screen/repos/diet_meal_repository.dart';
@@ -51,9 +49,9 @@ class _SmartSubstitutesBottomSheetState
   Future<void> _loadSubstitutes() async {
     try {
       // Fetch meals using the repository directly
-      final repo = DietMealRepository(getIt<ApiService>()); 
+      final repo = DietMealRepository(getIt<ApiService>());
       final result = await repo.getDietMeals();
-      
+
       result.when(
         success: (meals) {
           if (meals != null && mounted) {
@@ -127,7 +125,8 @@ class _SmartSubstitutesBottomSheetState
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Text(
                   desc,
                   textAlign: TextAlign.center,
@@ -148,7 +147,7 @@ class _SmartSubstitutesBottomSheetState
                               isAr
                                   ? 'لا توجد بدائل متاحة لهذه الفئة'
                                   : 'No alternatives available for this category',
-                              style: TextStyle(fontFamily: "Cairo"),
+                              style: const TextStyle(fontFamily: "Cairo"),
                             ),
                           )
                         : ListView.builder(
@@ -162,7 +161,8 @@ class _SmartSubstitutesBottomSheetState
 
                               // required_grams = (targetCalories / sub.calories_per_100g) * 100
                               final double requiredGrams =
-                                  (targetCalories / (sub.numOfCalories ?? 1)) * 100;
+                                  (targetCalories / (sub.numOfCalories ?? 1)) *
+                                      100;
 
                               return ListTile(
                                 leading: ClipRRect(
