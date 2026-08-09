@@ -79,8 +79,13 @@ class ChatCubit extends Cubit<ChatState> {
           await SharedPreferencesHelper.getString(AppConstants.userId);
 
       await apiService.sendMessage({
+        "id": 0,
         "senderId": currentUserId,
+        "senderName": "string",
         "receiverId": receiverId,
+        "receiverName": "string",
+        "isRead": false,
+        "messageType": 1,
         "message": message,
         "timestamp": DateTime.now().toIso8601String(),
       });
