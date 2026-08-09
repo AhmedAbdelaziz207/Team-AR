@@ -56,6 +56,7 @@ class ChatCubit extends Cubit<ChatState> {
 
       if (!isClosed) emit(GetChatContentSuccess(chatContent: chats));
     } catch (e) {
+      log("GetChatContent Error: $e");
       // في حالة فشل الاتصال، استرجاع البيانات من التخزين المؤقت
       final cachedMessages = await _chatStorage.getMessages(id);
 
@@ -79,15 +80,10 @@ class ChatCubit extends Cubit<ChatState> {
           await SharedPreferencesHelper.getString(AppConstants.userId);
 
       await apiService.sendMessage({
-        "id": 0,
         "senderId": currentUserId,
-        "senderName": "string",
         "receiverId": receiverId,
-        "receiverName": "string",
-        "isRead": false,
-        "messageType": 1,
         "message": message,
-        "timestamp": DateTime.now().toIso8601String(),
+        "timestamp": DateTime.now().toUtc().toIso8601String(),
       });
       if (!isClosed) emit(SendMessageSuccess());
     } catch (e) {
