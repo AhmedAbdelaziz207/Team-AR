@@ -254,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       } else if (state is UpdateUserImageFailure) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('${AppLocalKeys.imageUpdateFailed.tr()}: ${state.errorMessage}'),
+                            content: Text('${AppLocalKeys.imageUpdateFailed.tr()}: ${state.message}'),
                             backgroundColor: Colors.red,
                           ),
                         );

@@ -462,6 +462,8 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
         ),
       ],
     );
+  }
+
   Widget _buildYesNoField({
     required String title,
     required bool showDetails,
