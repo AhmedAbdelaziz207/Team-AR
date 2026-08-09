@@ -58,15 +58,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (token != null && userRole != null && context.mounted) {
       if (userRole.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
-        // Double-check if this is a real admin vs a self-registered trainee
-        if (userId != null && userId.isNotEmpty) {
-          final hasPaidLocally =
-              await SharedPreferencesHelper.getBool('has_completed_payment_$userId') ?? false;
-          if (!hasPaidLocally) {
-            // Check subscription to verify if they are trainee
-            await _checkUserSubscription(userId);
-            return;
-          }
+        final isRealAdmin =
+            await SharedPreferencesHelper.getBool('is_real_admin') ?? false;
+            
+        if (!isRealAdmin) {
+          // It's a self-registered trainee temporarily assigned 'Admin' role
+          await _checkUserSubscription(userId);
+          return;
         }
         Navigator.pushNamedAndRemoveUntil(
           context,

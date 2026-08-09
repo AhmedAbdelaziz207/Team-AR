@@ -82,7 +82,7 @@ class LoginCubit extends Cubit<LoginState> {
 
         if (isRealAdmin) {
           emit(LoginState.loginSuccess(loginResponse));
-          saveUserData(loginResponse);
+          saveUserData(loginResponse, isRealAdmin: isRealAdmin);
           return;
         }
 
@@ -119,20 +119,20 @@ class LoginCubit extends Cubit<LoginState> {
         // Handle incomplete data for trainers
         if (isIncomplete) {
           // Save now (valid paid user) so complete-data flow has token and info
-          await saveUserData(loginResponse);
+          await saveUserData(loginResponse, isRealAdmin: isRealAdmin);
           emit(LoginState.navigateToCompleteData(loginResponse));
           return;
         }
 
         // Otherwise success
-        await saveUserData(loginResponse);
+        await saveUserData(loginResponse, isRealAdmin: isRealAdmin);
         emit(LoginState.loginSuccess(loginResponse));
       },
       failure: (apiErrorModel) => emit(LoginState.loginFailure(apiErrorModel)),
     );
   }
 
-  Future<void> saveUserData(LoginResponse loginResponse) async {
+  Future<void> saveUserData(LoginResponse loginResponse, {bool isRealAdmin = false}) async {
     await SharedPreferencesHelper.setData(
       AppConstants.token,
       loginResponse.token,
@@ -140,6 +140,10 @@ class LoginCubit extends Cubit<LoginState> {
     await SharedPreferencesHelper.setData(
       AppConstants.userId,
       loginResponse.id,
+    );
+    await SharedPreferencesHelper.setData(
+      'is_real_admin',
+      isRealAdmin,
     );
     await SharedPreferencesHelper.setData(
       AppConstants.userRole,
