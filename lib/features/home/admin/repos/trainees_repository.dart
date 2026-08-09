@@ -80,6 +80,7 @@ class TraineesRepository {
     try {
       // Prepare FormData
       final formData = FormData.fromMap({
+        'UserId': userId,
         'Image': await MultipartFile.fromFile(
           userImage.path,
           filename: userImage.path.split('/').last,
@@ -90,7 +91,6 @@ class TraineesRepository {
       // Make the PUT request
       final response = await dio.put(
         ApiEndPoints.baseUrl + ApiEndPoints.updateUserImage,
-        queryParameters: {'UserId': userId},
         data: formData,
       );
 
