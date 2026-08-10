@@ -26,7 +26,6 @@ class _ProtectedPdfViewerScreenState extends State<ProtectedPdfViewerScreen> {
   String? _localFilePath;
   bool _isLoading = true;
   String? _errorMessage;
-  String _debugLog = "";
 
   @override
   void initState() {
@@ -43,11 +42,6 @@ class _ProtectedPdfViewerScreenState extends State<ProtectedPdfViewerScreen> {
 
   void _addLog(String msg) {
     debugPrint("[PDF_DEBUG] $msg");
-    if (mounted) {
-      setState(() {
-        _debugLog += "$msg\n";
-      });
-    }
   }
 
   Future<void> _downloadAndCachePdf() async {
@@ -203,61 +197,26 @@ class _ProtectedPdfViewerScreenState extends State<ProtectedPdfViewerScreen> {
         actions: const [],
       ),
       body: _isLoading
-          ? Center(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const CircularProgressIndicator(color: Color(0xFF102E50)),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'جاري تجهيز الكتيب للمرة الأولى...',
-                        style: TextStyle(fontFamily: 'Cairo', color: Colors.grey),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        _debugLog,
-                        textDirection: TextDirection.ltr,
-                        style: const TextStyle(fontSize: 10, color: Colors.blueGrey),
-                        textAlign: TextAlign.left,
-                      ),
-                    ],
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: Color(0xFF102E50)),
+                  SizedBox(height: 16),
+                  Text(
+                    'جاري تجهيز الكتيب للمرة الأولى...',
+                    style: TextStyle(fontFamily: 'Cairo', color: Colors.grey),
                   ),
-                ),
+                ],
               ),
             )
           : _errorMessage != null
               ? Center(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            _errorMessage!,
-                            style: const TextStyle(
-                                fontFamily: 'Cairo', color: Colors.red, fontSize: 16),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 20),
-                          const Text("سجل التتبع (Debug Log):", style: TextStyle(fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            color: Colors.black12,
-                            child: Text(
-                              _debugLog,
-                              textDirection: TextDirection.ltr,
-                              style: const TextStyle(fontSize: 12, color: Colors.black87),
-                              textAlign: TextAlign.left,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(
+                        fontFamily: 'Cairo', color: Colors.red, fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
                 )
               : SfPdfViewer.file(
@@ -268,7 +227,7 @@ class _ProtectedPdfViewerScreenState extends State<ProtectedPdfViewerScreen> {
                     if (mounted) {
                       setState(() {
                         _errorMessage = "فشل تحميل الكتيب: ${details.error}";
-                        _debugLog += "\n[SfPdfViewer Error]: ${details.error}\n${details.description}";
+                        _addLog("[SfPdfViewer Error]: ${details.error}\n${details.description}");
                       });
                     }
                   },
@@ -276,4 +235,5 @@ class _ProtectedPdfViewerScreenState extends State<ProtectedPdfViewerScreen> {
     );
   }
 }
+
 
