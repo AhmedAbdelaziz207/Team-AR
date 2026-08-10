@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:http_parser/http_parser.dart';
 
 import 'package:dio/dio.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
@@ -79,16 +80,17 @@ class TraineesRepository {
     try {
       // Prepare FormData
       final formData = FormData.fromMap({
+        'UserId': userId,
         'Image': await MultipartFile.fromFile(
           userImage.path,
           filename: userImage.path.split('/').last,
+          contentType: MediaType('image', 'jpeg'),
         ),
       });
 
       // Make the PUT request
       final response = await dio.put(
         ApiEndPoints.baseUrl + ApiEndPoints.updateUserImage,
-        queryParameters: {'UserId': userId},
         data: formData,
       );
 

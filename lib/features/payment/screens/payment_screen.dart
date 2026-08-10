@@ -407,53 +407,107 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ),
       );
     }
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.newPrimaryColor.withValues(alpha: 0.3),
-            blurRadius: 20,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 56.h,
-        child: ElevatedButton(
-          onPressed: () {
-            debugPrint('=== تم النقر على زر الدفع ===');
-            _paymentCubit.getPaymentMethods();
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.newPrimaryColor,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.r),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'اختيار طريقة الدفع',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(width: 12.w),
-              Icon(
-                Icons.payment,
-                color: Colors.white,
-                size: 24.sp,
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.newPrimaryColor.withValues(alpha: 0.3),
+                blurRadius: 20,
+                spreadRadius: 2,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
+          child: SizedBox(
+            width: double.infinity,
+            height: 56.h,
+            child: ElevatedButton(
+              onPressed: () {
+                debugPrint('=== تم النقر على زر الدفع ===');
+                _paymentCubit.getPaymentMethods();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.newPrimaryColor,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'اختيار طريقة الدفع',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Icon(
+                    Icons.payment,
+                    color: Colors.white,
+                    size: 24.sp,
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+        SizedBox(height: 16.h),
+        // زر التخطي للمطورين (للاختبار فقط)
+        SizedBox(
+          width: double.infinity,
+          height: 56.h,
+          child: ElevatedButton(
+            onPressed: () {
+              debugPrint('=== تخطي الدفع (وضع الاختبار) ===');
+              _navigateToPaymentResult(
+                isSuccess: true,
+                message: 'تم الدفع وتفعيل الحساب بنجاح (وضع الاختبار)!',
+                paymentData: PaymentData(
+                  invoiceId: 999999,
+                  invoiceKey: 'test_key',
+                  status: 'paid',
+                  amount: 0.0,
+                  currency: 'EGP',
+                  methodType: PaymentMethodType.unknown,
+                ),
+                plan: _planData,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.r),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'تخطي الدفع (للتجربة مجاناً)',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Icon(
+                  Icons.bug_report,
+                  color: Colors.white,
+                  size: 24.sp,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 

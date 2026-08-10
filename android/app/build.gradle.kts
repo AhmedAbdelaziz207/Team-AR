@@ -13,7 +13,7 @@ if (keystorePropertiesFile.exists()) {
 }
 android {
     namespace = "com.thecoreapps.team_ar"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = "29.0.13599879"
 
     compileOptions {

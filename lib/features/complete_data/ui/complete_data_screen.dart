@@ -18,6 +18,10 @@ class CompleteDataScreen extends StatefulWidget {
 class _CompleteDataScreenState extends State<CompleteDataScreen> {
   int _currentStep = 0;
 
+  bool _showAnyPains = false;
+  bool _showAnyInfection = false;
+  bool _showAllergyOfFood = false;
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +33,10 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
     if (cubit.areYouSmokerController.text.isEmpty) {
       cubit.areYouSmokerController.text = 'No';
     }
+    
+    _showAnyPains = cubit.anyPainsController.text.isNotEmpty;
+    _showAnyInfection = cubit.anyInfectionController.text.isNotEmpty;
+    _showAllergyOfFood = cubit.allergyOfFoodController.text.isNotEmpty;
   }
 
   void _nextStep(CompleteDataCubit cubit) {
@@ -50,8 +58,7 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
     if (!isValid) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(AppLocalKeys.pleaseEnterYourPhone
-                .tr())), // Use a generic error or the original
+            content: Text(AppLocalKeys.pleaseEnterAllRequiredFields.tr())),
       );
       return;
     }
@@ -188,8 +195,11 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
                   },
                   steps: [
                     Step(
-                      title: Text(AppLocalKeys.personalInfo.tr(),
-                          style: TextStyle(fontSize: 12.sp)),
+                      title: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(AppLocalKeys.personalInfo.tr(),
+                            style: TextStyle(fontSize: 12.sp)),
+                      ),
                       state: _currentStep > 0
                           ? StepState.complete
                           : StepState.indexed,
@@ -197,8 +207,11 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
                       content: _buildPersonalInfoStep(cubit),
                     ),
                     Step(
-                      title: Text(AppLocalKeys.activityInfo.tr(),
-                          style: TextStyle(fontSize: 12.sp)),
+                      title: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(AppLocalKeys.activityInfo.tr(),
+                            style: TextStyle(fontSize: 12.sp)),
+                      ),
                       state: _currentStep > 1
                           ? StepState.complete
                           : StepState.indexed,
@@ -206,8 +219,11 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
                       content: _buildActivityInfoStep(cubit),
                     ),
                     Step(
-                      title: Text(AppLocalKeys.healthInfo.tr(),
-                          style: TextStyle(fontSize: 12.sp)),
+                      title: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(AppLocalKeys.healthInfo.tr(),
+                            style: TextStyle(fontSize: 12.sp)),
+                      ),
                       isActive: _currentStep >= 2,
                       content: _buildHealthInfoStep(cubit),
                     ),
@@ -380,25 +396,49 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
           ],
         ),
         SizedBox(height: 16.h),
-        CustomTextFormField(
-          key: const ValueKey('anyPains'),
-          controller: cubit.anyPainsController,
-          hintText: AppLocalKeys.haveAnyPain.tr(),
-          isMultiline: true,
+        _buildYesNoField(
+          title: AppLocalKeys.haveAnyPain.tr(),
+          showDetails: _showAnyPains,
+          onChanged: (value) {
+            setState(() {
+              _showAnyPains = value ?? false;
+              if (!_showAnyPains) {
+                cubit.anyPainsController.clear();
+              }
+            });
+          },
+          detailsController: cubit.anyPainsController,
+          keyName: 'anyPains',
         ),
         SizedBox(height: 12.h),
-        CustomTextFormField(
-          key: const ValueKey('anyInfection'),
-          controller: cubit.anyInfectionController,
-          hintText: AppLocalKeys.haveInfection.tr(),
-          isMultiline: true,
+        _buildYesNoField(
+          title: AppLocalKeys.haveInfection.tr(),
+          showDetails: _showAnyInfection,
+          onChanged: (value) {
+            setState(() {
+              _showAnyInfection = value ?? false;
+              if (!_showAnyInfection) {
+                cubit.anyInfectionController.clear();
+              }
+            });
+          },
+          detailsController: cubit.anyInfectionController,
+          keyName: 'anyInfection',
         ),
         SizedBox(height: 12.h),
-        CustomTextFormField(
-          key: const ValueKey('allergyOfFood'),
-          controller: cubit.allergyOfFoodController,
-          hintText: AppLocalKeys.allergyOfFood.tr(),
-          isMultiline: true,
+        _buildYesNoField(
+          title: AppLocalKeys.allergyOfFood.tr(),
+          showDetails: _showAllergyOfFood,
+          onChanged: (value) {
+            setState(() {
+              _showAllergyOfFood = value ?? false;
+              if (!_showAllergyOfFood) {
+                cubit.allergyOfFoodController.clear();
+              }
+            });
+          },
+          detailsController: cubit.allergyOfFoodController,
+          keyName: 'allergyOfFood',
         ),
         SizedBox(height: 12.h),
         CustomTextFormField(
@@ -420,6 +460,56 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
           controller: cubit.abilityOfSystemMoneyController,
           hintText: AppLocalKeys.abilityOfSystemMoney.tr(),
         ),
+      ],
+    );
+  }
+
+  Widget _buildYesNoField({
+    required String title,
+    required bool showDetails,
+    required ValueChanged<bool?> onChanged,
+    required TextEditingController detailsController,
+    required String keyName,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
+        SizedBox(height: 8.h),
+        Row(
+          children: [
+            Expanded(
+              child: RadioListTile<bool>(
+                title: Text(AppLocalKeys.yes.tr()),
+                value: true,
+                groupValue: showDetails,
+                activeColor: AppColors.newPrimaryColor,
+                contentPadding: EdgeInsets.zero,
+                onChanged: onChanged,
+              ),
+            ),
+            Expanded(
+              child: RadioListTile<bool>(
+                title: Text(AppLocalKeys.no.tr()),
+                value: false,
+                groupValue: showDetails,
+                activeColor: AppColors.newPrimaryColor,
+                contentPadding: EdgeInsets.zero,
+                onChanged: onChanged,
+              ),
+            ),
+          ],
+        ),
+        if (showDetails) ...[
+          SizedBox(height: 8.h),
+          CustomTextFormField(
+            key: ValueKey(keyName),
+            controller: detailsController,
+            hintText: 'التفاصيل (يرجى التوضيح)',
+            isMultiline: true,
+          ),
+        ],
       ],
     );
   }

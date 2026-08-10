@@ -3,18 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import '../../../core/network/api_endpoints.dart';
 import '../../../core/routing/routes.dart';
-import '../../../core/utils/app_assets.dart';
-import '../../../core/widgets/status_badge.dart';
 import '../../home/admin/data/trainee_model.dart';
 
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
-import 'package:team_ar/core/utils/app_local_keys.dart';
-import '../../../core/network/api_endpoints.dart';
-import '../../../core/routing/routes.dart';
-import '../../home/admin/data/trainee_model.dart';
 
 class SubscribedUserCard extends StatelessWidget {
   const SubscribedUserCard({
@@ -28,12 +20,14 @@ class SubscribedUserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final int days = trainer.remindDays ?? 0;
     final bool isActive = days > 0;
-    final String initialChar = (trainer.userName != null && trainer.userName!.trim().isNotEmpty)
-        ? trainer.userName!.trim().substring(0, 1).toUpperCase()
-        : "?";
-    final String phoneDisplay = (trainer.phone != null && trainer.phone!.isNotEmpty)
-        ? trainer.phone!
-        : (trainer.phoneNumber ?? "بدون رقم");
+    final String initialChar =
+        (trainer.userName != null && trainer.userName!.trim().isNotEmpty)
+            ? trainer.userName!.trim().substring(0, 1).toUpperCase()
+            : "?";
+    final String phoneDisplay =
+        (trainer.phone != null && trainer.phone!.isNotEmpty)
+            ? trainer.phone!
+            : (trainer.phoneNumber ?? "بدون رقم");
 
     return Container(
       decoration: BoxDecoration(
@@ -89,7 +83,8 @@ class SubscribedUserCard extends StatelessWidget {
                         ? Image.network(
                             ApiEndPoints.usersImagesBaseUrl + trainer.image!,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Center(
+                            errorBuilder: (context, error, stackTrace) =>
+                                Center(
                               child: Text(
                                 initialChar,
                                 style: TextStyle(
@@ -173,7 +168,8 @@ class SubscribedUserCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                       decoration: BoxDecoration(
                         color: isActive
                             ? const Color(0xffE8F5E9)
@@ -193,7 +189,9 @@ class SubscribedUserCard extends StatelessWidget {
                             height: 6.r,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: isActive ? const Color(0xff2E7D32) : Colors.red,
+                              color: isActive
+                                  ? const Color(0xff2E7D32)
+                                  : Colors.red,
                             ),
                           ),
                           SizedBox(width: 6.w),
@@ -204,7 +202,9 @@ class SubscribedUserCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 11.sp,
                               fontWeight: FontWeight.bold,
-                              color: isActive ? const Color(0xff2E7D32) : Colors.red[700],
+                              color: isActive
+                                  ? const Color(0xff2E7D32)
+                                  : Colors.red[700],
                             ),
                           ),
                         ],

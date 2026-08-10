@@ -62,6 +62,7 @@ log("Number of Grams ${userDiet.first.numOfGrams}");
                 child: MealItem(
                   mealModel: meal,
                   grams: e.numOfGrams,
+                  coachNote: e.note,
                 ),
               );
             }).toList(),

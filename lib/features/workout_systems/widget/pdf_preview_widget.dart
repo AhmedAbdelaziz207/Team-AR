@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
+import 'package:team_ar/core/services/pdf_protection_service.dart';
 class PdfPreviewWidget extends StatefulWidget {
   final String pdfUrl;
 
@@ -17,6 +18,18 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
   String? _errorMessage;
 
   String get _fullPdfUrl => '${ApiEndPoints.baseUrl}/Exercises/${widget.pdfUrl}';
+
+  @override
+  void initState() {
+    super.initState();
+    PdfProtectionService.enable();
+  }
+
+  @override
+  void dispose() {
+    PdfProtectionService.disable();
+    super.dispose();
+  }
 
   void _onPdfLoaded() {
     if (mounted) {
@@ -53,19 +66,12 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
         title: const Text('Workout Preview'),
         centerTitle: true,
         elevation: 0,
-        leading:     IconButton(
+        leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: CupertinoColors.black,
-        actions: [
-          if (!_isLoading && _errorMessage == null)
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: _retryLoading,
-              tooltip: 'Refresh',
-            ),
-        ],
+        actions: const [],
       ),
       body: Stack(
         children: [
@@ -76,9 +82,10 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
               key: _pdfViewerKey,
               onDocumentLoaded: (_) => _onPdfLoaded(),
               onDocumentLoadFailed: _onPdfError,
-              canShowScrollHead: true,
-              canShowScrollStatus: true,
-              canShowPaginationDialog: true,
+              canShowScrollHead: false,
+              canShowScrollStatus: false,
+              canShowPaginationDialog: false,
+              enableDocumentLinkAnnotation: false,
             ),
 
           // Loading Indicator

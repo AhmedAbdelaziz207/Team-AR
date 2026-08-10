@@ -37,6 +37,16 @@ class MealCubit extends Cubit<MealState> {
   int mealType = 0;
   File? image;
 
+  // Controllers for specific item notes (alternatives)
+  final Map<int, TextEditingController> itemNoteControllers = {};
+
+  TextEditingController getItemNoteController(int mealId) {
+    if (!itemNoteControllers.containsKey(mealId)) {
+      itemNoteControllers[mealId] = TextEditingController();
+    }
+    return itemNoteControllers[mealId]!;
+  }
+
   // Prevent unnecessary refetching between steps
   bool _mealsFetched = false;
   List<DietMealModel>? _cachedMeals;
@@ -431,7 +441,7 @@ class MealCubit extends Cubit<MealState> {
     final selectedFoods = selectedMeals
         .map((meal) => FoodItem(
               foodId: meal.id!,
-              note: noteController.text, // Include usage instructions for natural supplements
+              note: itemNoteControllers[meal.id!]?.text.trim() ?? "",
               numOfGrams: meal.numOfGrams ?? 100,
             ))
         .toList();
@@ -461,6 +471,11 @@ class MealCubit extends Cubit<MealState> {
                   usageInstructions: null, // Reset usage instructions
                 ))
             .toList();
+
+        // Clear all individual item notes
+        for (var controller in itemNoteControllers.values) {
+          controller.clear();
+        }
 
         // Reset footer values
         resetTotals();
