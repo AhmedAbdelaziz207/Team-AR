@@ -6,6 +6,7 @@ import 'package:team_ar/core/utils/app_assets.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/diet/logic/user_diet_state.dart';
 import 'package:team_ar/features/diet/widgets/meal_list.dart';
+import 'package:team_ar/core/services/pdf_protection_service.dart';
 import '../logic/user_diet_cubit.dart';
 import '../model/user_diet.dart';
 
@@ -20,6 +21,7 @@ class _UserDietScreenState extends State<UserDietScreen> {
   @override
   void initState() {
     super.initState();
+    PdfProtectionService.enable();
     // استدعاء الدوال في إطار ما بعد العرض الأول
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserDietCubit>().loadCachedDiet().then((_) {
@@ -29,6 +31,12 @@ class _UserDietScreenState extends State<UserDietScreen> {
         }
       });
     });
+  }
+
+  @override
+  void dispose() {
+    PdfProtectionService.disable();
+    super.dispose();
   }
 
   @override

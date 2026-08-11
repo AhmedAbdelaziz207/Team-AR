@@ -5,11 +5,29 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
+import 'package:team_ar/core/services/pdf_protection_service.dart';
 
-class UserMealDetails extends StatelessWidget {
+class UserMealDetails extends StatefulWidget {
   const UserMealDetails({super.key, this.meal});
 
   final DietMealModel? meal;
+
+  @override
+  State<UserMealDetails> createState() => _UserMealDetailsState();
+}
+
+class _UserMealDetailsState extends State<UserMealDetails> {
+  @override
+  void initState() {
+    super.initState();
+    PdfProtectionService.enable();
+  }
+
+  @override
+  void dispose() {
+    PdfProtectionService.disable();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +37,7 @@ class UserMealDetails extends StatelessWidget {
           // Background Image (below sheet)
           Positioned.fill(
             child: CachedNetworkImage(
-              imageUrl: ApiEndPoints.imagesBaseUrl + meal!.imageURL!,
+              imageUrl: ApiEndPoints.imagesBaseUrl + widget.meal!.imageURL!,
               fit: BoxFit.cover,
               placeholder: (context, url) => Container(
                 color: Colors.grey[200],
@@ -66,8 +84,8 @@ class UserMealDetails extends StatelessWidget {
                     Text(
                       (() {
                         final isAr = context.locale.languageCode == 'ar';
-                        final arName = meal?.arabicName;
-                        final enName = meal?.name;
+                        final arName = widget.meal?.arabicName;
+                        final enName = widget.meal?.name;
                         if (isAr) {
                           return (arName != null && arName.isNotEmpty)
                               ? arName
@@ -90,22 +108,22 @@ class UserMealDetails extends StatelessWidget {
                       children: [
                         _buildNutrientTag(
                           "🔥",
-                          meal?.numOfCalories.toString() ??
+                          widget.meal?.numOfCalories.toString() ??
                               "0 ${AppLocalKeys.calories.tr()}",
                         ),
                         _buildNutrientTag(
                           "🥚",
-                          meal?.numOfFats.toString() ??
+                          widget.meal?.numOfFats.toString() ??
                               "0 ${AppLocalKeys.fats.tr()}",
                         ),
                         _buildNutrientTag(
                           "🍖",
-                          meal?.numOfProtein.toString() ??
+                          widget.meal?.numOfProtein.toString() ??
                               "0 ${AppLocalKeys.proteins.tr()}",
                         ),
                         _buildNutrientTag(
                           "🌽",
-                          meal?.numOfCarbs.toString() ??
+                          widget.meal?.numOfCarbs.toString() ??
                               "0 ${AppLocalKeys.carbs.tr()}",
                         ),
                       ],
