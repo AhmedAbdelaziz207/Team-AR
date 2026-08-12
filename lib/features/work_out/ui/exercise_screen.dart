@@ -14,6 +14,7 @@ import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/features/work_out/logic/workout_cubit.dart';
 import 'package:team_ar/features/work_out/logic/workout_state.dart';
+import 'package:team_ar/features/home/user/logic/user_cubit.dart' as team_ar_user;
 
 class ExerciseScreen extends StatefulWidget {
   const ExerciseScreen({
@@ -25,7 +26,6 @@ class ExerciseScreen extends StatefulWidget {
 }
 
 class _ExerciseScreenState extends State<ExerciseScreen> {
-  String? _pdfUrl;
   bool _isPdfError = false;
 
   @override
@@ -45,10 +45,44 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     setState(() {
       _isPdfError = false;
     });
-    final exerciseId = await SharedPreferencesHelper.getInt(AppConstants.exerciseId);
-    log("Get Workout with Id $exerciseId");
+    
+    int? exerciseId = await SharedPreferencesHelper.getInt(AppConstants.exerciseId);
+    log("Get Workout with Id $exerciseId from SharedPreferences");
+    
+    // If exerciseId is missing (e.g. UserCubit hasn't finished background fetch yet),
+    // let's fetch it directly from the API to guarantee we have the latest.
+    if ((exerciseId == null || exerciseId == 0) && mounted) {
+      final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
+      if (userId != null) {
+        try {
+          if (!mounted) return;
+          final repo = context.read<team_ar_user.UserCubit>().repo;
+          final result = await repo.getLoggedUser(userId);
+          result.when(
+            success: (data) async {
+              if (data.exerciseId != null) {
+                await SharedPreferencesHelper.setData(AppConstants.exerciseId, data.exerciseId!);
+                exerciseId = data.exerciseId;
+                log("Get Workout with Id $exerciseId after fresh fetch");
+              }
+            },
+            failure: (error) {},
+          );
+        } catch (e) {
+          log("Failed to fetch fresh user data: $e");
+        }
+      }
+    }
+
     if (mounted) {
-      context.read<WorkoutCubit>().getWorkout(exerciseId);
+      if (exerciseId != null && exerciseId != 0) {
+        context.read<WorkoutCubit>().getWorkout(exerciseId);
+      } else {
+        // No exercise assigned
+        setState(() {
+          _isPdfError = true;
+        });
+      }
     }
   }
 
@@ -80,17 +114,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                 ? ApiEndPoints.baseUrl.substring(0, ApiEndPoints.baseUrl.length - 1)
                 : ApiEndPoints.baseUrl;
             final url = '$cleanBaseUrl/Exercises/${state.url}';
-
-            if (_pdfUrl != url) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  setState(() {
-                    _pdfUrl = url;
-                    _isPdfError = false;
-                  });
-                }
-              });
-            }
 
             if (_isPdfError) {
               return _buildErrorStateView();

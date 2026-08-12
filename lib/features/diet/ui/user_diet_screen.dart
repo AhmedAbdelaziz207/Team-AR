@@ -61,6 +61,8 @@ class _UserDietScreenState extends State<UserDietScreen> {
         ),
       ),
       body: Container(
+        height: double.infinity,
+        width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(

@@ -108,22 +108,22 @@ class _UserMealDetailsState extends State<UserMealDetails> {
                       children: [
                         _buildNutrientTag(
                           "🔥",
-                          widget.meal?.numOfCalories.toString() ??
+                          widget.meal?.numOfCalories?.toStringAsFixed(1) ??
                               "0 ${AppLocalKeys.calories.tr()}",
                         ),
                         _buildNutrientTag(
                           "🥚",
-                          widget.meal?.numOfFats.toString() ??
+                          widget.meal?.numOfFats?.toStringAsFixed(1) ??
                               "0 ${AppLocalKeys.fats.tr()}",
                         ),
                         _buildNutrientTag(
                           "🍖",
-                          widget.meal?.numOfProtein.toString() ??
+                          widget.meal?.numOfProtein?.toStringAsFixed(1) ??
                               "0 ${AppLocalKeys.proteins.tr()}",
                         ),
                         _buildNutrientTag(
                           "🌽",
-                          widget.meal?.numOfCarbs.toString() ??
+                          widget.meal?.numOfCarbs?.toStringAsFixed(1) ??
                               "0 ${AppLocalKeys.carbs.tr()}",
                         ),
                       ],

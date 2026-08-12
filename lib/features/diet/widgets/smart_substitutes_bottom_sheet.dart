@@ -85,8 +85,7 @@ class _SmartSubstitutesBottomSheetState
     // Wait, the API usually stores calories per 100g.
     // In MealList, `totalCalories = sum(meal.numOfCalories)` - wait, is it per 100g or per the assigned grams?
     // Let's assume `numOfCalories` is per 100 grams. Then targetCalories = (numOfCalories / 100) * grams.
-    final double targetCalories =
-        ((widget.originalMeal.numOfCalories ?? 0) / 100) * widget.originalGrams;
+    final double targetCalories = widget.originalMeal.numOfCalories?.toDouble() ?? 0.0;
 
     final isAr = context.locale.languageCode == 'ar';
     final String title = isAr ? 'البدائل الذكية' : 'Smart Substitutes';
@@ -161,8 +160,7 @@ class _SmartSubstitutesBottomSheetState
 
                               // required_grams = (targetCalories / sub.calories_per_100g) * 100
                               final double requiredGrams =
-                                  (targetCalories / (sub.numOfCalories ?? 1)) *
-                                      100;
+                                  targetCalories / (sub.numOfCalories ?? 1);
 
                               return ListTile(
                                 leading: ClipRRect(

@@ -10,5 +10,6 @@
     "*.g.dart.false ": true,
     ".yoyo": true
   },
-  "Codegeex.RepoIndex": true
+  "Codegeex.RepoIndex": true,
+  "cmake.ignoreCMakeListsMissing": true
 }
