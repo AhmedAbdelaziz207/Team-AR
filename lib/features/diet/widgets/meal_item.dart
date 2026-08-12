@@ -133,7 +133,7 @@ class MealItem extends StatelessWidget {
                     children: _buildMacroNutrients(),
                   ),
                 ],
-                if (coachNote != null && coachNote!.isNotEmpty) ...[
+                if (coachNote != null && coachNote!.isNotEmpty && mealModel?.foodCategory != 4) ...[
                   SizedBox(height: 10.h),
                   Container(
                     width: double.infinity,
