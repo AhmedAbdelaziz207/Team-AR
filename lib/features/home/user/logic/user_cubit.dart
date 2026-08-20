@@ -37,8 +37,11 @@ class UserCubit extends Cubit<UserState> {
           emit(UserState.success(data));
         }
       },
-      failure: (error) =>
-          emit(UserState.failure(error.getErrorsMessage() ?? "")),
+      failure: (error) {
+        if (!isClosed) {
+          emit(UserState.failure(error.getErrorsMessage() ?? ""));
+        }
+      },
     );
   }
 

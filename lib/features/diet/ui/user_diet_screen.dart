@@ -25,10 +25,8 @@ class _UserDietScreenState extends State<UserDietScreen> {
     // استدعاء الدوال في إطار ما بعد العرض الأول
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserDietCubit>().loadCachedDiet().then((_) {
-        // فقط قم بجلب البيانات من الشبكة إذا لم يتم تحميلها من ذاكرة التخزين المؤقت
-        if (context.read<UserDietCubit>().state is! UserDietSuccess) {
-          context.read<UserDietCubit>().getUserDiet();
-        }
+        // Always fetch from network to guarantee fresh data
+        context.read<UserDietCubit>().getUserDiet();
       });
     });
   }

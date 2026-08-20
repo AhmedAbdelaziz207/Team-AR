@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:team_ar/app.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/utils/app_assets.dart';
@@ -20,6 +21,7 @@ import 'features/auth/login/model/user_role.dart';
 import 'core/common/notification_model.dart';
 import 'core/common/notification_type_enum.dart';
 import 'core/services/shorebird_update_service.dart';
+import 'core/services/background_task_service.dart';
 import 'firebase_options.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -98,6 +100,12 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
+    // Initialize Supabase
+    await Supabase.initialize(
+      url: 'https://exiovcdrkakpwpvuplzb.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4aW92Y2Rya2FrcHdwdnVwbHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwNzY4NjMsImV4cCI6MjEwMjY1Mjg2M30.faEeC_8uh4CaxFJ50Ua8Et9OJtqcR57RB9Z6WZAxb3g',
+    );
+
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     await requestNotificationPermissions();
@@ -119,6 +127,12 @@ void main() async {
     if (token != null && userRole != null) {
       if (userRole.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
         initialRoute = Routes.adminLanding;
+
+        // Initialize background tasks only for Admins
+        BackgroundTaskService.initialize(
+          'https://exiovcdrkakpwpvuplzb.supabase.co',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4aW92Y2Rya2FrcHdwdnVwbHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwNzY4NjMsImV4cCI6MjEwMjY1Mjg2M30.faEeC_8uh4CaxFJ50Ua8Et9OJtqcR57RB9Z6WZAxb3g',
+        );
       } else {
         // Check if trainer user needs to complete data
         if (userRole.toLowerCase() == 'trainer' && !isDataCompleted) {

@@ -8,6 +8,7 @@ import 'package:team_ar/features/diet/model/user_diet.dart';
 import 'package:team_ar/features/diet/widgets/health_alert.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/utils/app_local_keys.dart';
+import 'package:team_ar/features/select_meals/widgets/admin_substitute_picker_sheet.dart';
 import 'meal_item.dart';
 class MealsList extends StatelessWidget {
   const MealsList({super.key, required this.userDiet});
@@ -73,7 +74,7 @@ log("Number of Grams ${userDiet.first.numOfGrams}");
           ...userDiet
               .where((diet) => diet.meal?.foodCategory == 4 && diet.note != null && diet.note!.isNotEmpty)
               .map((diet) => HealthAlert(
-                    message: diet.note!,
+                    message: extractRegularNote(diet.note),
                     isNaturalSupplement: true,
                   )),
         ],

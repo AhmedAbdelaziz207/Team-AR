@@ -9,6 +9,8 @@ import '../../../core/network/api_error_handler.dart';
 import '../../../core/network/api_service.dart';
 import '../model/chat_model.dart';
 import '../services/chat_storage.dart';
+import '../services/supabase_chat_service.dart';
+import '../../follow_up/services/follow_up_service.dart';
 
 part 'chat_state.dart';
 
@@ -30,6 +32,7 @@ class ChatCubit extends Cubit<ChatState> {
       log("chats: ${chats[0].userName}");
       emit(GetChatsSuccess(chats: chats));
     } catch (e) {
+      log("getAllChats Backend Error: $e");
       // في حالة فشل الاتصال، استرجاع البيانات من التخزين المؤقت
       final cachedChats = await _chatStorage.getUsers();
 
@@ -38,8 +41,20 @@ class ChatCubit extends Cubit<ChatState> {
           emit(GetChatsSuccess(chats: cachedChats, isFromCache: true));
         }
       } else {
+        // في حالة عدم وجود تخزين مؤقت، جلب المحادثات السابقة من Supabase
+        try {
+          final currentUserId = await SharedPreferencesHelper.getString(AppConstants.userId);
+          final supabaseChats = await _supabaseChat.getRecentChatsFromSupabase(currentUserId ?? "");
+          if (supabaseChats.isNotEmpty) {
+            if (!isClosed) {
+              emit(GetChatsSuccess(chats: supabaseChats, isFromCache: true));
+            }
+            return;
+          }
+        } catch (_) {}
+
         final errorMessage = ApiErrorHandler.handle(e).getErrorsMessage();
-        emit(GetChatsFailure(message: errorMessage.toString()));
+        if (!isClosed) emit(GetChatsFailure(message: errorMessage.toString()));
       }
     }
   }
@@ -72,19 +87,26 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
+  final SupabaseChatService _supabaseChat = SupabaseChatService();
+  final FollowUpService _followUp = FollowUpService();
+
   void sendMessage(message, receiverId) async {
     emit(SendMessageLoading());
 
     try {
-      final currentUserId =
-          await SharedPreferencesHelper.getString(AppConstants.userId);
+      final currentUserId = await SharedPreferencesHelper.getString(AppConstants.userId);
 
-      await apiService.sendMessage({
-        "senderId": currentUserId,
-        "receiverId": receiverId,
-        "message": message,
-        "timestamp": DateTime.now().toUtc().toIso8601String(),
-      });
+      // Send via Supabase
+      await _supabaseChat.sendMessage(currentUserId ?? "", receiverId, message);
+      
+      // Update the follow-up timestamp if admin
+      final role = await SharedPreferencesHelper.getString(AppConstants.userRole);
+      if (role?.toLowerCase() == 'admin') {
+        await _followUp.updateChatTimestamp(receiverId);
+      } else {
+        await _followUp.updateChatTimestamp(currentUserId ?? "");
+      }
+
       if (!isClosed) emit(SendMessageSuccess());
     } catch (e) {
       log("SendMessage Error: $e");

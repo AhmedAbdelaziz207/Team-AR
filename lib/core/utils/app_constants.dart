@@ -8,6 +8,9 @@ class AppConstants {
   static const token = 'token';
   static const userRole = 'userRole';
   static const userId = 'userId';
+  static const trainerId = 'trainerId';
+  static const trainerName = 'trainerName';
+  static const trainerEmail = 'trainerEmail';
   static const dataCompleted = 'dataCompleted';
   static const isReleased = 'isReleased';
   static bool isReleasedValue = false;

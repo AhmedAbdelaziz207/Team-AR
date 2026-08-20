@@ -1,6 +1,10 @@
+import 'dart:developer';
+import 'dart:typed_data';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/services/pdf_protection_service.dart';
 class PdfPreviewWidget extends StatefulWidget {
@@ -16,13 +20,50 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
   final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
   bool _isLoading = true;
   String? _errorMessage;
+  Uint8List? _pdfBytes;
 
-  String get _fullPdfUrl => '${ApiEndPoints.baseUrl}/Exercises/${widget.pdfUrl}';
+  String get _fullPdfUrl {
+    final base = ApiEndPoints.baseUrl.endsWith('/')
+        ? ApiEndPoints.baseUrl.substring(0, ApiEndPoints.baseUrl.length - 1)
+        : ApiEndPoints.baseUrl;
+    final url = Uri.encodeFull('$base/Exercises/${widget.pdfUrl}');
+    return url;
+  }
 
   @override
   void initState() {
     super.initState();
     PdfProtectionService.enable();
+    _downloadPdf();
+  }
+
+  Future<void> _downloadPdf() async {
+    try {
+      if (mounted) setState(() { _isLoading = true; _errorMessage = null; });
+      log("PdfPreviewWidget - Attempting to download PDF from URL: $_fullPdfUrl");
+      
+      final dio = getIt<Dio>();
+      final response = await dio.get(
+        _fullPdfUrl,
+        options: Options(responseType: ResponseType.bytes),
+      );
+
+      log("PdfPreviewWidget - PDF downloaded successfully. Size: ${response.data.length} bytes");
+      if (mounted) {
+        setState(() {
+          _pdfBytes = response.data;
+          // _isLoading is set to false in _onPdfLoaded
+        });
+      }
+    } catch (e) {
+      log("PdfPreviewWidget - Dio Download Error: $e");
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'Failed to download PDF. Please check connection.';
+        });
+      }
+    }
   }
 
   @override
@@ -32,12 +73,15 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
   }
 
   void _onPdfLoaded() {
+    log("PdfPreviewWidget - PDF loaded successfully!");
     if (mounted) {
       setState(() => _isLoading = false);
     }
   }
 
-  void _onPdfError(details) {
+  void _onPdfError(PdfDocumentLoadFailedDetails details) {
+    log("PdfPreviewWidget - PDF Load Error: ${details.error}");
+    log("PdfPreviewWidget - PDF Load Error Description: ${details.description}");
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -47,12 +91,7 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
   }
 
   Future<void> _retryLoading() async {
-    if (mounted) {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-    }
+    _downloadPdf();
   }
 
   @override
@@ -76,9 +115,9 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
       body: Stack(
         children: [
           // PDF Viewer
-          if (_errorMessage == null)
-            SfPdfViewer.network(
-              _fullPdfUrl,
+          if (_errorMessage == null && _pdfBytes != null)
+            SfPdfViewer.memory(
+              _pdfBytes!,
               key: _pdfViewerKey,
               onDocumentLoaded: (_) => _onPdfLoaded(),
               onDocumentLoadFailed: _onPdfError,

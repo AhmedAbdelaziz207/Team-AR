@@ -7,6 +7,7 @@ import 'package:team_ar/features/home/admin/logic/trainees_cubit.dart';
 import 'package:team_ar/features/home/admin/logic/trainees_state.dart';
 import 'package:team_ar/features/home/admin/widget/new_trainee_card.dart';
 import 'package:team_ar/features/home/admin/widget/user_info_section.dart';
+import 'package:team_ar/features/follow_up/widgets/follow_up_section.dart';
 import 'package:team_ar/features/notification/services/push_notifications_services.dart';
 import '../../../core/utils/app_assets.dart';
 import '../../../core/utils/app_local_keys.dart';
@@ -146,6 +147,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   ),
                   SizedBox(height: 16.h),
                   const UserInfoSection(),
+                  const FollowUpSection(),
 
                   state.whenOrNull(
                         loading: () => const Center(
