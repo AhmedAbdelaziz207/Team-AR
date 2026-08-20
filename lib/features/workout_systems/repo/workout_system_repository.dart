@@ -37,7 +37,7 @@ class WorkoutSystemRepository {
     final dio = await DioFactory.getDio();
 
     FormData formData = FormData.fromMap({
-      "Name": workoutSystem.name, // Explicit key the server expects
+      "Name": workoutSystem.name,
       "File": await MultipartFile.fromFile(
         workoutPdf.path,
         filename: workoutPdf.path.split('/').last,
@@ -59,6 +59,7 @@ class WorkoutSystemRepository {
       return ApiResult.failure(ApiErrorHandler.handle(e));
     }
   }
+
 
   Future<ApiResult<bool>> deleteWorkoutSystem(int id) async {
     try {

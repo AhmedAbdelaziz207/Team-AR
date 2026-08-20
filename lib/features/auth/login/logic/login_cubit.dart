@@ -156,7 +156,34 @@ class LoginCubit extends Cubit<LoginState> {
     );
 
     DioFactory.setTokenIntoHeaderAfterLogin(loginResponse.token!);
+
+    // If the logged-in user is a Trainee, fetch and save the trainer's info
+    // so navigation_click.dart can open the correct chat without hardcoding.
+    final isTrainee = !isRealAdmin &&
+        loginResponse.role?.toLowerCase() != 'trainer';
+    if (isTrainee && loginResponse.id != null) {
+      try {
+        final api = getIt<ApiService>();
+        // getAllChas returns the trainer as a contact — pick the first one
+        final contacts = await api.getAllChas();
+        if (contacts.isNotEmpty) {
+          final trainer = contacts.first;
+          if (trainer.id != null) {
+            await SharedPreferencesHelper.setString(
+                AppConstants.trainerId, trainer.id!);
+            await SharedPreferencesHelper.setString(
+                AppConstants.trainerName, trainer.userName ?? 'المدرب');
+            await SharedPreferencesHelper.setString(
+                AppConstants.trainerEmail, trainer.email ?? '');
+            log('Trainer info saved: id=${trainer.id}, name=${trainer.userName}');
+          }
+        }
+      } catch (e) {
+        log('Could not fetch trainer info during login: $e');
+      }
+    }
   }
+
 
   /// Check data completion status on app startup
   void checkDataCompletionOnStartup() async {

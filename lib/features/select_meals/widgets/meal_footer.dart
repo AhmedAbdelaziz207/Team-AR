@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/add_workout/model/add_workout_params.dart';
 import 'package:team_ar/features/manage_meals_screen/logic/meal_cubit.dart';
 import 'package:team_ar/features/manage_meals_screen/logic/meal_state.dart';
+import 'package:team_ar/features/follow_up/services/follow_up_service.dart';
 import '../../../core/routing/routes.dart';
 
 class MealSummaryFooter extends StatefulWidget {
@@ -87,6 +89,13 @@ class _MealSummaryFooterState extends State<MealSummaryFooter> {
                             widget.userId,
                             isUpdate: widget.isUpdate,
                           );
+
+                      // Update the diet timestamp in Supabase for follow-up reminders
+                      try {
+                        await FollowUpService().updateDietTimestamp(widget.userId);
+                      } catch (e) {
+                        log('Error updating FollowUpService: $e');
+                      }
 
                       if (!mounted) return;
 

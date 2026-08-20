@@ -10,37 +10,48 @@ class DioFactory {
   static Dio? dio;
 
   static Future<Dio> getDio() async {
-    Duration timeOut = const Duration(seconds: 60);
+    const Duration timeOut = Duration(seconds: 120);
 
     if (dio == null) {
       dio = Dio();
       dio!
         ..options.connectTimeout = timeOut
-        ..options.receiveTimeout = timeOut;
-      await addDioHeaders();
-      addDioInterceptor();
-      return dio!;
-    } else {
-      // Even if dio is not null, headers might be stale, so we update them.
-      await addDioHeaders();
-      return dio!;
+        ..options.receiveTimeout = timeOut
+        ..options.headers = {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        };
+      _addTokenInterceptor();
+      _addLoggerInterceptor();
     }
+
+    return dio!;
   }
 
-  static Future<void> addDioHeaders() async {
-    dio?.options.headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization':
-          'Bearer ${await SharedPreferencesHelper.getString(AppConstants.token)}',
-    };
-  }
-
+  /// Called right after login to also set the token in memory for immediate use.
   static void setTokenIntoHeaderAfterLogin(String token) {
     dio?.options.headers['Authorization'] = 'Bearer $token';
   }
 
-  static void addDioInterceptor() {
+  /// Interceptor that injects the latest token from SharedPreferences
+  /// before every request. This ensures multipart and all other requests
+  /// always carry the correct Authorization header.
+  static void _addTokenInterceptor() {
+    dio?.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token =
+              await SharedPreferencesHelper.getString(AppConstants.token);
+          if (token != null && token.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          handler.next(options);
+        },
+      ),
+    );
+  }
+
+  static void _addLoggerInterceptor() {
     dio?.interceptors.add(
       PrettyDioLogger(
         requestBody: true,

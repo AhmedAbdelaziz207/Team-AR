@@ -1,11 +1,15 @@
 import 'dart:developer';
+import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
+import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/services/pdf_protection_service.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
@@ -14,7 +18,6 @@ import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/features/work_out/logic/workout_cubit.dart';
 import 'package:team_ar/features/work_out/logic/workout_state.dart';
-import 'package:team_ar/features/home/user/logic/user_cubit.dart' as team_ar_user;
 
 class ExerciseScreen extends StatefulWidget {
   const ExerciseScreen({
@@ -27,6 +30,9 @@ class ExerciseScreen extends StatefulWidget {
 
 class _ExerciseScreenState extends State<ExerciseScreen> {
   bool _isPdfError = false;
+  Uint8List? _pdfBytes;
+  String? _lastDownloadedUrl;
+  bool _isDownloadingPdf = false;
 
   @override
   void initState() {
@@ -44,43 +50,72 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   void loadData() async {
     setState(() {
       _isPdfError = false;
+      _pdfBytes = null;
+      _lastDownloadedUrl = null;
     });
-    
-    int? exerciseId = await SharedPreferencesHelper.getInt(AppConstants.exerciseId);
-    log("Get Workout with Id $exerciseId from SharedPreferences");
-    
-    // If exerciseId is missing (e.g. UserCubit hasn't finished background fetch yet),
-    // let's fetch it directly from the API to guarantee we have the latest.
-    if ((exerciseId == null || exerciseId == 0) && mounted) {
-      final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
-      if (userId != null) {
-        try {
-          if (!mounted) return;
-          final repo = context.read<team_ar_user.UserCubit>().repo;
-          final result = await repo.getLoggedUser(userId);
-          result.when(
-            success: (data) async {
-              if (data.exerciseId != null) {
-                await SharedPreferencesHelper.setData(AppConstants.exerciseId, data.exerciseId!);
-                exerciseId = data.exerciseId;
-                log("Get Workout with Id $exerciseId after fresh fetch");
-              }
-            },
-            failure: (error) {},
-          );
-        } catch (e) {
-          log("Failed to fetch fresh user data: $e");
-        }
-      }
+
+    int? cachedExerciseId =
+        await SharedPreferencesHelper.getInt(AppConstants.exerciseId);
+    log("Get Workout with Id $cachedExerciseId from SharedPreferences");
+
+    // Load from cache first
+    if (cachedExerciseId != null && cachedExerciseId != 0 && mounted) {
+      context.read<WorkoutCubit>().getWorkout(cachedExerciseId);
+    } else if (mounted) {
+      setState(() => _isPdfError = true);
     }
 
-    if (mounted) {
-      if (exerciseId != null && exerciseId != 0) {
-        context.read<WorkoutCubit>().getWorkout(exerciseId);
-      } else {
-        // No exercise assigned
+    // Fetch fresh user data in background to update exerciseId if changed
+    final userId =
+        await SharedPreferencesHelper.getString(AppConstants.userId);
+    if (userId != null && userId.isNotEmpty) {
+      try {
+        final api = getIt<ApiService>();
+        final user = await api.getLoggedUserData(userId);
+        if (user.exerciseId != null) {
+          await SharedPreferencesHelper.setData(
+              AppConstants.exerciseId, user.exerciseId!);
+          if (cachedExerciseId != user.exerciseId && mounted) {
+            setState(() {
+              _isPdfError = false;
+              _pdfBytes = null;
+              _lastDownloadedUrl = null;
+            });
+            context.read<WorkoutCubit>().getWorkout(user.exerciseId!);
+          }
+        } else if ((cachedExerciseId == null || cachedExerciseId == 0) &&
+            mounted) {
+          setState(() => _isPdfError = true);
+        }
+      } catch (e) {
+        log("Failed to fetch fresh user data: $e");
+      }
+    }
+  }
+
+  Future<void> _downloadPdf(String url) async {
+    _isDownloadingPdf = true;
+    _lastDownloadedUrl = url;
+    try {
+      log("ExerciseScreen - Downloading PDF with Dio from URL: $url");
+      final dio = getIt<Dio>();
+      final response = await dio.get(
+        url,
+        options: Options(responseType: ResponseType.bytes),
+      );
+      log("ExerciseScreen - PDF Downloaded successfully. Size: ${response.data.length} bytes");
+      if (mounted) {
+        setState(() {
+          _pdfBytes = response.data;
+          _isDownloadingPdf = false;
+        });
+      }
+    } catch (e) {
+      log("ExerciseScreen - Dio Download Error: $e");
+      if (mounted) {
         setState(() {
           _isPdfError = true;
+          _isDownloadingPdf = false;
         });
       }
     }
@@ -113,24 +148,55 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             final String cleanBaseUrl = ApiEndPoints.baseUrl.endsWith('/')
                 ? ApiEndPoints.baseUrl.substring(0, ApiEndPoints.baseUrl.length - 1)
                 : ApiEndPoints.baseUrl;
-            final url = '$cleanBaseUrl/Exercises/${state.url}';
+            final url = Uri.encodeFull('$cleanBaseUrl/Exercises/${state.url}');
+            
+            if (_lastDownloadedUrl != url && !_isDownloadingPdf && _pdfBytes == null) {
+              // Fire and forget
+              _downloadPdf(url);
+            }
 
             if (_isPdfError) {
               return _buildErrorStateView();
             }
 
-            return SfPdfViewer.network(
-              url,
-              canShowScrollHead: false,
-              canShowScrollStatus: false,
-              onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
-                log("PDF Load Failed: ${details.description}");
-                if (mounted) {
-                  setState(() {
-                    _isPdfError = true;
-                  });
-                }
-              },
+            if (_pdfBytes != null) {
+              return SfPdfViewer.memory(
+                _pdfBytes!,
+                canShowScrollHead: false,
+                canShowScrollStatus: false,
+                onDocumentLoaded: (PdfDocumentLoadedDetails details) {
+                  log("ExerciseScreen - PDF rendered successfully!");
+                },
+                onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
+                  log("ExerciseScreen - PDF Render Error: ${details.error}");
+                  log("ExerciseScreen - PDF Render Description: ${details.description}");
+                  if (mounted) {
+                    setState(() {
+                      _isPdfError = true;
+                    });
+                  }
+                },
+              );
+            }
+
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(
+                    color: Color(0xFF102E50),
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    "جاري تحميل ملف التمارين...",
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontFamily: "Cairo",
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
             );
           }
 
@@ -147,7 +213,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  "جاري تحميل تمارين النظام...",
+                  "جاري تجهيز بيانات النظام...",
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontFamily: "Cairo",

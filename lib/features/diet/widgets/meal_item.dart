@@ -5,7 +5,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
-import 'package:team_ar/features/diet/widgets/smart_substitutes_bottom_sheet.dart';
+import 'package:team_ar/features/select_meals/widgets/admin_substitute_picker_sheet.dart'; // For extractRegularNote, decodeSubstitutes
+import 'package:team_ar/features/diet/widgets/manual_substitutes_bottom_sheet.dart';
 
 class MealItem extends StatelessWidget {
   final DietMealModel? mealModel;
@@ -21,6 +22,9 @@ class MealItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final regularNote = extractRegularNote(coachNote);
+    final substitutes = decodeSubstitutes(coachNote);
+
     return Container(
       padding: EdgeInsets.all(10.w),
       decoration: BoxDecoration(
@@ -133,7 +137,7 @@ class MealItem extends StatelessWidget {
                     children: _buildMacroNutrients(),
                   ),
                 ],
-                if (coachNote != null && coachNote!.isNotEmpty && mealModel?.foodCategory != 4) ...[
+                if (regularNote.isNotEmpty && mealModel?.foodCategory != 4) ...[
                   SizedBox(height: 10.h),
                   Container(
                     width: double.infinity,
@@ -149,7 +153,7 @@ class MealItem extends StatelessWidget {
                         SizedBox(width: 6.w),
                         Expanded(
                           child: Text(
-                            coachNote!,
+                            regularNote,
                             style: TextStyle(
                               fontSize: 12.sp,
                               color: Colors.orange.shade900,
@@ -162,38 +166,39 @@ class MealItem extends StatelessWidget {
                     ),
                   ),
                 ],
-                // Add smart substitutes button if it's not a natural supplement
-                if (mealModel?.foodCategory != null && mealModel?.foodCategory != 4) ...[
+                // Show Substitutes button if substitutes exist
+                if (substitutes.isNotEmpty && mealModel?.foodCategory != 4) ...[
                   SizedBox(height: 12.h),
                   SizedBox(
                     height: 32.h,
                     child: ElevatedButton.icon(
                       onPressed: () {
                         if (mealModel != null) {
-                          SmartSubstitutesBottomSheet.show(
+                          ManualSubstitutesBottomSheet.show(
                             context,
                             mealModel!,
                             grams ?? mealModel!.numOfGrams?.toInt() ?? 0,
+                            substitutes,
                           );
                         }
                       },
-                      icon: Icon(Icons.calculate, size: 16.sp, color: Colors.blue.shade700),
+                      icon: Icon(Icons.swap_horiz_rounded, size: 18.sp, color: Colors.green.shade700),
                       label: Text(
-                        context.locale.languageCode == 'ar' ? 'البدائل الذكية' : 'Smart Substitutes',
+                        context.locale.languageCode == 'ar' ? 'البدائل المتاحة' : 'Substitutes',
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: Colors.blue.shade700,
+                          color: Colors.green.shade700,
                           fontWeight: FontWeight.bold,
                           fontFamily: "Cairo",
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade50,
+                        backgroundColor: Colors.green.shade50,
                         elevation: 0,
                         padding: EdgeInsets.symmetric(horizontal: 12.w),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.sp),
-                          side: BorderSide(color: Colors.blue.shade200),
+                          side: BorderSide(color: Colors.green.shade200),
                         ),
                       ),
                     ),
