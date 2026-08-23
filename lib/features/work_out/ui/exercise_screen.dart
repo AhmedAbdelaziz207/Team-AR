@@ -1,7 +1,5 @@
 import 'dart:developer';
-import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,9 +18,7 @@ import 'package:team_ar/features/work_out/logic/workout_cubit.dart';
 import 'package:team_ar/features/work_out/logic/workout_state.dart';
 
 class ExerciseScreen extends StatefulWidget {
-  const ExerciseScreen({
-    super.key,
-  });
+  const ExerciseScreen({super.key});
 
   @override
   State<ExerciseScreen> createState() => _ExerciseScreenState();
@@ -30,9 +26,6 @@ class ExerciseScreen extends StatefulWidget {
 
 class _ExerciseScreenState extends State<ExerciseScreen> {
   bool _isPdfError = false;
-  Uint8List? _pdfBytes;
-  String? _lastDownloadedUrl;
-  bool _isDownloadingPdf = false;
 
   @override
   void initState() {
@@ -50,8 +43,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   void loadData() async {
     setState(() {
       _isPdfError = false;
-      _pdfBytes = null;
-      _lastDownloadedUrl = null;
     });
 
     int? cachedExerciseId =
@@ -66,8 +57,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     }
 
     // Fetch fresh user data in background to update exerciseId if changed
-    final userId =
-        await SharedPreferencesHelper.getString(AppConstants.userId);
+    final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
     if (userId != null && userId.isNotEmpty) {
       try {
         final api = getIt<ApiService>();
@@ -78,8 +68,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
           if (cachedExerciseId != user.exerciseId && mounted) {
             setState(() {
               _isPdfError = false;
-              _pdfBytes = null;
-              _lastDownloadedUrl = null;
             });
             context.read<WorkoutCubit>().getWorkout(user.exerciseId!);
           }
@@ -89,34 +77,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
         }
       } catch (e) {
         log("Failed to fetch fresh user data: $e");
-      }
-    }
-  }
-
-  Future<void> _downloadPdf(String url) async {
-    _isDownloadingPdf = true;
-    _lastDownloadedUrl = url;
-    try {
-      log("ExerciseScreen - Downloading PDF with Dio from URL: $url");
-      final dio = getIt<Dio>();
-      final response = await dio.get(
-        url,
-        options: Options(responseType: ResponseType.bytes),
-      );
-      log("ExerciseScreen - PDF Downloaded successfully. Size: ${response.data.length} bytes");
-      if (mounted) {
-        setState(() {
-          _pdfBytes = response.data;
-          _isDownloadingPdf = false;
-        });
-      }
-    } catch (e) {
-      log("ExerciseScreen - Dio Download Error: $e");
-      if (mounted) {
-        setState(() {
-          _isPdfError = true;
-          _isDownloadingPdf = false;
-        });
       }
     }
   }
@@ -150,53 +110,22 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                 : ApiEndPoints.baseUrl;
             final url = Uri.encodeFull('$cleanBaseUrl/Exercises/${state.url}');
             
-            if (_lastDownloadedUrl != url && !_isDownloadingPdf && _pdfBytes == null) {
-              // Fire and forget
-              _downloadPdf(url);
-            }
-
             if (_isPdfError) {
               return _buildErrorStateView();
             }
 
-            if (_pdfBytes != null) {
-              return SfPdfViewer.memory(
-                _pdfBytes!,
-                canShowScrollHead: false,
-                canShowScrollStatus: false,
-                onDocumentLoaded: (PdfDocumentLoadedDetails details) {
-                  log("ExerciseScreen - PDF rendered successfully!");
-                },
-                onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
-                  log("ExerciseScreen - PDF Render Error: ${details.error}");
-                  log("ExerciseScreen - PDF Render Description: ${details.description}");
-                  if (mounted) {
-                    setState(() {
-                      _isPdfError = true;
-                    });
-                  }
-                },
-              );
-            }
-
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(
-                    color: Color(0xFF102E50),
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    "جاري تحميل ملف التمارين...",
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontFamily: "Cairo",
-                      color: Colors.grey[700],
-                    ),
-                  ),
-                ],
-              ),
+            return SfPdfViewer.network(
+              url,
+              canShowScrollHead: false,
+              canShowScrollStatus: false,
+              onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
+                log("ExerciseScreen - PDF Load Failed: ${details.description}");
+                if (mounted) {
+                  setState(() {
+                    _isPdfError = true;
+                  });
+                }
+              },
             );
           }
 

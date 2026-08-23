@@ -1,12 +1,10 @@
 import 'dart:developer';
-import 'dart:typed_data';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/services/pdf_protection_service.dart';
+
 class PdfPreviewWidget extends StatefulWidget {
   final String pdfUrl;
 
@@ -20,7 +18,6 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
   final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
   bool _isLoading = true;
   String? _errorMessage;
-  Uint8List? _pdfBytes;
 
   String get _fullPdfUrl {
     final base = ApiEndPoints.baseUrl.endsWith('/')
@@ -34,36 +31,6 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
   void initState() {
     super.initState();
     PdfProtectionService.enable();
-    _downloadPdf();
-  }
-
-  Future<void> _downloadPdf() async {
-    try {
-      if (mounted) setState(() { _isLoading = true; _errorMessage = null; });
-      log("PdfPreviewWidget - Attempting to download PDF from URL: $_fullPdfUrl");
-      
-      final dio = getIt<Dio>();
-      final response = await dio.get(
-        _fullPdfUrl,
-        options: Options(responseType: ResponseType.bytes),
-      );
-
-      log("PdfPreviewWidget - PDF downloaded successfully. Size: ${response.data.length} bytes");
-      if (mounted) {
-        setState(() {
-          _pdfBytes = response.data;
-          // _isLoading is set to false in _onPdfLoaded
-        });
-      }
-    } catch (e) {
-      log("PdfPreviewWidget - Dio Download Error: $e");
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = 'Failed to download PDF. Please check connection.';
-        });
-      }
-    }
   }
 
   @override
@@ -91,7 +58,10 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
   }
 
   Future<void> _retryLoading() async {
-    _downloadPdf();
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
   }
 
   @override
@@ -115,9 +85,9 @@ class _PdfPreviewWidgetState extends State<PdfPreviewWidget> {
       body: Stack(
         children: [
           // PDF Viewer
-          if (_errorMessage == null && _pdfBytes != null)
-            SfPdfViewer.memory(
-              _pdfBytes!,
+          if (_errorMessage == null)
+            SfPdfViewer.network(
+              _fullPdfUrl,
               key: _pdfViewerKey,
               onDocumentLoaded: (_) => _onPdfLoaded(),
               onDocumentLoadFailed: _onPdfError,
