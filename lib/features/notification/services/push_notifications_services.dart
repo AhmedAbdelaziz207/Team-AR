@@ -12,6 +12,7 @@ import 'package:team_ar/features/home/admin/repos/trainees_repository.dart';
 import '../../../core/common/notification_type_enum.dart';
 import '../../../core/prefs/shared_pref_manager.dart';
 import '../../../core/utils/app_constants.dart';
+import '../../../core/routing/navigation_service.dart';
 
 class FirebaseNotificationsServices {
   static FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -72,6 +73,8 @@ class FirebaseNotificationsServices {
       await notificationStorage.markAsRead(notification.id);
 
       log("Notification saved and marked as read: ${notification.id}");
+
+      NavigationService.routeFromRemoteMessage(message);
     } catch (e) {
       log("Error handling message opened app: $e");
     }
@@ -98,6 +101,15 @@ class FirebaseNotificationsServices {
     switch (type) {
       case 'workout_reminder':
         return NotificationType.workoutReminder;
+      case 'workout':
+      case 'workout_plan':
+      case 'exercise':
+        return NotificationType.workoutPlan;
+      case 'diet':
+      case 'diet_plan':
+      case 'food':
+      case 'user_diet':
+        return NotificationType.dietPlan;
       case 'subscription_expiry':
       case 'subscription_expiring':
         return NotificationType.subscriptionExpiry;
@@ -225,22 +237,57 @@ class FirebaseNotificationsServices {
       final token = await FirebaseMessaging.instance.getToken();
       final userId =
           await SharedPreferencesHelper.getString(AppConstants.userId);
+      final userRole =
+          await SharedPreferencesHelper.getString(AppConstants.userRole);
+
       if (token != null) {
         log("FCM token to send to server: $token");
-        TraineesRepository traineesRepository =
-            TraineesRepository(getIt<ApiService>());
+        if (userId != null && userId.isNotEmpty) {
+          TraineesRepository traineesRepository =
+              TraineesRepository(getIt<ApiService>());
 
-        await traineesRepository.sendFcmToken({
-          "id": 0,
-          "userId": userId,
-          "deviceToken": token,
-        });
-        log("FCM token ready to be sent to server");
+          await traineesRepository.sendFcmToken({
+            "id": 0,
+            "userId": userId,
+            "deviceToken": token,
+          });
+          log("FCM token registered on server for user: $userId");
+
+          // Subscribe to user-specific topics for instant targeted notifications
+          await subscribeToTopic("user_$userId");
+          await subscribeToTopic("chat_$userId");
+
+          final role = userRole?.toLowerCase().trim();
+          if (role == 'admin' ||
+              role == 'adimn' ||
+              role == 'administrator' ||
+              role == 'trainer') {
+            await subscribeToTopic("admins");
+          } else {
+            await subscribeToTopic("trainees");
+          }
+        }
       } else {
         log("FCM token is null");
       }
     } catch (e) {
       log("Error sending FCM token to server: $e");
+    }
+  }
+
+  static Future<void> unSubscribeOnLogout() async {
+    try {
+      final userId =
+          await SharedPreferencesHelper.getString(AppConstants.userId);
+      if (userId != null && userId.isNotEmpty) {
+        await unSubscribeFromTopic("user_$userId");
+        await unSubscribeFromTopic("chat_$userId");
+      }
+      await unSubscribeFromTopic("admins");
+      await unSubscribeFromTopic("trainees");
+      log("Unsubscribed from all user-specific topics on logout");
+    } catch (e) {
+      log("Error unsubscribing on logout: $e");
     }
   }
 

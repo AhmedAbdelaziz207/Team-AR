@@ -34,10 +34,11 @@ class TrainerRegistrationSuccess extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    AppLocalKeys.registerNewTrainer.tr(),
+                    "بيانات حساب المتدرب الجديد",
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
+                      fontFamily: "Cairo",
                     ),
                   ),
                   Icon(
@@ -77,7 +78,7 @@ class TrainerRegistrationSuccess extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    shareToWhatsApp(data!);
+                    shareToWhatsApp(context, data!);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
@@ -159,20 +160,31 @@ class _InfoField extends StatelessWidget {
   }
 }
 
-Future<void> shareToWhatsApp(RegisterSuccessModel data) async {
+Future<void> shareToWhatsApp(BuildContext context, RegisterSuccessModel data) async {
   final message = '''
-🎉 *Trainer Registration Successful!*
+🎉 مرحباً بك في تطبيق Team AR!
 
-👤 User Name : ${data.userName}
-🧾 Email: ${data.email}
-🔑 Password: ${data.password}
+بيانات تسجيل الدخول الخاصة بك:
+👤 اسم المستخدم: ${data.userName}
+🧾 البريد الإلكتروني: ${data.email}
+🔑 كلمة المرور: ${data.password}
+
+يرجى تسجيل الدخول إلى التطبيق لإكمال بياناتك والبدء في برنامجك التدريبي.
 ''';
 
   final url = Uri.parse("https://wa.me/?text=${Uri.encodeComponent(message)}");
 
-  if (await canLaunchUrl(url)) {
-    await launchUrl(url, mode: LaunchMode.externalApplication);
-  } else {
-    throw 'Could not launch WhatsApp';
+  try {
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      await launchUrl(url);
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذر فتح تطبيق واتساب، يرجى نسخ البيانات')),
+      );
+    }
   }
 }

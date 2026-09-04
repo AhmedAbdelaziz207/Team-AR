@@ -6,6 +6,7 @@ import 'package:team_ar/features/workout_systems/model/workout_system_model.dart
 import '../../../core/di/dependency_injection.dart';
 import '../../../core/network/api_result.dart';
 import '../../../core/network/api_service.dart';
+import '../../follow_up/services/follow_up_service.dart';
 import '../repo/workout_system_repository.dart';
 
 class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
@@ -103,6 +104,7 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
     );
     result.when(
       success: (data) {
+        FollowUpService().updateWorkoutTimestamp(userId);
         emit(const WorkoutSystemState.assignedSuccess());
       },
       failure: (error) {

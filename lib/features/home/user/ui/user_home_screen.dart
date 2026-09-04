@@ -122,6 +122,9 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             );
           },
           child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,

@@ -83,8 +83,14 @@ class TraineeModel {
     required this.gender,
   });
 
-  factory TraineeModel.fromJson(Map<String, dynamic> json) =>
-      _$TraineeModelFromJson(json);
+  factory TraineeModel.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'] ?? json['Id'] ?? json['userId'] ?? json['UserId'];
+    final Map<String, dynamic> normalized = Map<String, dynamic>.from(json);
+    if (rawId != null) {
+      normalized['id'] = rawId.toString();
+    }
+    return _$TraineeModelFromJson(normalized);
+  }
 
   Map<String, dynamic> toJson() => _$TraineeModelToJson(this);
 

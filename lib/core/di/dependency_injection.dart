@@ -20,6 +20,8 @@ import '../../features/notification/services/notification_repo_impl.dart';
 import '../../features/notification/services/notification_repository.dart';
 import '../../features/notification/services/notification_storage.dart';
 import '../../features/work_out/logic/workout_cubit.dart';
+import '../../features/follow_up/services/follow_up_service.dart';
+import '../../features/follow_up/logic/follow_up_cubit.dart';
 import '../network/api_service.dart';
 import '../network/dio_factory.dart';
 import '../network/signalr_service.dart';
@@ -145,8 +147,15 @@ Future<void> setupServiceLocator() async {
     getIt.registerFactory<TraineeCubit>(
         () => TraineeCubit(getIt<TraineesRepository>()));
 
+    // Follow Up (+14 days tracking)
+    getIt.registerLazySingleton<FollowUpService>(() => FollowUpService());
+    getIt.registerFactory<FollowUpCubit>(() => FollowUpCubit(
+          followUpService: getIt<FollowUpService>(),
+          traineesRepository: getIt<TraineesRepository>(),
+        ));
+
     // Navigation
-    getIt.registerFactory<NavigationCubit>(() => NavigationCubit());
+    getIt.registerLazySingleton<NavigationCubit>(() => NavigationCubit());
 
     // Workout
     getIt.registerFactory<WorkoutCubit>(() => WorkoutCubit());

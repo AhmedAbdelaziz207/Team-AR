@@ -457,56 +457,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
           ),
         ),
+        // تم إخفاء زر التخطي للمطورين حالياً بناءً على طلب المستخدم
+        /*
         SizedBox(height: 16.h),
-        // زر التخطي للمطورين (للاختبار فقط)
         SizedBox(
           width: double.infinity,
           height: 56.h,
           child: ElevatedButton(
-            onPressed: () {
-              debugPrint('=== تخطي الدفع (وضع الاختبار) ===');
-              _navigateToPaymentResult(
-                isSuccess: true,
-                message: 'تم الدفع وتفعيل الحساب بنجاح (وضع الاختبار)!',
-                paymentData: PaymentData(
-                  invoiceId: 999999,
-                  invoiceKey: 'test_key',
-                  status: 'paid',
-                  amount: 0.0,
-                  currency: 'EGP',
-                  methodType: PaymentMethodType.unknown,
-                ),
-                plan: _planData,
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.r),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'تخطي الدفع (للتجربة مجاناً)',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                Icon(
-                  Icons.bug_report,
-                  color: Colors.white,
-                  size: 24.sp,
-                ),
-              ],
-            ),
+            onPressed: () { ... },
+            child: Text('تخطي الدفع (للتجربة مجاناً)'),
           ),
         ),
+        */
       ],
     );
   }

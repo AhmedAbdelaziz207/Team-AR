@@ -96,8 +96,19 @@ class ChatCubit extends Cubit<ChatState> {
     try {
       final currentUserId = await SharedPreferencesHelper.getString(AppConstants.userId);
 
-      // Send via Supabase
+      // 1. Send via Supabase (real-time chat stream)
       await _supabaseChat.sendMessage(currentUserId ?? "", receiverId, message);
+
+      // 2. Notify backend to trigger FCM push notification to the recipient
+      try {
+        await apiService.sendMessage({
+          'receiverId': receiverId,
+          'message': message,
+        });
+        log("Backend apiService.sendMessage triggered successfully for receiver: $receiverId");
+      } catch (apiError) {
+        log("Backend apiService.sendMessage non-fatal error: $apiError");
+      }
       
       // Update the follow-up timestamp if admin
       final role = await SharedPreferencesHelper.getString(AppConstants.userRole);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
+import 'package:team_ar/core/widgets/app_confirm_dialog.dart';
 import 'package:team_ar/core/widgets/plans_list_card.dart';
 import 'package:team_ar/features/manage_plans/widget/plans_dialog.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_state.dart';
@@ -91,28 +92,39 @@ class _ManagePlansScreenState extends State<ManagePlansScreen> {
                     plansLoaded: (plans) {
                       if (plans.isEmpty) {
                         return Expanded(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.card_membership_rounded, size: 70.sp, color: Colors.grey[300]),
-                                SizedBox(height: 12.h),
-                                Text(
-                                  "لا توجد باقات مضافة حالياً",
-                                  style: TextStyle(
-                                    color: AppColors.grey,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.sp,
-                                  ),
-                                ),
-                              ],
+                          child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
                             ),
+                            children: [
+                              SizedBox(height: 80.h),
+                              Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.card_membership_rounded,
+                                        size: 70.sp, color: Colors.grey[300]),
+                                    SizedBox(height: 12.h),
+                                    Text(
+                                      "لا توجد باقات مضافة حالياً",
+                                      style: TextStyle(
+                                        color: AppColors.grey,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         );
                       }
                       return Expanded(
                         child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
                           padding: EdgeInsets.only(bottom: 90.h, top: 4.h),
                           itemCount: plans.length,
                           itemBuilder: (context, index) => Dismissible(
@@ -138,6 +150,17 @@ class _ManagePlansScreenState extends State<ManagePlansScreen> {
                                 ],
                               ),
                             ),
+                            confirmDismiss: (direction) async {
+                              final confirmed = await showAppConfirmDialog(
+                                context: context,
+                                title: "حذف الباقة",
+                                message:
+                                    "هل أنت متأكد من رغبتك في حذف باقة \"${plans[index].name ?? 'هذه الباقة'}\" نهائياً؟\n\nلن يتمكن المتدربون من الاشتراك بها بعد الآن.",
+                                confirmText: "حذف الباقة",
+                                cancelText: "إلغاء",
+                              );
+                              return confirmed == true;
+                            },
                             onDismissed: (direction) {
                               context.read<UserPlansCubit>().deletePlan(
                                     plans[index].id!,
@@ -152,11 +175,22 @@ class _ManagePlansScreenState extends State<ManagePlansScreen> {
                       );
                     },
                     plansFailure: (messageModel) => Expanded(
-                      child: Center(
-                        child: Text(
-                          messageModel.message.toString(),
-                          style: TextStyle(color: AppColors.red, fontSize: 16.sp, fontWeight: FontWeight.bold),
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics(),
                         ),
+                        children: [
+                          SizedBox(height: 100.h),
+                          Center(
+                            child: Text(
+                              messageModel.message.toString(),
+                              style: TextStyle(
+                                  color: AppColors.red,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     orElse: () => const SizedBox(),

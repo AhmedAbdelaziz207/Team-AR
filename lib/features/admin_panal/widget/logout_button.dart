@@ -5,6 +5,9 @@ import 'package:team_ar/core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_local_keys.dart';
 
+import 'package:team_ar/core/services/background_task_service.dart';
+import 'package:team_ar/features/notification/services/push_notifications_services.dart';
+
 class LogoutButton extends StatefulWidget {
   const LogoutButton({super.key});
 
@@ -41,14 +44,16 @@ class _LogoutButtonState extends State<LogoutButton> {
     );
   }
 
-  void logout(BuildContext context) {
-    SharedPreferencesHelper.removeAll().then((value) {
+  void logout(BuildContext context) async {
+    BackgroundTaskService.cancel();
+    await FirebaseNotificationsServices.unSubscribeOnLogout();
+    await SharedPreferencesHelper.removeAll();
+    if (context.mounted) {
       Navigator.pushNamedAndRemoveUntil(
         context,
         Routes.login,
-            (route) => false,
+        (route) => false,
       );
-    });
+    }
   }
-
 }

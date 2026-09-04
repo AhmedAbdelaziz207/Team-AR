@@ -97,7 +97,7 @@ class NotificationService {
 
       // إعداد التهيئة المحسنة
       const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@drawable/ic_notification');
 
       const DarwinInitializationSettings initializationSettingsIOS =
       DarwinInitializationSettings(
@@ -216,26 +216,6 @@ class NotificationService {
   // Enhanced subscription warning notification
   Future showSubscriptionWarning(int daysRemaining) async {
     try {
-      const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
-        'subscription_channel',
-        'Subscription Notifications',
-        channelDescription: 'Notifications about subscription status',
-        importance: Importance.max,
-        priority: Priority.high,
-      );
-
-      const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-
-      await _notificationsPlugin.show(
-        0,
-        'تنبيه انتهاء الاشتراك',
-        'اشتراكك سينتهي خلال $daysRemaining أيام. جدد اشتراكك الآن!',
-        platformChannelSpecifics,
-      );
-
-      // أيضاً إنشاء إشعار في النظام العادي
       final notification = NotificationHelper.createSubscriptionExpiryNotification(
         daysLeft: daysRemaining,
         customData: {
@@ -260,28 +240,8 @@ class NotificationService {
   }
 
   // Enhanced subscription expired notification
-  Future  showSubscriptionExpired() async {
+  Future showSubscriptionExpired() async {
     try {
-      const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
-        'subscription_channel',
-        'Subscription Notifications',
-        channelDescription: 'Notifications about subscription status',
-        importance: Importance.max,
-        priority: Priority.high,
-      );
-
-      const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-
-      await _notificationsPlugin.show(
-        1,
-        'انتهى الاشتراك',
-        'اشتراكك انتهى. يرجى تجديد الاشتراك لمواصلة الاستخدام.',
-        platformChannelSpecifics,
-      );
-
-      // أيضاً إنشاء إشعار في النظام العادي
       final notification = NotificationHelper.createSubscriptionExpiryNotification(
         daysLeft: 0,
         customData: {

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/custom_text_form_field.dart';
@@ -17,6 +18,9 @@ class AllChatsScreen extends StatefulWidget {
 }
 
 class _AllChatsScreenState extends State<AllChatsScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String searchQuery = '';
+
   @override
   void initState() {
     super.initState();
@@ -25,7 +29,11 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
     });
   }
 
-  String searchQuery = '';
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,10 +62,18 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
           final List<ChatUserModel> allChats =
               state is GetChatsSuccess ? state.chats : [];
 
-          final List<ChatUserModel> filteredChats = allChats
-              .where((chat) =>
-                  chat.userName?.toLowerCase().contains(searchQuery) ?? false)
-              .toList();
+          final String query = _searchController.text.trim().toLowerCase();
+          final List<ChatUserModel> filteredChats = query.isEmpty
+              ? List<ChatUserModel>.from(allChats)
+              : allChats
+                  .where((chat) =>
+                      (chat.userName?.toLowerCase().contains(query) ?? false) ||
+                      (chat.firstName?.toLowerCase().contains(query) ?? false) ||
+                      (chat.lastName?.toLowerCase().contains(query) ?? false) ||
+                      (chat.phoneNumber?.contains(query) ?? false) ||
+                      (chat.whatsappNumber?.contains(query) ?? false) ||
+                      (chat.email?.toLowerCase().contains(query) ?? false))
+                  .toList();
 
           // Sort by lastMessageDateTime descending (latest on top)
           filteredChats.sort((a, b) {
@@ -127,13 +143,24 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
                       ],
                     ),
                     child: CustomTextFormField(
+                      controller: _searchController,
                       hintText: AppLocalKeys.searchByName.tr(),
-                      suffixIcon: Icons.search_rounded,
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? Icons.clear_rounded
+                          : Icons.search_rounded,
+                      onSuffixTap: _searchController.text.isNotEmpty
+                          ? () {
+                              setState(() {
+                                _searchController.clear();
+                                searchQuery = '';
+                              });
+                            }
+                          : null,
                       isAdmin: true,
                       iconColor: AppColors.newSecondaryColor,
                       onChanged: (value) {
                         setState(() {
-                          searchQuery = value.toLowerCase();
+                          searchQuery = value.trim().toLowerCase();
                         });
                       },
                     ),
@@ -168,7 +195,7 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
                                     ),
                                     SizedBox(height: 16.h),
                                     Text(
-                                      searchQuery.isNotEmpty
+                                      _searchController.text.trim().isNotEmpty
                                           ? "لا توجد نتائج بحث مطابقة"
                                           : "لا توجد محادثات حالياً",
                                       style: TextStyle(
@@ -183,12 +210,28 @@ class _AllChatsScreenState extends State<AllChatsScreen> {
                             ],
                           )
                         : ListView.builder(
-                            physics: const BouncingScrollPhysics(),
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
                             padding: EdgeInsets.only(bottom: 20.h, top: 4.h),
                             itemCount: filteredChats.length,
                             itemBuilder: (context, index) {
                               return ChatsListItem(
                                 user: filteredChats[index],
+                                onTap: () async {
+                                  await Navigator.pushNamed(
+                                    context,
+                                    Routes.chat,
+                                    arguments: filteredChats[index],
+                                  );
+                                  if (mounted) {
+                                    _searchController.clear();
+                                    setState(() {
+                                      searchQuery = '';
+                                    });
+                                    context.read<ChatCubit>().getAllChats();
+                                  }
+                                },
                               );
                             },
                           ),

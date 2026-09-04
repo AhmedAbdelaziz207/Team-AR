@@ -46,6 +46,7 @@ import '../../features/diet/ui/user_meal_details.dart';
 import '../../features/home/admin/admin_home_screen.dart';
 import '../../features/home/admin/repos/trainees_repository.dart';
 import '../../features/home/user/logic/navigation/navigation_cubit.dart';
+import '../../features/home/user/logic/navigation/nav_bar_items.dart';
 import '../../features/home/user/ui/root_screen.dart';
 import '../../features/notification/logic/notification_cubit.dart';
 import '../../features/trainer_register_success/model/register_success_model.dart';
@@ -53,6 +54,8 @@ import '../../features/user_info/trainee_info_screen.dart';
 import '../../features/work_out/ui/exercise_screen.dart';
 import 'package:team_ar/features/complete_data/logic/complete_data_cubit.dart';
 import 'package:team_ar/features/complete_data/ui/complete_data_screen.dart';
+import 'package:team_ar/features/follow_up/logic/follow_up_cubit.dart';
+import 'package:team_ar/features/follow_up/ui/follow_up_trainees_screen.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings? settings) {
@@ -153,11 +156,19 @@ class AppRouter {
         );
 
       case Routes.rootScreen:
+        final int? initialIndex =
+            settings?.arguments is int ? (settings!.arguments as int) : null;
+        final navCubit = getIt<NavigationCubit>();
+        if (initialIndex != null &&
+            initialIndex >= 0 &&
+            initialIndex < NavBarItems.values.length) {
+          navCubit.getNavBarItem(NavBarItems.values[initialIndex]);
+        }
         return MaterialPageRoute(
           builder: (context) => MultiBlocProvider(
             providers: [
-              BlocProvider(
-                create: (context) => getIt<NavigationCubit>(),
+              BlocProvider.value(
+                value: navCubit,
               ),
               BlocProvider(
                 create: (context) => UserCubit(),
@@ -285,6 +296,17 @@ class AppRouter {
           builder: (context) => BlocProvider(
             create: (context) => getIt<AdminRegisterCubit>(),
             child: const AdminRegisterScreen(),
+          ),
+        );
+
+      case Routes.followUpTrainees:
+        final targetTraineeId = settings?.arguments as String?;
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => getIt<FollowUpCubit>(),
+            child: FollowUpTraineesScreen(
+              targetTraineeId: targetTraineeId,
+            ),
           ),
         );
 

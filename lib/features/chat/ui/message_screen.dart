@@ -1,5 +1,5 @@
+import 'dart:convert';
 import 'dart:developer';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,20 +26,60 @@ class _MessagesScreenState extends State<MessagesScreen> {
   final TextEditingController _controller = TextEditingController();
   final SupabaseChatService _supabaseChat = SupabaseChatService();
   String? currentUserId;
+  Stream<List<ChatMessageModel>>? _chatStream;
 
   @override
   void initState() {
     super.initState();
-    SharedPreferencesHelper.getString(AppConstants.userId).then((value) {
-      if (value != null && mounted) {
-        setState(() {
-          currentUserId = value;
-        });
+    _initializeUserAndStream();
+  }
 
-        // تسجيل المستخدم في موضوع إشعارات الدردشة
-        FirebaseNotificationsServices.subscribeToTopic("chat_$value");
+  Future<void> _initializeUserAndStream() async {
+    String? id = await SharedPreferencesHelper.getString(AppConstants.userId);
+
+    // If userId is missing from prefs, extract it from JWT token payload!
+    if (id == null || id.isEmpty) {
+      final token = await SharedPreferencesHelper.getString(AppConstants.token);
+      if (token != null && token.isNotEmpty) {
+        id = _extractUserIdFromJwt(token);
+        if (id != null && id.isNotEmpty) {
+          await SharedPreferencesHelper.setString(AppConstants.userId, id);
+        }
       }
-    });
+    }
+
+    final effectiveId = (id != null && id.isNotEmpty) ? id : "admin";
+    final otherId = widget.receiver.id ?? "";
+
+    if (mounted) {
+      setState(() {
+        currentUserId = effectiveId;
+        _chatStream = _supabaseChat.getChatStream(effectiveId, otherId);
+      });
+
+      if (id != null && id.isNotEmpty) {
+        FirebaseNotificationsServices.subscribeToTopic("chat_$id");
+      }
+    }
+  }
+
+  String? _extractUserIdFromJwt(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final payload = base64Url.normalize(parts[1]);
+      final decoded = utf8.decode(base64Url.decode(payload));
+      final Map<String, dynamic> data = jsonDecode(decoded);
+      return data['nameid'] ??
+          data['sub'] ??
+          data[
+              'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ??
+          data['UserId'] ??
+          data['id'];
+    } catch (e) {
+      log("Error decoding JWT: $e");
+      return null;
+    }
   }
 
   @override
@@ -52,15 +92,24 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   void _sendMessage(String text) {
-    if (currentUserId == null || widget.receiver.id == null) return;
-    
+    final receiverId = widget.receiver.id;
+    if (currentUserId == null || receiverId == null || receiverId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content:
+                Text('تعذر إرسال الرسالة: لم يتم العثور على معرّف المستلم')),
+      );
+      return;
+    }
+
     // الإرسال الفوري لـ Supabase عبر ChatCubit
-    context.read<ChatCubit>().sendMessage(text, widget.receiver.id!);
+    context.read<ChatCubit>().sendMessage(text, receiverId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final String initialChar = (widget.receiver.userName != null && widget.receiver.userName!.trim().isNotEmpty)
+    final String initialChar = (widget.receiver.userName != null &&
+            widget.receiver.userName!.trim().isNotEmpty)
         ? widget.receiver.userName!.trim().substring(0, 1).toUpperCase()
         : "?";
 
@@ -78,7 +127,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
               children: [
                 CircleAvatar(
                   radius: 20.r,
-                  backgroundColor: AppColors.newSecondaryColor.withOpacity(0.12),
+                  backgroundColor:
+                      AppColors.newSecondaryColor.withOpacity(0.12),
                   child: Text(
                     initialChar,
                     style: TextStyle(
@@ -136,16 +186,20 @@ class _MessagesScreenState extends State<MessagesScreen> {
         child: Column(
           children: [
             Expanded(
-              child: currentUserId == null
+              child: _chatStream == null
                   ? const Center(child: CircularProgressIndicator())
                   : StreamBuilder<List<ChatMessageModel>>(
-                      stream: _supabaseChat.getChatStream(currentUserId!, widget.receiver.id!),
+                      stream: _chatStream,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting &&
+                            !snapshot.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
                         if (snapshot.hasError) {
-                          return Center(child: Text('Error: ${snapshot.error}'));
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
                         }
                         final allMessages = snapshot.data ?? [];
                         final reversedMessages = allMessages.reversed.toList();
@@ -177,14 +231,17 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         return ListView.builder(
                           reverse: true,
                           physics: const BouncingScrollPhysics(),
-                          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.w, vertical: 16.h),
                           itemCount: reversedMessages.length,
                           itemBuilder: (context, index) {
                             final msg = reversedMessages[index];
                             final isMe = msg.senderId == currentUserId;
 
                             return Align(
-                              alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                              alignment: isMe
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
                               child: Container(
                                 margin: EdgeInsets.only(
                                   top: 4.h,
@@ -192,10 +249,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   left: isMe ? 40.w : 0,
                                   right: isMe ? 0 : 40.w,
                                 ),
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w, vertical: 10.h),
                                 decoration: BoxDecoration(
                                   gradient: isMe
-                                      ? LinearGradient(
+                                      ? const LinearGradient(
                                           colors: [
                                             AppColors.newSecondaryColor,
                                             AppColors.newPrimaryColor,
@@ -208,8 +266,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(16.r),
                                     topRight: Radius.circular(16.r),
-                                    bottomLeft: Radius.circular(isMe ? 16.r : 2.r),
-                                    bottomRight: Radius.circular(isMe ? 2.r : 16.r),
+                                    bottomLeft:
+                                        Radius.circular(isMe ? 16.r : 2.r),
+                                    bottomRight:
+                                        Radius.circular(isMe ? 2.r : 16.r),
                                   ),
                                   boxShadow: [
                                     BoxShadow(
@@ -218,16 +278,22 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                       offset: const Offset(0, 2),
                                     ),
                                   ],
-                                  border: isMe ? null : Border.all(color: Colors.grey.withOpacity(0.15)),
+                                  border: isMe
+                                      ? null
+                                      : Border.all(
+                                          color: Colors.grey.withOpacity(0.15)),
                                 ),
                                 child: Column(
-                                  crossAxisAlignment:
-                                      isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                                  crossAxisAlignment: isMe
+                                      ? CrossAxisAlignment.end
+                                      : CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       msg.message ?? "",
                                       style: TextStyle(
-                                        color: isMe ? Colors.white : AppColors.black,
+                                        color: isMe
+                                            ? Colors.white
+                                            : AppColors.black,
                                         fontSize: 14.5.sp,
                                         height: 1.35,
                                         fontWeight: FontWeight.w500,
@@ -240,7 +306,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         Text(
                                           _formatTime(msg.timestamp),
                                           style: TextStyle(
-                                            color: isMe ? Colors.white.withOpacity(0.75) : AppColors.grey,
+                                            color: isMe
+                                                ? Colors.white.withOpacity(0.75)
+                                                : AppColors.grey,
                                             fontSize: 10.5.sp,
                                           ),
                                         ),
@@ -249,7 +317,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                           Icon(
                                             Icons.done_all_rounded,
                                             size: 14.sp,
-                                            color: Colors.white.withOpacity(0.85),
+                                            color:
+                                                Colors.white.withOpacity(0.85),
                                           ),
                                         ],
                                       ],
@@ -285,11 +354,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       ),
                       child: TextField(
                         controller: _controller,
-                        style: TextStyle(fontSize: 14.5.sp, color: AppColors.black),
+                        style: TextStyle(
+                            fontSize: 14.5.sp, color: AppColors.black),
                         decoration: InputDecoration(
                           hintText: 'اكتب رسالتك هنا...',
-                          hintStyle: TextStyle(fontSize: 13.5.sp, color: AppColors.grey),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
+                          hintStyle: TextStyle(
+                              fontSize: 13.5.sp, color: AppColors.grey),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 18.w, vertical: 12.h),
                           border: InputBorder.none,
                         ),
                       ),
@@ -298,7 +370,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   SizedBox(width: 10.w),
                   Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [
                           AppColors.newSecondaryColor,
                           AppColors.newPrimaryColor,
@@ -314,7 +386,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       ],
                     ),
                     child: IconButton(
-                      icon: Icon(Icons.send_rounded, color: Colors.white, size: 20.sp),
+                      icon: Icon(Icons.send_rounded,
+                          color: Colors.white, size: 20.sp),
                       onPressed: () {
                         final text = _controller.text.trim();
                         if (text.isNotEmpty) {

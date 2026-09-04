@@ -7,9 +7,10 @@ import 'package:team_ar/features/chat/model/chat_user_model.dart';
 import '../logic/chat_cubit.dart';
 
 class ChatsListItem extends StatelessWidget {
-  const ChatsListItem({super.key, required this.user});
+  const ChatsListItem({super.key, required this.user, this.onTap});
 
   final ChatUserModel user;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +43,11 @@ class ChatsListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         child: InkWell(
           borderRadius: BorderRadius.circular(16.r),
-          onTap: () {
+          onTap: onTap ?? () {
             Navigator.pushNamed(context, Routes.chat, arguments: user).then((value) {
-              context.read<ChatCubit>().getAllChats();
+              if (context.mounted) {
+                context.read<ChatCubit>().getAllChats();
+              }
             });
           },
           child: Padding(

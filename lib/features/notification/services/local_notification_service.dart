@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -6,6 +7,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import '../../../core/common/exceptions/notification_exceptions.dart';
 import '../../../core/common/notification_model.dart';
 import '../../../core/common/notification_type_enum.dart';
+import '../../../core/routing/navigation_service.dart';
 import 'notification_storage.dart';
 
 class LocalNotificationService {
@@ -29,7 +31,7 @@ class LocalNotificationService {
 
       tz.initializeTimeZones();
 
-      const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const androidInit = AndroidInitializationSettings('@drawable/ic_notification');
       const iosInit = DarwinInitializationSettings(
         requestAlertPermission: false,
         requestBadgePermission: false,
@@ -117,7 +119,10 @@ class LocalNotificationService {
   String _getChannelIdForType(NotificationType type) {
     switch (type) {
       case NotificationType.workoutReminder:
+      case NotificationType.workoutPlan:
         return 'gym_workout';
+      case NotificationType.dietPlan:
+        return 'gym_general';
       case NotificationType.subscriptionExpiry:
         return 'gym_subscription';
       case NotificationType.system:
@@ -157,17 +162,20 @@ class LocalNotificationService {
         priority: Priority.high,
         showWhen: true,
         when: notification.createdAt.millisecondsSinceEpoch,
-        icon: '@mipmap/ic_launcher',
+        icon: '@drawable/ic_notification',
+        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+        color: const Color(0xFFC62828),
         enableVibration: true,
         enableLights: true,
+        ledColor: const Color(0xFFC62828),
+        ledOnMs: 1000,
+        ledOffMs: 500,
         ticker: notification.title,
-        styleInformation: notification.body.length > 50
-            ? BigTextStyleInformation(
+        styleInformation: BigTextStyleInformation(
           notification.body,
           contentTitle: notification.title,
-          summaryText: 'إشعار جديد',
-        )
-            : null,
+          summaryText: 'Team AR',
+        ),
       );
 
       const iosDetails = DarwinNotificationDetails(
@@ -230,10 +238,20 @@ class LocalNotificationService {
         priority: Priority.high,
         showWhen: true,
         when: time.millisecondsSinceEpoch,
-        icon: '@mipmap/ic_launcher',
+        icon: '@drawable/ic_notification',
+        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+        color: const Color(0xFFC62828),
         enableVibration: true,
         enableLights: true,
+        ledColor: const Color(0xFFC62828),
+        ledOnMs: 1000,
+        ledOffMs: 500,
         ticker: notification.title,
+        styleInformation: BigTextStyleInformation(
+          notification.body,
+          contentTitle: notification.title,
+          summaryText: 'Team AR',
+        ),
       );
 
       const iosDetails = DarwinNotificationDetails(
@@ -360,7 +378,10 @@ class LocalNotificationService {
   Importance _getImportance(NotificationType type) {
     switch (type) {
       case NotificationType.workoutReminder:
+      case NotificationType.workoutPlan:
       case NotificationType.subscriptionExpiry:
+      case NotificationType.dietPlan:
+      case NotificationType.chatMessage:
         return Importance.high;
       case NotificationType.system:
       case NotificationType.maintenance:
@@ -384,6 +405,8 @@ class LocalNotificationService {
 
         if (_onNotificationTap != null) {
           _onNotificationTap!(response.payload!);
+        } else {
+          NavigationService.routeFromNotificationPayload(response.payload!);
         }
       } catch (e) {
         debugPrint("Error handling notification tap: $e");

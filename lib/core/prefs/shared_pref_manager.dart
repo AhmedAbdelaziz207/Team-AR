@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:team_ar/core/services/background_task_service.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
 
 class SharedPreferencesHelper {
@@ -61,11 +62,15 @@ class SharedPreferencesHelper {
   }
 
   static Future<void> removeAll() async {
+    try {
+      await BackgroundTaskService.cancel();
+    } catch (_) {}
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(AppConstants.token);
     await prefs.remove(AppConstants.userId);
     await prefs.remove(AppConstants.userRole);
     await prefs.remove(AppConstants.userDiet);
     await prefs.remove(AppConstants.dataCompleted);
+    await prefs.remove('last_follow_up_notification_time');
   }
 }

@@ -8,6 +8,9 @@ class PlansList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
       itemCount: plans.length,
       itemBuilder: (context, index) {
         return PlansListCard(plan: plans[index],isAdmin: false,isSelected: false,);

@@ -6,7 +6,7 @@ import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
-import 'package:team_ar/features/select_meals/widgets/admin_substitute_picker_sheet.dart'; // For decodeSubstitutes
+// For decodeSubstitutes
 
 class ManualSubstitutesBottomSheet extends StatelessWidget {
   final DietMealModel originalMeal;
@@ -20,7 +20,8 @@ class ManualSubstitutesBottomSheet extends StatelessWidget {
     required this.substitutes,
   });
 
-  static void show(BuildContext context, DietMealModel originalMeal, int originalGrams, List<Map<String, int>> substitutes) {
+  static void show(BuildContext context, DietMealModel originalMeal,
+      int originalGrams, List<Map<String, int>> substitutes) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -38,7 +39,7 @@ class ManualSubstitutesBottomSheet extends StatelessWidget {
       final apiService = getIt<ApiService>();
       final allMeals = await apiService.getDietMeals();
       if (allMeals == null) return [];
-      
+
       final subIds = substitutes.map((s) => s['mealId']).toSet();
       return allMeals.where((m) => subIds.contains(m.id)).toList();
     } catch (e) {
@@ -50,7 +51,9 @@ class ManualSubstitutesBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final isAr = context.locale.languageCode == 'ar';
     final originalName = isAr
-        ? (originalMeal.arabicName?.isNotEmpty == true ? originalMeal.arabicName! : originalMeal.name ?? '')
+        ? (originalMeal.arabicName?.isNotEmpty == true
+            ? originalMeal.arabicName!
+            : originalMeal.name ?? '')
         : (originalMeal.name ?? originalMeal.arabicName ?? '');
 
     return Container(
@@ -71,12 +74,12 @@ class ManualSubstitutesBottomSheet extends StatelessWidget {
             ),
           ),
           SizedBox(height: 16.h),
-          
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Row(
               children: [
-                Icon(Icons.swap_horiz_rounded, color: Colors.blue.shade700, size: 28.sp),
+                Icon(Icons.swap_horiz_rounded,
+                    color: Colors.blue.shade700, size: 28.sp),
                 SizedBox(width: 10.w),
                 Expanded(
                   child: Column(
@@ -105,7 +108,6 @@ class ManualSubstitutesBottomSheet extends StatelessWidget {
             ),
           ),
           const Divider(height: 30),
-          
           Expanded(
             child: FutureBuilder<List<DietMealModel>>(
               future: _resolveSubstitutes(),
@@ -113,7 +115,7 @@ class ManualSubstitutesBottomSheet extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                
+
                 final meals = snapshot.data ?? [];
                 if (meals.isEmpty) {
                   return Center(
@@ -125,22 +127,25 @@ class ManualSubstitutesBottomSheet extends StatelessWidget {
                 }
 
                 return ListView.separated(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                   itemCount: substitutes.length,
                   separatorBuilder: (_, __) => SizedBox(height: 12.h),
                   itemBuilder: (context, index) {
                     final subData = substitutes[index];
                     final mealId = subData['mealId'];
                     final targetGrams = subData['grams'] ?? 0;
-                    
+
                     final meal = meals.firstWhere(
                       (m) => m.id == mealId,
-                      orElse: () => DietMealModel(id: -1),
+                      orElse: () => const DietMealModel(id: -1),
                     );
                     if (meal.id == -1) return const SizedBox.shrink();
 
                     final subName = isAr
-                        ? (meal.arabicName?.isNotEmpty == true ? meal.arabicName! : meal.name ?? '')
+                        ? (meal.arabicName?.isNotEmpty == true
+                            ? meal.arabicName!
+                            : meal.name ?? '')
                         : (meal.name ?? meal.arabicName ?? '');
 
                     return Container(
@@ -155,12 +160,16 @@ class ManualSubstitutesBottomSheet extends StatelessWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12.sp),
                             child: CachedNetworkImage(
-                              imageUrl: ApiEndPoints.imagesBaseUrl + (meal.imageURL ?? ''),
+                              imageUrl: ApiEndPoints.imagesBaseUrl +
+                                  (meal.imageURL ?? ''),
                               width: 60.w,
                               height: 60.h,
                               fit: BoxFit.cover,
-                              placeholder: (_, __) => Container(color: Colors.grey.shade200),
-                              errorWidget: (_, __, ___) => Container(color: Colors.grey.shade200, child: const Icon(Icons.broken_image)),
+                              placeholder: (_, __) =>
+                                  Container(color: Colors.grey.shade200),
+                              errorWidget: (_, __, ___) => Container(
+                                  color: Colors.grey.shade200,
+                                  child: const Icon(Icons.broken_image)),
                             ),
                           ),
                           SizedBox(width: 12.w),
@@ -179,7 +188,9 @@ class ManualSubstitutesBottomSheet extends StatelessWidget {
                                 SizedBox(height: 4.h),
                                 Row(
                                   children: [
-                                    Icon(Icons.scale, size: 14.sp, color: Colors.blue.shade700),
+                                    Icon(Icons.scale,
+                                        size: 14.sp,
+                                        color: Colors.blue.shade700),
                                     SizedBox(width: 4.w),
                                     Text(
                                       '$targetGrams ${isAr ? 'جرام' : 'g'}',

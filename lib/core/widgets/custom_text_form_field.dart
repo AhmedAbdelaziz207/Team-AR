@@ -23,12 +23,14 @@ class CustomTextFormField extends StatefulWidget {
       this.iconColor,
       this.onChanged,
       this.onSaved,
+      this.onSuffixTap,
       this.isAdmin = false});
 
   final GlobalKey<FormState>? formKey;
   final String? Function(String?)? validator;
   final String? hintText;
   final IconData? suffixIcon;
+  final VoidCallback? onSuffixTap;
   final IconData? prefixIcon;
   final bool? obscureText;
   final TextDirection? textDirection;
@@ -117,10 +119,15 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                       Icons.error_outline,
                       color: AppColors.red,
                     )
-                  : Icon(
-                      widget.suffixIcon,
-                      color: widget.iconColor ?? Colors.grey,
-                    ),
+                  : (widget.suffixIcon != null
+                      ? GestureDetector(
+                          onTap: widget.onSuffixTap,
+                          child: Icon(
+                            widget.suffixIcon,
+                            color: widget.iconColor ?? Colors.grey,
+                          ),
+                        )
+                      : null),
               filled: true,
               fillColor: _hasError
                   ? AppColors.red.withOpacity(0.1)

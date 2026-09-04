@@ -87,7 +87,39 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
     );
   }
 
-  // initializeRole() no longer needed since we set isAdmin in constructor
+  String _generateValidUserName(String name, String email) {
+    const arabicToLatin = {
+      'ا': 'a', 'أ': 'a', 'إ': 'a', 'آ': 'a', 'ء': 'a',
+      'ب': 'b', 'ت': 't', 'ث': 'th', 'ج': 'g', 'ح': 'h',
+      'خ': 'kh', 'د': 'd', 'ذ': 'z', 'ر': 'r', 'ز': 'z',
+      'س': 's', 'ش': 'sh', 'ص': 's', 'ض': 'd', 'ط': 't',
+      'ظ': 'z', 'ع': 'a', 'غ': 'gh', 'ف': 'f', 'ق': 'k',
+      'ك': 'k', 'ل': 'l', 'م': 'm', 'ن': 'n', 'ه': 'h',
+      'و': 'w', 'ي': 'y', 'ى': 'a', 'ة': 'a', 'ئ': 'y', 'ؤ': 'o'
+    };
+
+    final buffer = StringBuffer();
+    for (int i = 0; i < name.length; i++) {
+      final char = name[i];
+      if (arabicToLatin.containsKey(char)) {
+        buffer.write(arabicToLatin[char]);
+      } else if (RegExp(r'[a-zA-Z0-9]').hasMatch(char)) {
+        buffer.write(char);
+      }
+    }
+
+    final candidate = buffer.toString().trim();
+    if (candidate.length >= 3) {
+      return candidate[0].toUpperCase() + candidate.substring(1);
+    }
+
+    final emailPrefix = email.split('@').first.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+    if (emailPrefix.length >= 3) {
+      return emailPrefix[0].toUpperCase() + emailPrefix.substring(1);
+    }
+
+    return "User${DateTime.now().millisecondsSinceEpoch % 1000000}";
+  }
 
   void subscribe() async {
     emit(const ConfirmSubscriptionState.loading());
@@ -98,9 +130,13 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
           .add(Duration(days: userPlan.duration!))
 ;
 
+    final rawName = nameController.text.trim();
+    final rawEmail = emailController.text.trim();
+    final validUserName = _generateValidUserName(rawName, rawEmail);
+
     final req = RegisterAdminRequest(
-      userName: nameController.text.trim(),
-      email: emailController.text.trim(),
+      userName: validUserName,
+      email: rawEmail,
       password: passwordController.text,
       startPackage: start,
       endPackage: end,

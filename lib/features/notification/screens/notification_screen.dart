@@ -6,6 +6,7 @@ import '../../../core/common/notification_model.dart';
 import '../../../core/common/notification_type_enum.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_local_keys.dart';
+import '../../../core/routing/navigation_service.dart';
 import '../logic/notification_cubit.dart';
 import '../logic/notification_state.dart';
 import '../widgets/notification_tile.dart';
@@ -510,36 +511,40 @@ class _NotificationScreenState extends State<NotificationScreen>
   }
 
   Widget _buildNotificationsList(List<NotificationModel> notifications) {
-    if (notifications.isEmpty) {
-      return _buildEmptyState();
-    }
-
     return RefreshIndicator(
       color: AppColors.newPrimaryColor,
       onRefresh: () async {
         _notificationCubit?.loadNotifications();
       },
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final notification = notifications[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: NotificationTile(
-              notification: notification,
-              onTap: () => _handleNotificationTap(notification),
-              onDelete: () => _handleNotificationDelete(notification),
+      child: notifications.isEmpty
+          ? _buildEmptyState()
+          : ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              padding: const EdgeInsets.all(16),
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                final notification = notifications[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: NotificationTile(
+                    notification: notification,
+                    onTap: () => _handleNotificationTap(notification),
+                    onDelete: () => _handleNotificationDelete(notification),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 
   Widget _buildEmptyState() {
     return Center(
       child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -591,20 +596,17 @@ class _NotificationScreenState extends State<NotificationScreen>
       _notificationCubit?.markAsRead(notification.id);
     }
 
-    // التنقل حسب نوع الإشعار
-    switch (notification.type) {
-      case NotificationType.subscriptionExpiry:
-        _navigateToSubscription();
-        break;
-      case NotificationType.workoutReminder:
-        _navigateToWorkout();
-        break;
-      case NotificationType.promotion:
-        _navigateToPromotions();
-        break;
-      default:
-        _showNotificationDetails(notification);
-        break;
+    // التنقل الموحد عبر NavigationService (متابعة المتدربين، الدردشة، النظام الغذائي، التمارين)
+    if (notification.payload != null && notification.payload!.isNotEmpty) {
+      NavigationService.routeFromNotificationModel(notification);
+    } else if (notification.type == NotificationType.chatMessage ||
+        notification.type == NotificationType.workoutPlan ||
+        notification.type == NotificationType.workoutReminder ||
+        notification.type == NotificationType.dietPlan ||
+        notification.type == NotificationType.subscriptionExpiry) {
+      NavigationService.routeFromNotificationModel(notification);
+    } else {
+      _showNotificationDetails(notification);
     }
   }
 
@@ -745,20 +747,5 @@ class _NotificationScreenState extends State<NotificationScreen>
     }
   }
 
-  // دوال التنقل
-  void _navigateToSubscription() {
-    // Navigator.pushNamed(context, Routes.subscription);
-  }
-
-  void _navigateToWorkout() {
-    // Navigator.pushNamed(context, Routes.workout);
-  }
-
-  void _navigateToPromotions() {
-    // Navigator.pushNamed(context, Routes.promotions);
-  }
-
-  void _navigateToSettings() {
-    // Navigator.pushNamed(context, Routes.notificationSettings);
-  }
+  void _navigateToSettings() {}
 }

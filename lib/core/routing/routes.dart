@@ -43,4 +43,7 @@ class Routes {
 
   // Complete user data after login
   static const String completeData = '/completeData';
+
+  // Trainees follow-up (+14 days)
+  static const String followUpTrainees = '/followUpTrainees';
 }

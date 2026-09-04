@@ -88,7 +88,9 @@ class _UsersAboutToExpireScreenState extends State<UsersAboutToExpireScreen> {
                 if (state is TraineeSuccess && state.trainees.isNotEmpty)
                   Expanded(
                     child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
                       itemCount: state.trainees.length,
                       padding: EdgeInsets.only(top: 4.h, bottom: 20.h),
                       itemBuilder: (context, index) => InkWell(
@@ -109,36 +111,54 @@ class _UsersAboutToExpireScreenState extends State<UsersAboutToExpireScreen> {
                   ),
                 if (state is TraineeSuccess && state.trainees.isEmpty)
                   Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
                       children: [
-                        Image.asset(
-                          AppAssets.emptyPageEmpty,
-                          height: 180.h,
-                          width: 180.w,
-                        ),
-                        SizedBox(height: 16.h),
-                        Text(
-                          "لا يوجد أعضاء اقترب انتهاء اشتراكاتهم حالياً",
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: AppColors.black.withOpacity(.6),
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16.sp,
-                                  ),
+                        SizedBox(height: 60.h),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              AppAssets.emptyPageEmpty,
+                              height: 180.h,
+                              width: 180.w,
+                            ),
+                            SizedBox(height: 16.h),
+                            Text(
+                              "لا يوجد أعضاء اقترب انتهاء اشتراكاتهم حالياً",
+                              style:
+                                  Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: AppColors.black.withOpacity(.6),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16.sp,
+                                      ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 if (state is TraineeFailure)
-                  Center(
-                    child: Text(
-                      state.errorMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.red,
-                            fontSize: 18.sp,
+                  Expanded(
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                      children: [
+                        SizedBox(height: 100.h),
+                        Center(
+                          child: Text(
+                            state.errorMessage,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.red,
+                                  fontSize: 18.sp,
+                                ),
                           ),
+                        ),
+                      ],
                     ),
                   ),
               ],

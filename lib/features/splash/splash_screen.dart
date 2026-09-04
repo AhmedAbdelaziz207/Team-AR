@@ -9,7 +9,6 @@ import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/features/home/admin/repos/trainees_repository.dart';
 import '../../core/services/subscription_service.dart';
-import '../auth/login/model/user_role.dart';
 import '../subscription/screens/subscription_expired_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -57,22 +56,16 @@ class _SplashScreenState extends State<SplashScreen> {
     log("HandleNavigation: dataCompleted, $isDataCompleted");
 
     if (token != null && userRole != null && context.mounted) {
-      if (userRole.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
-        final isRealAdmin =
-            await SharedPreferencesHelper.getBool('is_real_admin') ?? false;
-            
-        if (!isRealAdmin) {
-          // It's a self-registered trainee temporarily assigned 'Admin' role
-          await _checkUserSubscription(userId);
-          return;
-        }
+      final role = userRole.toLowerCase().trim();
+      if (role == 'admin' || role == 'adimn' || role == 'administrator') {
         Navigator.pushNamedAndRemoveUntil(
           context,
           Routes.adminLanding,
           (route) => false,
         );
+        return;
       } else {
-        // Non-admin: if trainer and data not completed, force complete data first
+        // Non-admin: if trainer, do not check subscription (trainers are not subscribers)
         if (userRole.toLowerCase() == 'trainer'.toLowerCase()) {
           if (isDataCompleted == false) {
             Navigator.pushNamedAndRemoveUntil(
@@ -82,7 +75,12 @@ class _SplashScreenState extends State<SplashScreen> {
             );
             return;
           } else {
-            await _checkUserSubscription(userId);
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.rootScreen,
+              (route) => false,
+            );
+            return;
           }
         } else {
           // For non-trainer users, proceed with subscription check

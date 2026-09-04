@@ -8,6 +8,7 @@ import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_assets.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
+import 'package:team_ar/core/widgets/app_confirm_dialog.dart';
 import 'package:team_ar/features/diet/logic/user_diet_cubit.dart';
 import 'package:team_ar/features/diet/logic/user_diet_state.dart';
 import 'package:team_ar/features/update_user_diet/widget/admin_user_meal_card.dart';
@@ -46,20 +47,20 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
         leading: const AppBarBackButton(),
         actions: [
           IconButton(
-              onPressed: () {
-                showDeleteDietDialog(isEmpty
-                    ? null
-                    : () {
-                        context
-                            .read<UserDietCubit>()
-                            .removeUserDiet(widget.userId ?? "");
-                        Navigator.pop(context);
-                      });
-              },
-              icon: const Icon(
-                Icons.delete,
-                color: AppColors.red,
-              ))
+            onPressed: isEmpty
+                ? null
+                : () {
+                    showDeleteDietDialog(() {
+                      context
+                          .read<UserDietCubit>()
+                          .removeUserDiet(widget.userId ?? "");
+                    });
+                  },
+            icon: Icon(
+              Icons.delete_forever_rounded,
+              color: isEmpty ? AppColors.grey : AppColors.red,
+            ),
+          )
         ],
         title: Text(
           AppLocalKeys.manageUserMeals.tr(),
@@ -95,10 +96,23 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
           }
 
           if (state is UserDietFailure) {
-            return Center(
-              child: Text(
-                "Failed to load meals",
-                style: Theme.of(context).textTheme.bodyLarge,
+            return RefreshIndicator(
+              onRefresh: () async => context
+                  .read<UserDietCubit>()
+                  .getUserDiet(userId: widget.userId ?? ""),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                children: [
+                  SizedBox(height: 120.h),
+                  Center(
+                    child: Text(
+                      "Failed to load meals",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                ],
               ),
             );
           }
@@ -107,26 +121,34 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
             final meals = state.diet;
 
             if (meals.isEmpty) {
-              return Column(
-                children: [
-                  SizedBox(
-                    height: 40.h,
+              return RefreshIndicator(
+                onRefresh: () async => context
+                    .read<UserDietCubit>()
+                    .getUserDiet(userId: widget.userId ?? ""),
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
                   ),
-                  Image.asset(AppAssets.noData),
-                  SizedBox(
-                    height: 21.h,
-                  ),
-                  Center(
-                    child: Text(
-                      AppLocalKeys.noMeals.tr(),
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.black,
-                            fontFamily: "Cairo",
-                          ),
+                  children: [
+                    SizedBox(
+                      height: 40.h,
                     ),
-                  ),
-                ],
+                    Image.asset(AppAssets.noData),
+                    SizedBox(
+                      height: 21.h,
+                    ),
+                    Center(
+                      child: Text(
+                        AppLocalKeys.noMeals.tr(),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.black,
+                              fontFamily: "Cairo",
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
               );
             }
             // Group meals by foodType
@@ -141,7 +163,9 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
                   .getUserDiet(userId: widget.userId ?? ""),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
-                physics: const AlwaysScrollableScrollPhysics(),
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
                 child: Column(
                   children: grouped.entries.map((entry) {
                     final meals = entry.value;
@@ -257,27 +281,18 @@ class _AdminMealsScreenState extends State<AdminMealsScreen> {
     );
   }
 
-  showDeleteDietDialog(onAccept) {
-    showDialog(
+  Future<void> showDeleteDietDialog(VoidCallback? onAccept) async {
+    if (onAccept == null) return;
+    final confirmed = await showAppConfirmDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("حذف النظام الغذائي"),
-          content: const Text("هل انت متأكد من حذف النظام الغذائي؟"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("الغاء"),
-            ),
-            TextButton(
-              onPressed: onAccept,
-              child: const Text("حذف"),
-            ),
-          ],
-        );
-      },
+      title: "حذف النظام الغذائي",
+      message:
+          "هل أنت متأكد من رغبتك في حذف النظام الغذائي لهذا المتدرب؟\n\nسيتم مسح كافة الوجبات المحددة بالكامل.",
+      confirmText: "حذف النظام",
+      cancelText: "إلغاء",
     );
+    if (confirmed == true) {
+      onAccept();
+    }
   }
 }

@@ -11,6 +11,7 @@ enum NotificationType {
   newContent('new_content', 'محتوى جديد', '🆕'),
   promotion('promotion', 'عرض خاص', '🛍'),
   chatMessage('chat_message', 'رسالة جديدة', '💬'),  // إضافة نوع إشعار للدردشة
+  dietPlan('diet_plan', 'النظام الغذائي', '🥗'),
 
   // Admin Notifications
   newMember('new_member', 'عضو جديد', '👤'),
@@ -48,6 +49,8 @@ enum NotificationType {
     paymentConfirmation,
     newContent,
     promotion,
+    chatMessage,
+    dietPlan,
   ].contains(this);
 
   bool get isAdminNotification => [

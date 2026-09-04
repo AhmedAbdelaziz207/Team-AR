@@ -12,9 +12,13 @@ class SubscribedUserCard extends StatelessWidget {
   const SubscribedUserCard({
     super.key,
     required this.trainer,
+    this.onDelete,
+    this.onDeletedFromDetails,
   });
 
   final TraineeModel trainer;
+  final VoidCallback? onDelete;
+  final Function(String? id)? onDeletedFromDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -52,12 +56,15 @@ class SubscribedUserCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         child: InkWell(
           borderRadius: BorderRadius.circular(16.r),
-          onTap: () {
-            Navigator.pushNamed(
+          onTap: () async {
+            final deleted = await Navigator.pushNamed(
               context,
               Routes.userInfo,
               arguments: trainer,
             );
+            if (deleted == true) {
+              onDeletedFromDetails?.call(trainer.id);
+            }
           },
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
@@ -210,7 +217,7 @@ class SubscribedUserCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 8.h),
+                    SizedBox(height: 6.h),
                     Icon(
                       Icons.arrow_forward_ios_rounded,
                       size: 14.sp,

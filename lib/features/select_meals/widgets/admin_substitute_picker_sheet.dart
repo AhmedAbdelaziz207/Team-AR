@@ -1,12 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
-import 'package:team_ar/core/network/api_service.dart';
-import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
-import 'package:team_ar/features/manage_meals_screen/repos/diet_meal_repository.dart';
 
 /// Represents a single substitute entry chosen by the admin
 class SubstituteEntry {

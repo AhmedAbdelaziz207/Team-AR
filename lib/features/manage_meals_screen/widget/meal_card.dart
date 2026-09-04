@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
+import 'package:team_ar/core/widgets/app_confirm_dialog.dart';
 import 'package:team_ar/features/manage_meals_screen/logic/meal_cubit.dart';
 import 'package:team_ar/features/manage_meals_screen/model/meal_model.dart';
 import '../../../core/theme/app_colors.dart';
@@ -18,37 +19,17 @@ class MealCard extends StatelessWidget {
 
   final DietMealModel? meal;
 
-  void _showDeleteDialog(BuildContext context) {
-    showDialog(
+  void _showDeleteDialog(BuildContext context) async {
+    final confirmDelete = await showAppConfirmDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(AppLocalKeys.deleteMealTitle.tr()),
-          content: Text(AppLocalKeys.deleteMealMessage.tr()),
-          actions: <Widget>[
-            TextButton(
-              child: Text(AppLocalKeys.cancel.tr()),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            TextButton(
-              child: Text(
-                AppLocalKeys.delete.tr(),
-                style: const TextStyle(color: Colors.red),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
-    ).then((confirmDelete) {
-      if (confirmDelete == true) {
-        context.read<MealCubit>().deleteMeal(meal!.id!);
-      }
-    });
+      title: AppLocalKeys.deleteMealTitle.tr(),
+      message: AppLocalKeys.deleteMealMessage.tr(),
+      confirmText: AppLocalKeys.delete.tr(),
+      cancelText: AppLocalKeys.cancel.tr(),
+    );
+    if (confirmDelete == true && context.mounted) {
+      context.read<MealCubit>().deleteMeal(meal!.id!);
+    }
   }
 
   @override

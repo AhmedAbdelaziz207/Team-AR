@@ -1,15 +1,38 @@
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:team_ar/core/di/dependency_injection.dart';
+import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/features/chat/model/chat_model.dart';
 import 'package:team_ar/features/chat/model/chat_user_model.dart';
+import 'package:team_ar/features/chat/services/chat_storage.dart';
 
 class SupabaseChatService {
   final SupabaseClient _client = Supabase.instance.client;
+  final ChatStorage _chatStorage = ChatStorage();
 
   /// Continuous HTTP REST polling stream (fetches messages every 2 seconds).
   Stream<List<ChatMessageModel>> getChatStream(
       String currentUserId, String otherUserId) async* {
     log("getChatStream started: currentUserId=$currentUserId, otherUserId=$otherUserId");
+
+    // 1. Immediately yield cached messages so the screen opens instantly without blocking
+    if (otherUserId.isNotEmpty) {
+      try {
+        final cached = await _chatStorage.getMessages(otherUserId);
+        if (cached.isNotEmpty) {
+          yield cached;
+        }
+      } catch (_) {}
+    }
+
+    // 2. If IDs are missing, yield empty list immediately so UI doesn't hang indefinitely
+    if (currentUserId.isEmpty || otherUserId.isEmpty) {
+      yield [];
+      return;
+    }
+
+    bool hasYieldedAtLeastOnce = false;
+
     while (true) {
       try {
         final response = await _client
@@ -31,9 +54,30 @@ class SupabaseChatService {
                 ))
             .toList();
 
+        if (messages.isNotEmpty) {
+          _chatStorage.saveMessages(otherUserId, messages);
+        }
+
+        hasYieldedAtLeastOnce = true;
         yield messages;
       } catch (e) {
         log("Supabase REST Polling Error: $e");
+
+        // Fallback: try REST API if Supabase polling fails
+        try {
+          final api = getIt<ApiService>();
+          final restMessages = await api.getChat(otherUserId);
+          hasYieldedAtLeastOnce = true;
+          yield restMessages;
+        } catch (restError) {
+          log("REST chat fallback error: $restError");
+          // If we haven't yielded anything yet, yield cached or empty list so UI never hangs!
+          if (!hasYieldedAtLeastOnce) {
+            final cached = await _chatStorage.getMessages(otherUserId);
+            hasYieldedAtLeastOnce = true;
+            yield cached;
+          }
+        }
       }
       await Future.delayed(const Duration(seconds: 2));
     }

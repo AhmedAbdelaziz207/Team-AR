@@ -13,6 +13,7 @@ import 'package:team_ar/features/auth/login/model/login_response.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
+import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/features/payment/screens/payment_screen.dart';
 
 class LoginBlocListener extends StatelessWidget {
@@ -36,8 +37,9 @@ class LoginBlocListener extends StatelessWidget {
           },
           navigateToSubscriptionExpired: (loginResponse) {
             log("navigateToSubscriptionExpired");
-            // If admin, bypass subscription checks and go directly to admin panel
-            if (_isAdmin(loginResponse)) {
+            final r = loginResponse.role?.toLowerCase().trim() ?? '';
+            // Admins go to adminLanding
+            if (r == 'admin' || r == 'adimn' || r == 'administrator') {
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 Routes.adminLanding,
@@ -45,7 +47,16 @@ class LoginBlocListener extends StatelessWidget {
               );
               return;
             }
-            // Non-admin: go to subscription expired screen
+            // Trainers go to rootScreen
+            if (r == 'trainer') {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                Routes.rootScreen,
+                (route) => false,
+              );
+              return;
+            }
+            // Non-admin trainee: go to subscription expired screen
             Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.subscriptionExpired,
@@ -67,57 +78,77 @@ class LoginBlocListener extends StatelessWidget {
     );
   }
 
-  // Real admin: role is "admin" AND isPaid is not false.
-  // AdminRegistration gives role="Admin" to all users, so we use isPaid to distinguish.
-  bool _isAdmin(LoginResponse loginResponse) {
-    final r = loginResponse.role?.toLowerCase().trim();
-    final isAdminRole = r == 'admin' || r == 'adimn' || r == 'administrator';
-    // If isPaid == false, this is a regular subscriber (not a real admin)
-    return isAdminRole && loginResponse.isPaid != false;
-  }
-
   void navigateToHomeScreen(
       BuildContext context, LoginResponse loginResponse) async {
-    // 1) USER FLOW: Check if user hasn't paid or completed payment FIRST
+    final r = loginResponse.role?.toLowerCase().trim() ?? '';
+    final bool isTrainerRole = r == 'trainer';
+    final bool isAdminRole =
+        r == 'admin' || r == 'adimn' || r == 'administrator';
+    final isRealAdmin =
+        await SharedPreferencesHelper.getBool('is_real_admin');
+
+    // 1) ADMIN FLOW: Proceed to admin landing
+    if (isAdminRole && (isRealAdmin || loginResponse.isPaid != false)) {
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.adminLanding, (route) => false);
+      }
+      return;
+    }
+
+    // 2) TRAINER FLOW:
+    if (isTrainerRole) {
+      final isDataCompleted = loginResponse.isDataCompleted ??
+          await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
+      if (context.mounted) {
+        if (!isDataCompleted) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, Routes.completeData, (route) => false);
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+              context, Routes.rootScreen, (route) => false);
+        }
+      }
+      return;
+    }
+
+    // 3) TRAINEE / USER FLOW:
     bool isUnpaid = loginResponse.isPaid == false;
     final userId = loginResponse.id ?? '';
 
     final hasPaidLocally = userId.isNotEmpty
-        ? (await SharedPreferencesHelper.getBool('has_completed_payment_$userId') ?? false)
+        ? await SharedPreferencesHelper.getBool('has_completed_payment_$userId')
         : false;
 
     if (isUnpaid && !hasPaidLocally) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (_) => PaymentScreen(
-            userId: userId,
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PaymentScreen(
+              userId: userId,
+            ),
           ),
-        ),
-        (route) => false,
-      );
+          (route) => false,
+        );
+      }
       return;
     }
 
-    // 2) ADMIN FLOW: If user is real admin and paid, proceed to admin landing
-    if (_isAdmin(loginResponse)) {
-      Navigator.pushNamedAndRemoveUntil(
-          context, Routes.adminLanding, (route) => false);
-      return; // Exit early for admin
-    }
-
-    // 2) If paid, check if subscription expired (endPackage <= today)
+    // Check if trainee subscription expired (endPackage <= today)
     try {
       if ((loginResponse.id ?? '').isNotEmpty) {
         final api = getIt<ApiService>();
         final user = await api.getLoggedUserData(loginResponse.id!);
-        final end = user.endPackage; // DateTime? from model
+        final end = user.endPackage;
         if (end == null || end.difference(DateTime.now()).inDays <= 0) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            Routes.subscriptionExpired,
-            (route) => false,
-          );
+          if (context.mounted) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.subscriptionExpired,
+              (route) => false,
+            );
+          }
           return;
         }
       }
@@ -125,8 +156,10 @@ class LoginBlocListener extends StatelessWidget {
       // On error fetching user, fallback to normal navigation
     }
 
-    // 3) Otherwise proceed to home for non-admin users
-    Navigator.pushNamedAndRemoveUntil(
-        context, Routes.rootScreen, (route) => false);
+    // Otherwise proceed to home for regular trainees
+    if (context.mounted) {
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.rootScreen, (route) => false);
+    }
   }
 }

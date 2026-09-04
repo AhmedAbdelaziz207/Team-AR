@@ -15,6 +15,9 @@ import 'package:team_ar/features/home/user/logic/user_cubit.dart';
 import 'package:team_ar/features/home/user/logic/user_state.dart';
 import '../../core/prefs/shared_pref_manager.dart';
 import '../../core/utils/app_constants.dart';
+import '../../core/widgets/app_confirm_dialog.dart';
+import '../../core/services/background_task_service.dart';
+import '../notification/services/push_notifications_services.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -119,56 +122,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: BlocBuilder<UserCubit, UserState>(
-          buildWhen: (context, state) =>
-              state is UserLoading ||
-              state is UserSuccess ||
-              state is UserFailure,
-          builder: (context, state) {
-            // إذا كانت البيانات المخزنة محليًا متوفرة وما زلنا في حالة التحميل، نعرض البيانات المخزنة
-            if (state is UserLoading && !isLoading && userName != null) {
-              return buildUserProfile(userName!, userEmail!, userImage);
+        child: RefreshIndicator(
+          onRefresh: () async {
+            final userId =
+                await SharedPreferencesHelper.getString(AppConstants.userId);
+            if (userId != null && mounted) {
+              context.read<UserCubit>().getUser(userId);
             }
+          },
+          child: BlocBuilder<UserCubit, UserState>(
+            buildWhen: (context, state) =>
+                state is UserLoading ||
+                state is UserSuccess ||
+                state is UserFailure,
+            builder: (context, state) {
+              // إذا كانت البيانات المخزنة محليًا متوفرة وما زلنا في حالة التحميل، نعرض البيانات المخزنة
+              if (state is UserLoading && !isLoading && userName != null) {
+                return buildUserProfile(userName!, userEmail!, userImage);
+              }
 
-            if (state is UserLoading && isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+              if (state is UserLoading && isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            if (state is UserFailure) {
-              // في حالة الفشل، نعرض البيانات المخزنة محليًا إذا كانت متوفرة
+              if (state is UserFailure) {
+                // في حالة الفشل، نعرض البيانات المخزنة محليًا إذا كانت متوفرة
+                if (!isLoading && userName != null) {
+                  return buildUserProfile(userName!, userEmail!, userImage);
+                }
+
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  children: [
+                    SizedBox(height: 120.h),
+                    Center(
+                      child: Text(
+                        state.errorMessage,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: "Cairo",
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              if (state is UserSuccess) {
+                final user = state.userData;
+
+                // حفظ البيانات المحدثة محليًا
+                saveUserData(user.userName ?? "", user.email ?? "", user.image);
+
+                return buildUserProfile(
+                    user.userName ?? "", user.email ?? "", user.image);
+              }
+
+              // إذا كانت البيانات المخزنة محليًا متوفرة ولم نصل إلى أي حالة أخرى، نعرض البيانات المخزنة
               if (!isLoading && userName != null) {
                 return buildUserProfile(userName!, userEmail!, userImage);
               }
 
-              return Center(
-                  child: Text(
-                state.errorMessage,
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  fontFamily: "Cairo",
-                ),
-              ));
-            }
-
-            if (state is UserSuccess) {
-              final user = state.userData;
-
-              // حفظ البيانات المحدثة محليًا
-              saveUserData(user.userName ?? "", user.email ?? "", user.image);
-
-              return buildUserProfile(
-                  user.userName ?? "", user.email ?? "", user.image);
-            }
-
-            // إذا كانت البيانات المخزنة محليًا متوفرة ولم نصل إلى أي حالة أخرى، نعرض البيانات المخزنة
-            if (!isLoading && userName != null) {
-              return buildUserProfile(userName!, userEmail!, userImage);
-            }
-
-            return const SizedBox();
-          },
+              return const SizedBox();
+            },
+          ),
         ),
       ),
     );
@@ -177,6 +198,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // استخراج واجهة المستخدم إلى دالة منفصلة لتجنب تكرار الكود
   Widget buildUserProfile(String name, String email, String? userImagePath) {
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -447,14 +471,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Colors.redAccent,
                       ),
                     ),
-                    onTap: () {
-                      SharedPreferencesHelper.removeAll().then((value) {
+                    onTap: () async {
+                      BackgroundTaskService.cancel();
+                      await FirebaseNotificationsServices.unSubscribeOnLogout();
+                      await SharedPreferencesHelper.removeAll();
+                      if (context.mounted) {
                         Navigator.pushNamedAndRemoveUntil(
                           context,
                           Routes.login,
                           (route) => false,
                         );
-                      });
+                      }
                     },
                   ),
                 ),
@@ -564,28 +591,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _showDeleteAccountDialog(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppConfirmDialog(
           context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text(AppLocalKeys.deleteAccountTitle.tr()),
-              content: Text(AppLocalKeys.deleteAccountMessage.tr()),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                  child: Text(AppLocalKeys.cancel.tr()),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                  child: Text(AppLocalKeys.confirmDelete.tr()),
-                ),
-              ],
-            );
-          },
+          title: AppLocalKeys.deleteAccountTitle.tr(),
+          message: AppLocalKeys.deleteAccountMessage.tr(),
+          confirmText: AppLocalKeys.confirmDelete.tr(),
+          cancelText: AppLocalKeys.cancel.tr(),
         ) ??
         false;
 

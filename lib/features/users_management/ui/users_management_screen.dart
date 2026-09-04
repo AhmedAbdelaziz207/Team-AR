@@ -28,43 +28,59 @@ class UsersManagementScreen extends StatelessWidget {
         ),
         leading: const SizedBox.shrink(),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: 24.0.h,
-            horizontal: 16.w,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(milliseconds: 300));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "إدارة شؤون الأعضاء والاشتراكات",
-                style: TextStyle(
-                  fontSize: 15.sp,
-                  color: AppColors.grey,
-                  fontWeight: FontWeight.w600,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 24.0.h,
+              horizontal: 16.w,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "إدارة شؤون الأعضاء والاشتراكات",
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    color: AppColors.grey,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              SizedBox(height: 20.h),
-              AdminManageCard(
-                title: AppLocalKeys.addNewUser.tr(),
-                cardColor: AppColors.primaryColor,
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    Routes.plans,
-                  );
-                },
-              ),
-              SizedBox(height: 20.h),
-              AdminManageCard(
-                title: AppLocalKeys.usersAboutToExpire.tr(),
-                cardColor: Colors.orange[700] ?? AppColors.newPrimaryColor,
-                onTap: () {
-                  Navigator.pushNamed(context, Routes.usersAboutToExpire);
-                },
-              ),
-            ],
+                SizedBox(height: 20.h),
+                AdminManageCard(
+                  title: AppLocalKeys.addNewUser.tr(),
+                  cardColor: AppColors.primaryColor,
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      Routes.plans,
+                    );
+                  },
+                ),
+                SizedBox(height: 20.h),
+                AdminManageCard(
+                  title: AppLocalKeys.usersAboutToExpire.tr(),
+                  cardColor: Colors.orange[700] ?? AppColors.newPrimaryColor,
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.usersAboutToExpire);
+                  },
+                ),
+                SizedBox(height: 20.h),
+                AdminManageCard(
+                  title: "متابعة المتدربين (+14 يوم)",
+                  cardColor: const Color(0xFFD32F2F),
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.followUpTrainees);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

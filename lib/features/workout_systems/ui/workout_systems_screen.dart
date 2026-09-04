@@ -54,37 +54,63 @@ class _WorkoutSystemsScreenState extends State<WorkoutSystemsScreen> {
             }
 
             if (state is WorkoutSystemFailure) {
-              return Center(
-                child: Text(
-                    state.errorModel.getErrorsMessage() ?? "Unknown Error"),
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                children: [
+                  SizedBox(height: 120.h),
+                  Center(
+                    child: Text(
+                      state.errorModel.getErrorsMessage() ?? "Unknown Error",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               );
             }
 
             if (state is WorkoutSystemLoadSuccess) {
               if (state.data.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.fitness_center_outlined,
-                        size: 80.sp,
-                        color: AppColors.grey.withOpacity(0.4),
-                      ),
-                      SizedBox(height: 16.h),
-                      Text(
-                        "لا توجد أنظمة تمارين مسجلة حالياً",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.grey,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16.sp,
-                            ),
-                      ),
-                    ],
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
                   ),
+                  children: [
+                    SizedBox(height: 120.h),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.fitness_center_outlined,
+                            size: 80.sp,
+                            color: AppColors.grey.withOpacity(0.4),
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            "لا توجد أنظمة تمارين مسجلة حالياً",
+                            style:
+                                Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: AppColors.grey,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16.sp,
+                                    ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 );
               }
               return ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
                 itemCount: state.data.length,
                 padding: EdgeInsets.only(top: 8.h, bottom: 100.h),
                 itemBuilder: (context, index) => WorkoutSystemCard(

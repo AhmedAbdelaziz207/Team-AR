@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/features/add_workout/model/add_workout_params.dart';
+import 'package:team_ar/features/follow_up/services/follow_up_service.dart';
 import 'package:team_ar/features/user_info/model/trainee_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -24,6 +25,9 @@ class _FloatingMenuState extends State<FloatingMenu>
   void _openWhatsApp(String phone) async {
     final url = "https://wa.me/$phone";
     if (await canLaunchUrl(Uri.parse(url))) {
+      if (widget.trainee?.id != null) {
+        FollowUpService().updateChatTimestamp(widget.trainee!.id!);
+      }
       await launchUrl(
         Uri.parse(url),
         mode: LaunchMode.externalApplication,

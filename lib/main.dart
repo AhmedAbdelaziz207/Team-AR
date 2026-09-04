@@ -11,13 +11,13 @@ import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/utils/app_assets.dart';
 import 'package:team_ar/core/prefs/shared_pref_manager.dart';
 import 'package:team_ar/core/routing/routes.dart';
+import 'package:team_ar/core/routing/navigation_service.dart';
 import 'package:team_ar/core/utils/app_constants.dart';
 import 'package:team_ar/features/notification/services/push_notifications_services.dart';
 import 'package:team_ar/features/notification/services/local_notification_service.dart';
 import 'package:team_ar/features/notification/services/notification_storage.dart';
 import 'package:team_ar/features/notification/services/subscription_monitor_service.dart';
 
-import 'features/auth/login/model/user_role.dart';
 import 'core/common/notification_model.dart';
 import 'core/common/notification_type_enum.dart';
 import 'core/services/shorebird_update_service.dart';
@@ -25,7 +25,7 @@ import 'core/services/background_task_service.dart';
 import 'firebase_options.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 final localNotificationService = LocalNotificationService();
 
 @pragma('vm:entry-point')
@@ -85,7 +85,7 @@ NotificationType _getNotificationTypeFromData(Map data) {
       return NotificationType.system;
   }
 }
- 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -95,7 +95,6 @@ void main() async {
   try {
     await EasyLocalization.ensureInitialized();
 
-
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -103,7 +102,8 @@ void main() async {
     // Initialize Supabase
     await Supabase.initialize(
       url: 'https://exiovcdrkakpwpvuplzb.supabase.co',
-      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4aW92Y2Rya2FrcHdwdnVwbHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwNzY4NjMsImV4cCI6MjEwMjY1Mjg2M30.faEeC_8uh4CaxFJ50Ua8Et9OJtqcR57RB9Z6WZAxb3g',
+      anonKey:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4aW92Y2Rya2FrcHdwdnVwbHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwNzY4NjMsImV4cCI6MjEwMjY1Mjg2M30.faEeC_8uh4CaxFJ50Ua8Et9OJtqcR57RB9Z6WZAxb3g',
     );
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -119,13 +119,34 @@ void main() async {
     SubscriptionMonitorService().startMonitoring();
     await setupServiceLocator();
 
+    final launchDetails =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    if (launchDetails != null && launchDetails.didNotificationLaunchApp) {
+      final launchPayload = launchDetails.notificationResponse?.payload;
+      if (launchPayload != null && launchPayload.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _processNotificationNavigation(launchPayload);
+        });
+      }
+    }
+
     final token = await SharedPreferencesHelper.getString(AppConstants.token);
-    final userRole = await SharedPreferencesHelper.getString(AppConstants.userRole);
-    final isDataCompleted = await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
+    final userRole =
+        await SharedPreferencesHelper.getString(AppConstants.userRole);
+    final isDataCompleted =
+        await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
 
     String initialRoute;
-    if (token != null && userRole != null) {
-      if (userRole.toLowerCase() == UserRole.Admin.name.toLowerCase()) {
+    if (token != null &&
+        token.isNotEmpty &&
+        userRole != null &&
+        userRole.isNotEmpty) {
+      final role = userRole.toLowerCase().trim();
+      final isAdmin =
+          role == 'admin' || role == 'adimn' || role == 'administrator';
+      final isTrainer = role == 'trainer';
+
+      if (isAdmin) {
         initialRoute = Routes.adminLanding;
 
         // Initialize background tasks only for Admins
@@ -134,17 +155,29 @@ void main() async {
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4aW92Y2Rya2FrcHdwdnVwbHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwNzY4NjMsImV4cCI6MjEwMjY1Mjg2M30.faEeC_8uh4CaxFJ50Ua8Et9OJtqcR57RB9Z6WZAxb3g',
         );
       } else {
-        // Check if trainer user needs to complete data
-        if (userRole.toLowerCase() == 'trainer' && !isDataCompleted) {
-          initialRoute = Routes.completeData;
+        // Explicitly cancel background tasks for any non-admin (trainees, trainers)
+        BackgroundTaskService.cancel();
+
+        if (isTrainer) {
+          // Check if trainer user needs to complete data
+          if (!isDataCompleted) {
+            initialRoute = Routes.completeData;
+          } else {
+            initialRoute = Routes.rootScreen;
+          }
         } else {
           initialRoute = Routes.rootScreen;
         }
       }
-    } else if (await SharedPreferencesHelper.getString(AppConstants.language) != null) {
-      initialRoute = Routes.login;
     } else {
-      initialRoute = Routes.onboarding;
+      // User is not logged in: cancel any lingering background tasks
+      BackgroundTaskService.cancel();
+      if (await SharedPreferencesHelper.getString(AppConstants.language) !=
+          null) {
+        initialRoute = Routes.login;
+      } else {
+        initialRoute = Routes.onboarding;
+      }
     }
 
     runApp(
@@ -180,17 +213,17 @@ void main() async {
 Future initializeNotifications() async {
   try {
     const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@drawable/ic_notification');
 
     const DarwinInitializationSettings initializationSettingsIOS =
-    DarwinInitializationSettings(
+        DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
 
     const InitializationSettings initializationSettings =
-    InitializationSettings(
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
@@ -236,8 +269,8 @@ Future createNotificationChannel() async {
     ];
 
     final androidPlugin =
-    flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+        flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
 
     if (androidPlugin != null) {
       for (final channel in channels) {
@@ -247,6 +280,11 @@ Future createNotificationChannel() async {
   } catch (e) {
     debugPrint('Error creating notification channels: $e');
   }
+}
+
+void _processNotificationNavigation(String? payload) {
+  if (payload == null || payload.isEmpty) return;
+  NavigationService.routeFromNotificationPayload(payload);
 }
 
 void onDidReceiveNotificationResponse(NotificationResponse response) async {
@@ -259,7 +297,7 @@ void onDidReceiveNotificationResponse(NotificationResponse response) async {
       final notifications = await storage.getNotifications();
 
       final notificationIndex = notifications.indexWhere(
-            (n) => n.payload == payload,
+        (n) => n.payload == payload,
       );
 
       if (notificationIndex != -1) {
@@ -271,6 +309,8 @@ void onDidReceiveNotificationResponse(NotificationResponse response) async {
     } catch (e) {
       debugPrint("Error handling notification tap: $e");
     }
+
+    _processNotificationNavigation(payload);
   }
 }
 
@@ -280,7 +320,7 @@ void _handleNotificationTap(String payload) async {
     final notifications = await storage.getNotifications();
 
     final notificationIndex = notifications.indexWhere(
-          (n) => n.payload == payload,
+      (n) => n.payload == payload,
     );
 
     if (notificationIndex != -1) {
@@ -293,6 +333,8 @@ void _handleNotificationTap(String payload) async {
   } catch (e) {
     debugPrint("Error handling notification tap: $e");
   }
+
+  _processNotificationNavigation(payload);
 }
 
 Future requestNotificationPermissions() async {

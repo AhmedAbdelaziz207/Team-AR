@@ -33,38 +33,48 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
     if (cubit.areYouSmokerController.text.isEmpty) {
       cubit.areYouSmokerController.text = 'No';
     }
-    
+
     _showAnyPains = cubit.anyPainsController.text.isNotEmpty;
     _showAnyInfection = cubit.anyInfectionController.text.isNotEmpty;
     _showAllergyOfFood = cubit.allergyOfFoodController.text.isNotEmpty;
   }
 
   void _nextStep(CompleteDataCubit cubit) {
-    // Validate current step
-    bool isValid = false;
     if (_currentStep == 0) {
-      isValid = cubit.phoneController.text.isNotEmpty &&
-          cubit.addressController.text.isNotEmpty &&
-          cubit.heightController.text.isNotEmpty &&
-          cubit.weightController.text.isNotEmpty;
+      final isValid = cubit.phoneController.text.trim().isNotEmpty &&
+          cubit.addressController.text.trim().isNotEmpty &&
+          cubit.heightController.text.trim().isNotEmpty &&
+          cubit.weightController.text.trim().isNotEmpty;
+      if (!isValid) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalKeys.pleaseEnterAllRequiredFields.tr(),
+              style: const TextStyle(fontFamily: "Cairo"),
+            ),
+            backgroundColor: Colors.red[700],
+          ),
+        );
+        return;
+      }
+      setState(() => _currentStep = 1);
     } else if (_currentStep == 1) {
-      isValid = cubit.numberOfDaysController.text.isNotEmpty &&
-          cubit.numberOfMealsController.text.isNotEmpty &&
-          cubit.aimOfJoinController.text.isNotEmpty;
-    } else {
-      isValid = true; // final step validation happens on submit
-    }
-
-    if (!isValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(AppLocalKeys.pleaseEnterAllRequiredFields.tr())),
-      );
-      return;
-    }
-
-    if (_currentStep < 2) {
-      setState(() => _currentStep++);
+      final isValid = cubit.numberOfDaysController.text.trim().isNotEmpty &&
+          cubit.numberOfMealsController.text.trim().isNotEmpty &&
+          cubit.aimOfJoinController.text.trim().isNotEmpty;
+      if (!isValid) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalKeys.pleaseEnterAllRequiredFields.tr(),
+              style: const TextStyle(fontFamily: "Cairo"),
+            ),
+            backgroundColor: Colors.red[700],
+          ),
+        );
+        return;
+      }
+      setState(() => _currentStep = 2);
     } else {
       cubit.submit();
     }
@@ -84,10 +94,10 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
       appBar: AppBar(
         title: Text(
           AppLocalKeys.enterYourInfo.tr(),
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontFamily: "Cairo",
+              ),
         ),
         backgroundColor: AppColors.white,
         centerTitle: true,
@@ -101,7 +111,13 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
             if (state.status == CompleteDataStatus.failure &&
                 state.error != null) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error!)),
+                SnackBar(
+                  content: Text(
+                    state.error!,
+                    style: const TextStyle(fontFamily: "Cairo"),
+                  ),
+                  backgroundColor: Colors.red[700],
+                ),
               );
             }
             if (state.status == CompleteDataStatus.success) {
@@ -110,130 +126,217 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
             }
           },
           builder: (context, state) {
+            final isLoading = state.status == CompleteDataStatus.loading;
+            final isLastStep = _currentStep == 2;
+
             return Form(
               key: cubit.formKey,
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  colorScheme: const ColorScheme.light(
-                      primary: AppColors.newPrimaryColor),
-                ),
-                child: Stepper(
-                  type: StepperType.horizontal,
-                  elevation: 0,
-                  currentStep: _currentStep,
-                  onStepCancel: _prevStep,
-                  onStepContinue: () => _nextStep(cubit),
-                  onStepTapped: (step) {
-                    if (step < _currentStep) {
-                      setState(() => _currentStep = step);
-                    }
-                  },
-                  controlsBuilder: (context, details) {
-                    final isLastStep = _currentStep == 2;
-                    final isLoading =
-                        state.status == CompleteDataStatus.loading;
-                    return Container(
-                      margin: EdgeInsets.only(top: 30.h),
-                      child: Row(
+              child: Column(
+                children: [
+                  _buildStepIndicator(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed:
-                                  isLoading ? null : details.onStepContinue,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.newPrimaryColor,
-                                padding: EdgeInsets.symmetric(vertical: 14.h),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                              ),
-                              child: isLoading
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2, color: Colors.white),
-                                    )
-                                  : Text(
-                                      isLastStep
-                                          ? AppLocalKeys.submit.tr()
-                                          : AppLocalKeys.next.tr(),
-                                      style: TextStyle(
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    ),
-                            ),
-                          ),
-                          if (_currentStep > 0) ...[
-                            SizedBox(width: 12.w),
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed:
-                                    isLoading ? null : details.onStepCancel,
-                                style: OutlinedButton.styleFrom(
-                                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                  ),
-                                  side: const BorderSide(
-                                      color: AppColors.newPrimaryColor),
-                                ),
-                                child: Text(
-                                  AppLocalKeys.previous.tr(),
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: AppColors.newPrimaryColor,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-                          ]
+                          if (_currentStep == 0) _buildPersonalInfoStep(cubit),
+                          if (_currentStep == 1) _buildActivityInfoStep(cubit),
+                          if (_currentStep == 2) _buildHealthInfoStep(cubit),
+                          SizedBox(height: 28.h),
+                          _buildBottomButtons(cubit, isLoading, isLastStep),
+                          SizedBox(height: 24.h),
                         ],
                       ),
-                    );
-                  },
-                  steps: [
-                    Step(
-                      title: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(AppLocalKeys.personalInfo.tr(),
-                            style: TextStyle(fontSize: 12.sp)),
-                      ),
-                      state: _currentStep > 0
-                          ? StepState.complete
-                          : StepState.indexed,
-                      isActive: _currentStep >= 0,
-                      content: _buildPersonalInfoStep(cubit),
                     ),
-                    Step(
-                      title: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(AppLocalKeys.activityInfo.tr(),
-                            style: TextStyle(fontSize: 12.sp)),
-                      ),
-                      state: _currentStep > 1
-                          ? StepState.complete
-                          : StepState.indexed,
-                      isActive: _currentStep >= 1,
-                      content: _buildActivityInfoStep(cubit),
-                    ),
-                    Step(
-                      title: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(AppLocalKeys.healthInfo.tr(),
-                            style: TextStyle(fontSize: 12.sp)),
-                      ),
-                      isActive: _currentStep >= 2,
-                      content: _buildHealthInfoStep(cubit),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildStepIndicator() {
+    final stepTitles = [
+      AppLocalKeys.personalInfo.tr(),
+      AppLocalKeys.activityInfo.tr(),
+      AppLocalKeys.healthInfo.tr(),
+    ];
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      margin: EdgeInsets.only(bottom: 12.h),
+      decoration: const BoxDecoration(
+        color: AppColors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x0A000000),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: List.generate(stepTitles.length, (index) {
+          final isCompleted = _currentStep > index;
+          final isCurrent = _currentStep == index;
+          final isClickable = index < _currentStep;
+
+          return Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: isClickable
+                        ? () => setState(() => _currentStep = index)
+                        : null,
+                    borderRadius: BorderRadius.circular(8.r),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          width: 32.w,
+                          height: 32.w,
+                          decoration: BoxDecoration(
+                            color: isCompleted
+                                ? Colors.green
+                                : (isCurrent
+                                    ? AppColors.newPrimaryColor
+                                    : Colors.grey[200]),
+                            shape: BoxShape.circle,
+                            border: isCurrent
+                                ? Border.all(
+                                    color: AppColors.newPrimaryColor
+                                        .withValues(alpha: 0.3),
+                                    width: 3,
+                                  )
+                                : null,
+                          ),
+                          child: Center(
+                            child: isCompleted
+                                ? Icon(Icons.check,
+                                    size: 18.sp, color: Colors.white)
+                                : Text(
+                                    "${index + 1}",
+                                    style: TextStyle(
+                                      color: isCurrent
+                                          ? Colors.white
+                                          : Colors.grey[600],
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14.sp,
+                                      fontFamily: "Cairo",
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        SizedBox(height: 6.h),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            stepTitles[index],
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              fontWeight: isCurrent
+                                  ? FontWeight.bold
+                                  : FontWeight.w500,
+                              fontFamily: "Cairo",
+                              color: isCurrent
+                                  ? AppColors.newPrimaryColor
+                                  : (isCompleted
+                                      ? Colors.black87
+                                      : Colors.grey[500]),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (index < stepTitles.length - 1)
+                  Container(
+                    width: 16.w,
+                    height: 2.h,
+                    margin: EdgeInsets.only(bottom: 16.h),
+                    color: _currentStep > index
+                        ? Colors.green
+                        : Colors.grey[300],
+                  ),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildBottomButtons(
+      CompleteDataCubit cubit, bool isLoading, bool isLastStep) {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            onPressed: isLoading ? null : () => _nextStep(cubit),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.newPrimaryColor,
+              padding: EdgeInsets.symmetric(vertical: 14.h),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+            ),
+            child: isLoading
+                ? const SizedBox(
+                    height: 22,
+                    width: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    isLastStep
+                        ? AppLocalKeys.submit.tr()
+                        : AppLocalKeys.next.tr(),
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontFamily: "Cairo",
+                    ),
+                  ),
+          ),
+        ),
+        if (_currentStep > 0) ...[
+          SizedBox(width: 12.w),
+          Expanded(
+            child: OutlinedButton(
+              onPressed: isLoading ? null : _prevStep,
+              style: OutlinedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 14.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                side: const BorderSide(color: AppColors.newPrimaryColor),
+              ),
+              child: Text(
+                AppLocalKeys.previous.tr(),
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  color: AppColors.newPrimaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Cairo",
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -281,13 +384,13 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
         ),
         SizedBox(height: 24.h),
         Text(AppLocalKeys.gender.tr(),
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, fontFamily: "Cairo")),
         SizedBox(height: 8.h),
         Row(
           children: [
             Expanded(
               child: RadioListTile<String>(
-                title: Text(AppLocalKeys.male.tr()),
+                title: Text(AppLocalKeys.male.tr(), style: const TextStyle(fontFamily: "Cairo")),
                 value: 'Male',
                 groupValue: cubit.genderController.text,
                 activeColor: AppColors.newPrimaryColor,
@@ -299,7 +402,7 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
             ),
             Expanded(
               child: RadioListTile<String>(
-                title: Text(AppLocalKeys.female.tr()),
+                title: Text(AppLocalKeys.female.tr(), style: const TextStyle(fontFamily: "Cairo")),
                 value: 'Female',
                 groupValue: cubit.genderController.text,
                 activeColor: AppColors.newPrimaryColor,
@@ -355,6 +458,7 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
           controller: cubit.lastExerciseController,
           hintText: AppLocalKeys.lastTimeTrained.tr(),
           suffixIcon: Icons.history,
+          validator: (value) => null,
         ),
       ],
     );
@@ -365,13 +469,13 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(AppLocalKeys.areYouSmoking.tr(),
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, fontFamily: "Cairo")),
         SizedBox(height: 8.h),
         Row(
           children: [
             Expanded(
               child: RadioListTile<String>(
-                title: Text(AppLocalKeys.yes.tr()),
+                title: Text(AppLocalKeys.yes.tr(), style: const TextStyle(fontFamily: "Cairo")),
                 value: 'Yes',
                 groupValue: cubit.areYouSmokerController.text,
                 activeColor: AppColors.newPrimaryColor,
@@ -383,7 +487,7 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
             ),
             Expanded(
               child: RadioListTile<String>(
-                title: Text(AppLocalKeys.no.tr()),
+                title: Text(AppLocalKeys.no.tr(), style: const TextStyle(fontFamily: "Cairo")),
                 value: 'No',
                 groupValue: cubit.areYouSmokerController.text,
                 activeColor: AppColors.newPrimaryColor,
@@ -446,6 +550,7 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
           controller: cubit.foodSystemController,
           hintText: AppLocalKeys.whatYouWantInFood.tr(),
           isMultiline: true,
+          validator: (value) => null,
         ),
         SizedBox(height: 12.h),
         CustomTextFormField(
@@ -453,12 +558,14 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
           controller: cubit.dailyWorkController,
           hintText: AppLocalKeys.aboutYourWork.tr(),
           isMultiline: true,
+          validator: (value) => null,
         ),
         SizedBox(height: 12.h),
         CustomTextFormField(
           key: const ValueKey('abilityOfSystemMoney'),
           controller: cubit.abilityOfSystemMoneyController,
           hintText: AppLocalKeys.abilityOfSystemMoney.tr(),
+          validator: (value) => null,
         ),
       ],
     );
@@ -475,13 +582,13 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, fontFamily: "Cairo")),
         SizedBox(height: 8.h),
         Row(
           children: [
             Expanded(
               child: RadioListTile<bool>(
-                title: Text(AppLocalKeys.yes.tr()),
+                title: Text(AppLocalKeys.yes.tr(), style: const TextStyle(fontFamily: "Cairo")),
                 value: true,
                 groupValue: showDetails,
                 activeColor: AppColors.newPrimaryColor,
@@ -491,7 +598,7 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
             ),
             Expanded(
               child: RadioListTile<bool>(
-                title: Text(AppLocalKeys.no.tr()),
+                title: Text(AppLocalKeys.no.tr(), style: const TextStyle(fontFamily: "Cairo")),
                 value: false,
                 groupValue: showDetails,
                 activeColor: AppColors.newPrimaryColor,
@@ -508,6 +615,7 @@ class _CompleteDataScreenState extends State<CompleteDataScreen> {
             controller: detailsController,
             hintText: 'التفاصيل (يرجى التوضيح)',
             isMultiline: true,
+            validator: (value) => null,
           ),
         ],
       ],

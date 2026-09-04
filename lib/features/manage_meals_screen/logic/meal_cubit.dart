@@ -12,6 +12,7 @@ import 'package:team_ar/features/manage_meals_screen/repos/diet_meal_repository.
 import 'package:team_ar/features/select_meals/model/user_meal_request.dart';
 import '../../../core/di/dependency_injection.dart';
 import '../../../core/network/api_result.dart';
+import '../../follow_up/services/follow_up_service.dart';
 import '../model/meal_model.dart';
 import 'meal_state.dart';
 
@@ -463,6 +464,7 @@ class MealCubit extends Cubit<MealState> {
 
     result.when(
       success: (_) {
+        FollowUpService().updateDietTimestamp(userId);
         // ✅ Step 2: Reset all meals to unselected/default
         final resetMeals = allMeals
             .map((meal) => meal.copyWith(

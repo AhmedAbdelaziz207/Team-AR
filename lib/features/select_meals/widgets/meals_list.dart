@@ -32,63 +32,81 @@ class _MealListState extends State<MealList> {
           orElse: () {},
         );
       },
-      child: BlocBuilder<MealCubit, MealState>(
-      buildWhen: (previous, current) => current.maybeWhen(
-        loading: () => true,
-        loaded: (_) => true,
-        failure: (_) => true,
+      child: RefreshIndicator(
+        onRefresh: () async {
+          context.read<MealCubit>().getMeals();
+        },
+        child: BlocBuilder<MealCubit, MealState>(
+          buildWhen: (previous, current) => current.maybeWhen(
+            loading: () => true,
+            loaded: (_) => true,
+            failure: (_) => true,
+            orElse: () => false,
+          ),
+          builder: (context, state) {
+            return state.maybeMap(
+              loading: (_) => const Center(child: CircularProgressIndicator()),
+              loaded: (value) {
+                final meals = value.meals;
 
-        orElse: () => false,
-      ),
-      builder: (context, state) {
-        return state.maybeMap(
-          loading: (_) => const Center(child: CircularProgressIndicator()),
-          loaded: (value) {
-            final meals = value.meals;
-            
-            final proteinsMeals = meals.where((meal) => meal.foodCategory == 0).toList();
-            final fatsMeals = meals.where((meal) => meal.foodCategory == 1).toList();
-            final carbsMeals = meals.where((meal) => meal.foodCategory == 2).toList();
-            final vegetablesMeals = meals.where((meal) => meal.foodCategory == 3).toList();
-            final naturalSupplementsMeals = meals.where((meal) => meal.foodCategory == 4).toList();
+                final proteinsMeals =
+                    meals.where((meal) => meal.foodCategory == 0).toList();
+                final fatsMeals =
+                    meals.where((meal) => meal.foodCategory == 1).toList();
+                final carbsMeals =
+                    meals.where((meal) => meal.foodCategory == 2).toList();
+                final vegetablesMeals =
+                    meals.where((meal) => meal.foodCategory == 3).toList();
+                final naturalSupplementsMeals =
+                    meals.where((meal) => meal.foodCategory == 4).toList();
 
-            // Do NOT wrap with Expanded here; parent already wraps MealList with Expanded
-            return ListView(
-              children: [
-                MealCategory(
-                  title: AppLocalKeys.proteins.tr(),
-                  meals: proteinsMeals,
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  children: [
+                    MealCategory(
+                      title: AppLocalKeys.proteins.tr(),
+                      meals: proteinsMeals,
+                    ),
+                    MealCategory(
+                      title: AppLocalKeys.fats.tr(),
+                      meals: fatsMeals,
+                    ),
+                    MealCategory(
+                      title: AppLocalKeys.carbs.tr(),
+                      meals: carbsMeals,
+                    ),
+                    MealCategory(
+                      title: AppLocalKeys.vegetables.tr(),
+                      meals: vegetablesMeals,
+                    ),
+                    MealCategory(
+                      title: AppLocalKeys.naturalSupplements.tr(),
+                      meals: naturalSupplementsMeals,
+                    ),
+                  ],
+                );
+              },
+              failure: (value) => ListView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
                 ),
-                MealCategory(
-                  title: AppLocalKeys.fats.tr(),
-                  meals: fatsMeals,
-                ),
-                MealCategory(
-                  title: AppLocalKeys.carbs.tr(),
-                  meals: carbsMeals,
-                ),
-                MealCategory(
-                  title: AppLocalKeys.vegetables.tr(),
-                  meals: vegetablesMeals,
-                ),
-                MealCategory(
-                  title: AppLocalKeys.naturalSupplements.tr(),
-                  meals: naturalSupplementsMeals,
-                ),
-              ],
+                children: [
+                  const SizedBox(height: 100),
+                  Center(
+                    child: Text(
+                      value.message,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+              orElse: () => const SizedBox.shrink(),
             );
           },
-          failure: (value) => Center(
-            child: Text(
-              value.message,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
-
-          orElse: () => const SizedBox.shrink(),
-        );
-      },
-    ),
+        ),
+      ),
     );
   }
 }

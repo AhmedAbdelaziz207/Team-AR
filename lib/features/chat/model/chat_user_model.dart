@@ -23,15 +23,15 @@ class ChatUserModel {
 
   factory ChatUserModel.fromJson(Map<String, dynamic> json) {
     return ChatUserModel(
-      id: json['id'] as String?,
-      userName: json['userName'] as String?,
-      firstName: json['firstName'] as String?,
-      lastName: json['lastName'] as String?,
-      email: json['email'] as String?,
-      whatsappNumber: json['whatsappNumber'] as String?,
-      phoneNumber: json['phoneNumber'] as String?,
-      numOfUnReadMessages: json['numOfUnReadMessages'] as int?,
-      lastMessageDateTime: json['lastMessageTime'] as String?,
+      id: (json['id'] ?? json['Id'] ?? json['userId'] ?? json['UserId'])?.toString(),
+      userName: (json['userName'] ?? json['UserName'])?.toString(),
+      firstName: (json['firstName'] ?? json['FirstName'])?.toString(),
+      lastName: (json['lastName'] ?? json['LastName'])?.toString(),
+      email: (json['email'] ?? json['Email'])?.toString(),
+      whatsappNumber: (json['whatsappNumber'] ?? json['WhatsappNumber'])?.toString(),
+      phoneNumber: (json['phoneNumber'] ?? json['PhoneNumber'])?.toString(),
+      numOfUnReadMessages: (json['numOfUnReadMessages'] ?? json['NumOfUnReadMessages']) as int?,
+      lastMessageDateTime: (json['lastMessageTime'] ?? json['LastMessageTime'] ?? json['lastMessageDateTime'])?.toString(),
     );
   }
 

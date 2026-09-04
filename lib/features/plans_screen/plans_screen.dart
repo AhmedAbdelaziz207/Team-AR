@@ -60,75 +60,90 @@ class _PlansScreenState extends State<PlansScreen>
               ?.copyWith(color: AppColors.black),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text(
-              title,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontSize: 21.sp,
-                  ),
-            ),
-            SizedBox(height: 8.h),
-            TabBar(
-              unselectedLabelStyle: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(fontSize: 16.sp, color: AppColors.secondaryColor),
-              controller: _tabController,
-              indicator: BoxDecoration(
-                color: AppColors.newPrimaryColor,
-                borderRadius: BorderRadius.circular(30.r),
-              ),
-              indicatorWeight: 0,
-              labelStyle: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(fontSize: 16.sp),
-              labelColor: AppColors.white,
-              indicatorSize: TabBarIndicatorSize.tab,
-              tabs: [
-                const Tab(text: "VIP"),
-                Tab(text: AppLocalKeys.normal.tr()),
-              ],
-            ),
-            const SizedBox(height: 16),
-            BlocBuilder<UserPlansCubit, UserPlansState>(
-              builder: (context, state) {
-                if (state is UserPlansLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-
-                if (state is UserPlansLoaded) {
-                  final vipPlans = state.plans
-                      .where((plan) => plan.packageType?.toLowerCase() == "vip")
-                      .toList();
-                  final normalPlans = state.plans
-                      .where((plan) => plan.packageType?.toLowerCase() != "vip")
-                      .toList();
-
-                  return Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        PlansList(plans: vipPlans), // VIP Plans
-                        PlansList(plans: normalPlans), // Normal Plans
-                      ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<UserPlansCubit>().getUserPlans();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text(
+                title,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontSize: 21.sp,
                     ),
-                  );
-                }
-                if (state is UserPlansFailure) {
-                  return const Center(
-                    child: Text("Error"),
-                  );
-                }
-                return const SizedBox();
-              },
-            )
-          ],
+              ),
+              SizedBox(height: 8.h),
+              TabBar(
+                unselectedLabelStyle: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontSize: 16.sp, color: AppColors.secondaryColor),
+                controller: _tabController,
+                indicator: BoxDecoration(
+                  color: AppColors.newPrimaryColor,
+                  borderRadius: BorderRadius.circular(30.r),
+                ),
+                indicatorWeight: 0,
+                labelStyle: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontSize: 16.sp),
+                labelColor: AppColors.white,
+                indicatorSize: TabBarIndicatorSize.tab,
+                tabs: [
+                  const Tab(text: "VIP"),
+                  Tab(text: AppLocalKeys.normal.tr()),
+                ],
+              ),
+              const SizedBox(height: 16),
+              BlocBuilder<UserPlansCubit, UserPlansState>(
+                builder: (context, state) {
+                  if (state is UserPlansLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  if (state is UserPlansLoaded) {
+                    final vipPlans = state.plans
+                        .where((plan) => plan.packageType?.toLowerCase() == "vip")
+                        .toList();
+                    final normalPlans = state.plans
+                        .where((plan) => plan.packageType?.toLowerCase() != "vip")
+                        .toList();
+
+                    return Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          PlansList(plans: vipPlans), // VIP Plans
+                          PlansList(plans: normalPlans), // Normal Plans
+                        ],
+                      ),
+                    );
+                  }
+                  if (state is UserPlansFailure) {
+                    return Expanded(
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics(),
+                        ),
+                        children: const [
+                          SizedBox(height: 100),
+                          Center(
+                            child: Text("Error"),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return const SizedBox();
+                },
+              )
+            ],
+          ),
         ),
       ),
     );

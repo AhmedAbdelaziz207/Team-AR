@@ -3,9 +3,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/network/api_endpoints.dart';
+import 'package:team_ar/core/network/dio_factory.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
+import 'package:team_ar/core/widgets/app_confirm_dialog.dart';
 import 'package:team_ar/core/widgets/plans_list_card.dart';
 import 'package:team_ar/features/home/admin/data/trainee_model.dart';
 import 'package:team_ar/features/home/user/logic/user_cubit.dart';
@@ -13,6 +16,8 @@ import 'package:team_ar/features/home/user/logic/user_state.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_cubit.dart';
 import 'package:team_ar/features/plans_screen/logic/user_plans_state.dart';
 import 'package:team_ar/features/plans_screen/model/user_plan.dart';
+import 'package:dio/dio.dart';
+import 'package:team_ar/features/home/admin/logic/trainees_cubit.dart';
 import 'package:team_ar/features/user_info/model/trainee_model.dart';
 import 'package:team_ar/features/user_info/widget/floating_menu.dart';
 
@@ -39,6 +44,111 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
 
   late TrainerModel trainee;
 
+  Future<void> _confirmDeleteTrainee() async {
+    final String traineeName = widget.traineeModel?.userName ?? "المتدرب";
+    final String? traineeId = widget.traineeModel?.id;
+
+    if (traineeId == null || traineeId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("تعذر حذف المتدرب: معرّف الحساب غير متوفر")),
+      );
+      return;
+    }
+
+    final confirmed = await showAppConfirmDialog(
+      context: context,
+      title: "حذف حساب المتدرب",
+      message:
+          "هل أنت متأكد من رغبتك في حذف حساب المتدرب \"$traineeName\" نهائياً؟\n\nسيتم حذف جميع بياناته واشتراكاته وجداوله من النظام بشكل كامل.",
+      confirmText: "حذف الحساب",
+      cancelText: "إلغاء",
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Center(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 20.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16.r),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(color: Colors.red),
+              SizedBox(height: 14.h),
+              Text(
+                "جاري حذف الحساب...",
+                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: AppColors.black),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    try {
+      final dio = await DioFactory.getDio();
+      final cleanId = traineeId.trim();
+      final response = await dio.delete(
+        '${ApiEndPoints.baseUrl}${ApiEndPoints.deleteUser}',
+        queryParameters: {
+          'id': cleanId,
+          'Id': cleanId,
+          'userId': cleanId,
+          'UserId': cleanId,
+        },
+        options: Options(
+          validateStatus: (status) => status != null && status < 500,
+        ),
+      );
+
+      if (mounted) Navigator.pop(context); // Dismiss loading dialog
+
+      if (response.statusCode == 200 ||
+          response.statusCode == 204 ||
+          response.statusCode == 404) {
+        try {
+          context.read<TraineeCubit>().getAllTrainees();
+        } catch (_) {}
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("تم حذف حساب المتدرب \"$traineeName\" بنجاح"),
+              backgroundColor: Colors.green[700],
+            ),
+          );
+          Navigator.pop(context, true); // Pop back to trainees list with true
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("فشل حذف الحساب (كود: ${response.statusCode})"),
+              backgroundColor: Colors.red[700],
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      log("Error deleting trainee: $e");
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("حدث خطأ أثناء محاولة حذف الحساب: $e"),
+            backgroundColor: Colors.red[700],
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,10 +164,34 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
         backgroundColor: AppColors.white,
         elevation: 0,
         leading: const AppBarBackButton(),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.delete_forever_rounded,
+              color: Colors.red[700],
+              size: 24.sp,
+            ),
+            tooltip: "حذف حساب المتدرب",
+            onPressed: _confirmDeleteTrainee,
+          ),
+          SizedBox(width: 4.w),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-        child: Column(
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<UserCubit>().getUser(
+                widget.traineeModel?.id ?? "",
+              );
+          context.read<UserPlansCubit>().getUserPlan(
+                widget.traineeModel?.packageId ?? 0,
+              );
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -313,6 +447,7 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
           ],
         ),
       ),
+    ),
       floatingActionButton: BlocBuilder<UserCubit, UserState>(
         builder: (context, state) {
           if (state is UserSuccess) {

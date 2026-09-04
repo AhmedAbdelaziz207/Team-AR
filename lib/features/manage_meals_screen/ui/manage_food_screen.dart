@@ -140,32 +140,54 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                     return state.maybeMap(
                       loading: (_) =>
                           const Center(child: CircularProgressIndicator(color: AppColors.lightBlue)),
-                      failure: (value) => Center(
-                        child: Text(value.message,
-                            style: TextStyle(color: Colors.red, fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                      failure: (value) => ListView(
+                        physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics(),
+                        ),
+                        children: [
+                          SizedBox(height: 100.h),
+                          Center(
+                            child: Text(
+                              value.message,
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
                       ),
                       loaded: (value) {
                         final filteredMeals = value.meals
                             .where((meal) => meal.foodCategory == selectedTab)
                             .toList();
                         if (filteredMeals.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.restaurant_menu_rounded, size: 70.sp, color: Colors.grey[300]),
-                                SizedBox(height: 12.h),
-                                Text(
-                                  AppLocalKeys.noMealsFound.tr(),
-                                  style: TextStyle(
-                                    color: AppColors.grey,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: "Cairo",
-                                    fontSize: 18.sp,
-                                  ),
-                                ),
-                              ],
+                          return ListView(
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
                             ),
+                            children: [
+                              SizedBox(height: 80.h),
+                              Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.restaurant_menu_rounded,
+                                        size: 70.sp, color: Colors.grey[300]),
+                                    SizedBox(height: 12.h),
+                                    Text(
+                                      AppLocalKeys.noMealsFound.tr(),
+                                      style: TextStyle(
+                                        color: AppColors.grey,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: "Cairo",
+                                        fontSize: 18.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           );
                         }
 
@@ -181,7 +203,9 @@ class _ManageMealsScreenState extends State<ManageMealsScreen> {
                         });
 
                         return ReorderableListView.builder(
-                          physics: const BouncingScrollPhysics(),
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
+                          ),
                           padding: EdgeInsets.only(top: 4.h, bottom: 90.h),
                           itemCount: filteredMeals.length,
                           itemBuilder: (context, index) => MealCard(

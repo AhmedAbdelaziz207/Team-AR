@@ -32,54 +32,66 @@ class AdminPanel extends StatelessWidget {
               color: AppColors.black),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 24.h,
-              ),
-              BlocProvider(
-                create: (context) => TraineeCubit(
-                  getIt<TraineesRepository>(),
+      body: BlocProvider(
+        create: (context) => TraineeCubit(
+          getIt<TraineesRepository>(),
+        ),
+        child: Builder(
+          builder: (context) {
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<TraineeCubit>().getAllTrainees();
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
                 ),
-                child: const SubscribedUsersSection(),
-              ),
-              SizedBox(height: 20.h),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 24.h,
+                      ),
+                      const SubscribedUsersSection(),
+                      SizedBox(height: 20.h),
 
-              AdminManageCard(
-                title: AppLocalKeys.manageFoods.tr(),
-                cardColor: AppColors.lightBlue,
-                onTap: () {
-                  Navigator.pushNamed(context, Routes.manageMealsScreen);
-                },
-              ),
-              SizedBox(height: 20.h),
-              AdminManageCard(
-                title: AppLocalKeys.plans.tr(),
-                onTap: () {
-                  Navigator.pushNamed(context, Routes.managePlansScreen);
-                },
-              ),
-              SizedBox(height: 20.h),
-              const LanguageSelection(),
-              SizedBox(height: 20.h),
+                      AdminManageCard(
+                        title: AppLocalKeys.manageFoods.tr(),
+                        cardColor: AppColors.lightBlue,
+                        onTap: () {
+                          Navigator.pushNamed(context, Routes.manageMealsScreen);
+                        },
+                      ),
+                      SizedBox(height: 20.h),
+                      AdminManageCard(
+                        title: AppLocalKeys.plans.tr(),
+                        onTap: () {
+                          Navigator.pushNamed(context, Routes.managePlansScreen);
+                        },
+                      ),
+                      SizedBox(height: 20.h),
+                      const LanguageSelection(),
+                      SizedBox(height: 20.h),
 
-              // logout button
+                      // logout button
 
-              SizedBox(
-                height: 50.h,
-              ),
+                      SizedBox(
+                        height: 50.h,
+                      ),
 
-              const Align(
-                alignment: Alignment.center,
-                child: LogoutButton(),
+                      const Align(
+                        alignment: Alignment.center,
+                        child: LogoutButton(),
+                      ),
+                      SizedBox(height: 20.h),
+                    ],
+                  ),
+                ),
               ),
-              SizedBox(height: 20.h),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

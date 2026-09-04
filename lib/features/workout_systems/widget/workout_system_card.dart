@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/widgets/app_confirm_dialog.dart';
 import 'package:team_ar/features/workout_systems/logic/workout_system_cubit.dart';
 import 'package:team_ar/features/workout_systems/model/workout_system_model.dart';
 import 'package:team_ar/features/workout_systems/widget/pdf_preview_widget.dart';
@@ -21,8 +22,19 @@ class WorkoutSystemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: UniqueKey(),
-      direction:  DismissDirection.startToEnd,
+      key: ValueKey("workout_${workout?.id ?? name}"),
+      direction: DismissDirection.horizontal,
+      confirmDismiss: (direction) async {
+        final confirmed = await showAppConfirmDialog(
+          context: context,
+          title: "حذف نظام التمرين",
+          message:
+              "هل أنت متأكد من رغبتك في حذف نظام التمرين \"${name ?? 'هذا النظام'}\" نهائياً؟",
+          confirmText: "حذف النظام",
+          cancelText: "إلغاء",
+        );
+        return confirmed == true;
+      },
       onDismissed: (direction) {
         context.read<WorkoutSystemCubit>().deleteWorkoutSystem(workout!.id!);
       },
@@ -31,18 +43,48 @@ class WorkoutSystemCard extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         margin: EdgeInsets.all(8.r),
         decoration: BoxDecoration(
-          color: Colors.red,
+          color: const Color(0xFFDC2626),
           borderRadius: BorderRadius.circular(20.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 2,
-              offset: const Offset(0, 3),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.delete_forever_rounded, color: Colors.white),
+            SizedBox(width: 8.w),
+            const Text(
+              "حذف",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Cairo",
+              ),
             ),
           ],
         ),
-        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      secondaryBackground: Container(
+        alignment: AlignmentDirectional.centerEnd,
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        margin: EdgeInsets.all(8.r),
+        decoration: BoxDecoration(
+          color: const Color(0xFFDC2626),
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "حذف",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontFamily: "Cairo",
+              ),
+            ),
+            SizedBox(width: 8.w),
+            const Icon(Icons.delete_forever_rounded, color: Colors.white),
+          ],
+        ),
       ),
       child: GestureDetector(
         onTap: () => _openPdf(context),

@@ -30,6 +30,7 @@ class ApiEndPoints {
   static const updateUserPackage = "api/Account/UpdateUserPackage";
   static const fcmToken = "/api/UserDevice";
   static const removeAccount = "api/Account/RemoeAccount";
+  static const deleteUser = "api/Account/DeleteUser";
   static const trainerDataByAdmin = "api/Account/AdminRegistration";
   static const completeUserData = "api/Account/CompleteRegistration";
   static const updateUserPayment = "/api/Account/UpdateUserPayemnt";

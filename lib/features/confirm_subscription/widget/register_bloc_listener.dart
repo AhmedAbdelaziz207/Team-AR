@@ -33,19 +33,24 @@ class RegisterBlocListener extends StatelessWidget {
             );
           }
         }, success: (registerResponse) async {
-          DioFactory.setTokenIntoHeaderAfterLogin(registerResponse.token!);
-          // save user Id
-          await SharedPreferencesHelper.setString(
-            AppConstants.userId,
-            registerResponse.id!,
-          );
+          final role = await SharedPreferencesHelper.getString(
+              AppConstants.userRole);
+          final isAdmin = role?.toLowerCase() == "admin";
+
+          // Only set Dio header and userId if NOT admin (normal user registering themselves)
+          // To prevent corrupting the active Admin session
+          if (!isAdmin) {
+            DioFactory.setTokenIntoHeaderAfterLogin(registerResponse.token!);
+            await SharedPreferencesHelper.setString(
+              AppConstants.userId,
+              registerResponse.id!,
+            );
+          }
+          if (!context.mounted) return;
           showCustomDialog(
             context,
             onConfirm: () async {
-              final role = await SharedPreferencesHelper.getString(
-                  AppConstants.userRole);
-
-              if (role?.toLowerCase() == "admin") {
+              if (isAdmin) {
                 Navigator.pushReplacementNamed(
                   context,
                   Routes.registerSuccess,
