@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/core/widgets/custom_text_form_field.dart';
@@ -125,10 +126,17 @@ class AdminRegisterScreen extends StatelessWidget {
                   listener: (context, state) {
                     state.maybeWhen(
                       success: (data) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('User created')),
-                        );
-                        Navigator.of(context).pop(true);
+                        final cubit = context.read<AdminRegisterCubit>();
+                        final successModel = cubit.lastCreatedUser;
+                        if (successModel != null) {
+                          Navigator.of(context).pushReplacementNamed(
+                            Routes.registerSuccess,
+                            arguments: successModel,
+                          );
+                        } else {
+                          // Fallback if model missing
+                          Navigator.of(context).pop(true);
+                        }
                       },
                       failure: (err) {
                         ScaffoldMessenger.of(context).showSnackBar(

@@ -85,10 +85,10 @@ class LoginBlocListener extends StatelessWidget {
     final bool isAdminRole =
         r == 'admin' || r == 'adimn' || r == 'administrator';
     final isRealAdmin =
-        await SharedPreferencesHelper.getBool('is_real_admin');
+        (await SharedPreferencesHelper.getBool('is_real_admin')) ?? false;
 
-    // 1) ADMIN FLOW: Proceed to admin landing
-    if (isAdminRole && (isRealAdmin || loginResponse.isPaid != false)) {
+    // 1) ADMIN FLOW: Only verified real administrators enter admin landing
+    if (isAdminRole && isRealAdmin) {
       if (context.mounted) {
         Navigator.pushNamedAndRemoveUntil(
             context, Routes.adminLanding, (route) => false);
@@ -99,7 +99,8 @@ class LoginBlocListener extends StatelessWidget {
     // 2) TRAINER FLOW:
     if (isTrainerRole) {
       final isDataCompleted = loginResponse.isDataCompleted ??
-          await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
+          (await SharedPreferencesHelper.getBool(AppConstants.dataCompleted)) ??
+          false;
       if (context.mounted) {
         if (!isDataCompleted) {
           Navigator.pushNamedAndRemoveUntil(
@@ -156,10 +157,19 @@ class LoginBlocListener extends StatelessWidget {
       // On error fetching user, fallback to normal navigation
     }
 
-    // Otherwise proceed to home for regular trainees
+    // Check if trainee has completed their profile data
+    final isDataCompleted = loginResponse.isDataCompleted ??
+        (await SharedPreferencesHelper.getBool(AppConstants.dataCompleted)) ??
+        false;
+
     if (context.mounted) {
-      Navigator.pushNamedAndRemoveUntil(
-          context, Routes.rootScreen, (route) => false);
+      if (!isDataCompleted) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.completeData, (route) => false);
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.rootScreen, (route) => false);
+      }
     }
   }
 }

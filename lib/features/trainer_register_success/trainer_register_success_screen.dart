@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
@@ -62,24 +63,26 @@ class TrainerRegistrationSuccess extends StatelessWidget {
               // Username section
               _InfoField(
                 label: AppLocalKeys.email.tr(),
-                value: data!.email ?? "",
+                value: data?.email ?? "",
               ),
               const SizedBox(height: 16),
 
               // Password section
               _InfoField(
                 label: AppLocalKeys.password.tr(),
-                value: data!.password ?? "",
+                value: data?.password ?? "",
               ),
               SizedBox(height: 24.h),
 
-              // Login button
+              // Share to WhatsApp button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    shareToWhatsApp(context, data!);
-                  },
+                  onPressed: data != null
+                      ? () {
+                          shareToWhatsApp(context, data!);
+                        }
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
                     shape: RoundedRectangleBorder(
@@ -91,6 +94,34 @@ class TrainerRegistrationSuccess extends StatelessWidget {
                     AppLocalKeys.shareToWhatsApp.tr(),
                     style: TextStyle(
                       fontSize: 16.sp,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 12.h),
+              // Back to dashboard button
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      Routes.adminLanding,
+                      (route) => false,
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.primaryColor),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: Text(
+                    'العودة للرئيسية',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: AppColors.primaryColor,
+                      fontFamily: 'Cairo',
                     ),
                   ),
                 ),

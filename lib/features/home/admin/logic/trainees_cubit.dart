@@ -38,7 +38,9 @@ class TraineeCubit extends Cubit<TraineeState> {
       success: (trainees) {
         final normalUsers = trainees
             .where(
-              (user) => user.role?.toLowerCase() != 'admin',
+              (user) =>
+                  user.role?.toLowerCase() != 'admin' ||
+                  user.endPackage != null,
             )
             .toList();
         emit(TraineeState.success(normalUsers));

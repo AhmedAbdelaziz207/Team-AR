@@ -57,7 +57,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (token != null && userRole != null && context.mounted) {
       final role = userRole.toLowerCase().trim();
-      if (role == 'admin' || role == 'adimn' || role == 'administrator') {
+      final isRealAdmin =
+          await SharedPreferencesHelper.getBool('is_real_admin');
+      if ((role == 'admin' || role == 'adimn' || role == 'administrator') &&
+          isRealAdmin) {
         Navigator.pushNamedAndRemoveUntil(
           context,
           Routes.adminLanding,

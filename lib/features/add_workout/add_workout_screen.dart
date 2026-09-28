@@ -120,7 +120,7 @@ class _AddWorkoutScreenState extends State<AddWorkoutScreen> {
             BlocConsumer<WorkoutSystemCubit, WorkoutSystemState>(
              listener: (context, state) {
                if (state is WorkoutSystemAssignedSuccess) {
-                 if (mounted) Navigator.pop(context); // ✅ Safe place to do this
+                 if (mounted) Navigator.pop(context, true); // ✅ returns true so caller knows plan is complete
                }
              },
               builder: (context, state) {

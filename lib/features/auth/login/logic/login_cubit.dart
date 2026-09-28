@@ -59,12 +59,28 @@ class LoginCubit extends Cubit<LoginState> {
         // -------------------------------------------------------------
         // CASE 2: ADMIN
         // Admins are system administrators. They NEVER expire and never pay for trainee packages.
-        // Always save session immediately with isRealAdmin: true.
         // -------------------------------------------------------------
         if (isAdminRole) {
-          await saveUserData(loginResponse, isRealAdmin: true);
-          emit(LoginState.loginSuccess(loginResponse));
-          return;
+          // Check if this account is actually a trainee that was created via AdminRegistration
+          bool isTraineeWithPackage = false;
+          if (loginResponse.id != null) {
+            try {
+              final api = getIt<ApiService>();
+              final user = await api.getLoggedUserData(loginResponse.id!);
+              if (user.endPackage != null ||
+                  user.packageId != null ||
+                  (user.remindDays != null && user.remindDays! > 0)) {
+                isTraineeWithPackage = true;
+              }
+            } catch (_) {}
+          }
+
+          if (!isTraineeWithPackage) {
+            await saveUserData(loginResponse, isRealAdmin: true);
+            emit(LoginState.loginSuccess(loginResponse));
+            return;
+          }
+          // If they have a package, fall through to CASE 3 (Trainee)
         }
 
         // -------------------------------------------------------------

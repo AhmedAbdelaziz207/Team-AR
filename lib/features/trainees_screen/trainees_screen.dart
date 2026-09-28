@@ -54,7 +54,9 @@ class _TraineesScreenState extends State<TraineesScreen> {
       response.whenOrNull(
         success: (trainees) {
           final normalUsers = trainees
-              .where((user) => user.role?.toLowerCase() != 'admin')
+              .where((user) =>
+                  user.role?.toLowerCase() != 'admin' ||
+                  user.endPackage != null)
               .toList();
           if (mounted) {
             setState(() {

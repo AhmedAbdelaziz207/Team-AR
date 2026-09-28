@@ -35,41 +35,52 @@ class RegisterBlocListener extends StatelessWidget {
         }, success: (registerResponse) async {
           final role = await SharedPreferencesHelper.getString(
               AppConstants.userRole);
-          final isAdmin = role?.toLowerCase() == "admin";
+          final isRealAdmin =
+              await SharedPreferencesHelper.getBool('is_real_admin');
+          final isAdmin = isRealAdmin ||
+              role?.toLowerCase() == "admin" ||
+              role?.toLowerCase() == "adimn" ||
+              role?.toLowerCase() == "administrator" ||
+              (context.mounted &&
+                  context.read<ConfirmSubscriptionCubit>().isAdmin);
 
-          // Only set Dio header and userId if NOT admin (normal user registering themselves)
-          // To prevent corrupting the active Admin session
-          if (!isAdmin) {
-            DioFactory.setTokenIntoHeaderAfterLogin(registerResponse.token!);
-            await SharedPreferencesHelper.setString(
-              AppConstants.userId,
-              registerResponse.id!,
+          if (!context.mounted) return;
+
+          // -------------------------------------------------------------
+          // CASE 1: ADMIN CREATED A TRAINEE ACCOUNT
+          // -------------------------------------------------------------
+          if (isAdmin) {
+            final cubit = context.read<ConfirmSubscriptionCubit>();
+            final successModel = RegisterSuccessModel(
+              userName: cubit.nameController.text.trim(),
+              email: cubit.emailController.text.trim(),
+              password: cubit.passwordController.text,
             );
+
+            // Navigate directly to TrainerRegistrationSuccess screen
+            // Displays: Checkmark, Credentials, and WhatsApp share button
+            Navigator.pushReplacementNamed(
+              context,
+              Routes.registerSuccess,
+              arguments: successModel,
+            );
+            return;
           }
+
+          // -------------------------------------------------------------
+          // CASE 2: NORMAL TRAINEE SELF-REGISTRATION
+          // -------------------------------------------------------------
+          DioFactory.setTokenIntoHeaderAfterLogin(registerResponse.token!);
+          await SharedPreferencesHelper.setString(
+            AppConstants.userId,
+            registerResponse.id!,
+          );
+
           if (!context.mounted) return;
           showCustomDialog(
             context,
             onConfirm: () async {
-              if (isAdmin) {
-                Navigator.pushReplacementNamed(
-                  context,
-                  Routes.registerSuccess,
-                  arguments: RegisterSuccessModel(
-                    userName: context
-                        .read<ConfirmSubscriptionCubit>()
-                        .nameController
-                        .text,
-                    email: context
-                        .read<ConfirmSubscriptionCubit>()
-                        .emailController
-                        .text,
-                    password: context
-                        .read<ConfirmSubscriptionCubit>()
-                        .passwordController
-                        .text,
-                  ),
-                );
-              } else if (AppConstants.isReleasedValue) {
+              if (AppConstants.isReleasedValue) {
                 // Skip payment screen entirely if released/in-review
                 await SharedPreferencesHelper.setData(
                     AppConstants.token, registerResponse.token);
@@ -86,7 +97,6 @@ class RegisterBlocListener extends StatelessWidget {
                 }
               } else {
                 // Save userRole as Trainee and userId only (Do NOT save token to disk yet)
-                // This ensures if the user exits payment, they are NOT logged in automatically on restart.
                 await SharedPreferencesHelper.setData(
                     AppConstants.userRole, "Trainee");
                 await SharedPreferencesHelper.setData(

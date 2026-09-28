@@ -136,6 +136,9 @@ void main() async {
     final isDataCompleted =
         await SharedPreferencesHelper.getBool(AppConstants.dataCompleted);
 
+    final isRealAdmin =
+        await SharedPreferencesHelper.getBool('is_real_admin');
+
     String initialRoute;
     if (token != null &&
         token.isNotEmpty &&
@@ -143,7 +146,8 @@ void main() async {
         userRole.isNotEmpty) {
       final role = userRole.toLowerCase().trim();
       final isAdmin =
-          role == 'admin' || role == 'adimn' || role == 'administrator';
+          (role == 'admin' || role == 'adimn' || role == 'administrator') &&
+              isRealAdmin;
       final isTrainer = role == 'trainer';
 
       if (isAdmin) {

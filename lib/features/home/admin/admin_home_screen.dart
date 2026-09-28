@@ -19,15 +19,31 @@ class AdminHomeScreen extends StatefulWidget {
   State<AdminHomeScreen> createState() => _AdminHomeScreenState();
 }
 
-class _AdminHomeScreenState extends State<AdminHomeScreen> {
+class _AdminHomeScreenState extends State<AdminHomeScreen>
+    with WidgetsBindingObserver {
   int totalTrainees = 0;
   bool isLoading = false;
 
   @override
   void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
     context.read<TraineeCubit>().getNewTrainees();
     FirebaseNotificationsServices.listenToTokenRefresh();
-    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Refresh when app comes back to foreground
+    if (state == AppLifecycleState.resumed && mounted) {
+      context.read<TraineeCubit>().getNewTrainees();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

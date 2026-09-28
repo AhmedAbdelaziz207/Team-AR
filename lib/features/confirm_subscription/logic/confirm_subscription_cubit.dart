@@ -143,9 +143,16 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
       packageId: userPlan.id!,
     );
     if (isAdmin) {
-      final result = await repo.addTrainerByAdmin(req);
+      // Register user as Trainee (never Admin)
+      final result = await repo.registerUser(req);
       result.when(
         success: (data) async {
+          // Activate trainee payment silently in the background
+          if (data.id != null && data.id!.isNotEmpty) {
+            try {
+              await repo.updateUserPayment(data.id!);
+            } catch (_) {}
+          }
           emit(ConfirmSubscriptionState.success(data));
         },
         failure: (error) => emit(ConfirmSubscriptionState.failure(error)),
