@@ -14,6 +14,7 @@ import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/core/network/api_service.dart';
 import 'package:team_ar/core/services/background_task_service.dart';
 import 'package:team_ar/features/notification/services/push_notifications_services.dart';
+import 'package:team_ar/features/chat/services/supabase_chat_service.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit(this._loginRepo) : super(const LoginState.loginInitial());
@@ -193,19 +194,26 @@ class LoginCubit extends Cubit<LoginState> {
         !isRealAdmin && loginResponse.role?.toLowerCase() != 'trainer';
     if (isTrainee && loginResponse.id != null) {
       try {
-        final api = getIt<ApiService>();
-        // getAllChas returns the trainer as a contact — pick the first one
-        final contacts = await api.getAllChas();
-        if (contacts.isNotEmpty) {
-          final trainer = contacts.first;
-          if (trainer.id != null) {
-            await SharedPreferencesHelper.setString(
-                AppConstants.trainerId, trainer.id!);
-            await SharedPreferencesHelper.setString(
-                AppConstants.trainerName, trainer.userName ?? 'المدرب');
-            await SharedPreferencesHelper.setString(
-                AppConstants.trainerEmail, trainer.email ?? '');
-            log('Trainer info saved: id=${trainer.id}, name=${trainer.userName}');
+        final supabaseChat = SupabaseChatService();
+        final trainerId = await supabaseChat.getTrainerIdForTrainee(loginResponse.id!);
+        
+        if (trainerId != null && trainerId.isNotEmpty) {
+          await SharedPreferencesHelper.setString(AppConstants.trainerId, trainerId);
+          await SharedPreferencesHelper.setString(AppConstants.trainerName, 'المدرب');
+          await SharedPreferencesHelper.setString(AppConstants.trainerEmail, '');
+          log('Trainer info saved from Supabase: id=$trainerId');
+        } else {
+          // Fallback to REST API if no Supabase history
+          final api = getIt<ApiService>();
+          final contacts = await api.getAllChas();
+          if (contacts.isNotEmpty) {
+            final trainer = contacts.first;
+            if (trainer.id != null) {
+              await SharedPreferencesHelper.setString(AppConstants.trainerId, trainer.id!);
+              await SharedPreferencesHelper.setString(AppConstants.trainerName, trainer.userName ?? 'المدرب');
+              await SharedPreferencesHelper.setString(AppConstants.trainerEmail, trainer.email ?? '');
+              log('Trainer info saved from REST API: id=${trainer.id}, name=${trainer.userName}');
+            }
           }
         }
       } catch (e) {

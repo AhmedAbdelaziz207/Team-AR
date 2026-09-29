@@ -32,24 +32,7 @@ class NavigationClick extends StatelessWidget {
     String? name = await SharedPreferencesHelper.getString(AppConstants.trainerName);
     String? email = await SharedPreferencesHelper.getString(AppConstants.trainerEmail);
 
-    // Fallback 1: fetch from REST API (getAllChas)
-    if (id == null || id.isEmpty) {
-      try {
-        final api = getIt<ApiService>();
-        final contacts = await api.getAllChas();
-        if (contacts.isNotEmpty) {
-          final trainer = contacts.first;
-          id = trainer.id ?? '';
-          name = trainer.userName ?? 'المدرب';
-          email = trainer.email ?? '';
-          log('Trainer info from REST API: id=$id, name=$name');
-        }
-      } catch (e) {
-        log('REST API fallback failed: $e');
-      }
-    }
-
-    // Fallback 2: query Supabase for messages received by this trainee
+    // Fallback 1: query Supabase for messages received by this trainee
     if (id == null || id.isEmpty) {
       try {
         final currentUserId =
@@ -67,6 +50,23 @@ class NavigationClick extends StatelessWidget {
         }
       } catch (e) {
         log('Supabase fallback failed: $e');
+      }
+    }
+
+    // Fallback 2: fetch from REST API (getAllChas)
+    if (id == null || id.isEmpty) {
+      try {
+        final api = getIt<ApiService>();
+        final contacts = await api.getAllChas();
+        if (contacts.isNotEmpty) {
+          final trainer = contacts.first;
+          id = trainer.id ?? '';
+          name = trainer.userName ?? 'المدرب';
+          email = trainer.email ?? '';
+          log('Trainer info from REST API: id=$id, name=$name');
+        }
+      } catch (e) {
+        log('REST API fallback failed: $e');
       }
     }
 

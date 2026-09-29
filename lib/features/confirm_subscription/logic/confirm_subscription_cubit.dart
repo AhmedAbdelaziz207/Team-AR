@@ -11,6 +11,7 @@ import 'package:team_ar/features/plans_screen/model/user_plan.dart';
 import '../../auth/register/model/user_model.dart';
 import '../../auth/register/model/register_admin_request.dart';
 import '../../auth/register/repos/register_repository.dart';
+import '../../chat/services/supabase_chat_service.dart';
 import 'confirm_subscription_state.dart';
 
 class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
@@ -152,6 +153,24 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
             try {
               await repo.updateUserPayment(data.id!);
             } catch (_) {}
+            
+            // Send automated welcome message to establish chat link between Admin and Trainee
+            try {
+              final adminId = getIt<SharedPreferences>().getString(AppConstants.userId);
+              if (adminId != null && adminId.isNotEmpty) {
+                // Send via Supabase
+                final _client = SupabaseChatService();
+                await _client.sendMessage(adminId, data.id!, 'مرحباً بك في تطبيق Team AR! لقد تم تفعيل حسابك بنجاح.');
+                
+                // Trigger backend FCM
+                await getIt<ApiService>().sendMessage({
+                  'receiverId': data.id,
+                  'message': 'مرحباً بك في تطبيق Team AR! لقد تم تفعيل حسابك بنجاح.',
+                });
+              }
+            } catch (e) {
+              log("Failed to send automated welcome message: $e");
+            }
           }
           emit(ConfirmSubscriptionState.success(data));
         },
