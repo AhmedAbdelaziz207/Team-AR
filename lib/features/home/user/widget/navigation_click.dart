@@ -28,29 +28,35 @@ class NavigationClick extends StatelessWidget {
   /// Reads the trainer's ChatUserModel from SharedPreferences.
   /// If not cached, tries REST API, then Supabase as a last resort.
   Future<ChatUserModel> _getTrainerModel() async {
-    String? id = await SharedPreferencesHelper.getString(AppConstants.trainerId);
-    String? name = await SharedPreferencesHelper.getString(AppConstants.trainerName);
-    String? email = await SharedPreferencesHelper.getString(AppConstants.trainerEmail);
+    String? id;
+    String? name;
+    String? email;
 
-    // Fallback 1: query Supabase for messages received by this trainee
-    if (id == null || id.isEmpty) {
-      try {
-        final currentUserId =
-            await SharedPreferencesHelper.getString(AppConstants.userId);
-        if (currentUserId != null && currentUserId.isNotEmpty) {
-          final supabaseService = SupabaseChatService();
-          final trainerId =
-              await supabaseService.getTrainerIdForTrainee(currentUserId);
-          if (trainerId != null && trainerId.isNotEmpty) {
-            id = trainerId;
-            name = 'المدرب';
-            email = '';
-            log('Trainer ID from Supabase fallback: id=$id');
-          }
+    // 1. Always query Supabase FIRST to get the most recent person who messaged this trainee.
+    // This fixes older accounts that were wrongly cached to "Ahmed55".
+    try {
+      final currentUserId =
+          await SharedPreferencesHelper.getString(AppConstants.userId);
+      if (currentUserId != null && currentUserId.isNotEmpty) {
+        final supabaseService = SupabaseChatService();
+        final trainerId =
+            await supabaseService.getTrainerIdForTrainee(currentUserId);
+        if (trainerId != null && trainerId.isNotEmpty) {
+          id = trainerId;
+          name = 'المدرب';
+          email = '';
+          log('Trainer ID from Supabase fallback: id=$id');
         }
-      } catch (e) {
-        log('Supabase fallback failed: $e');
       }
+    } catch (e) {
+      log('Supabase fallback failed: $e');
+    }
+
+    // 2. Fallback: Local Cache
+    if (id == null || id.isEmpty) {
+      id = await SharedPreferencesHelper.getString(AppConstants.trainerId);
+      name = await SharedPreferencesHelper.getString(AppConstants.trainerName);
+      email = await SharedPreferencesHelper.getString(AppConstants.trainerEmail);
     }
 
     // Fallback 2: fetch from REST API (getAllChas)
