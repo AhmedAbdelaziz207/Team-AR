@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
@@ -76,9 +77,68 @@ class VideoUrlHelper {
     return null;
   }
 
+  /// تنظيف وتجهيز روابط الفيديو وإزالة وسوم التتبع من فيسبوك
+  static String cleanVideoUrl(String rawUrl) {
+    var url = rawUrl.trim();
+    if (url.isEmpty) return url;
+    try {
+      final uri = Uri.parse(url);
+      final host = uri.host.toLowerCase();
+
+      if (host.contains('facebook.com') ||
+          host.contains('fb.watch') ||
+          host.contains('fb.com')) {
+        // 1. استخراج معرّف الريل الصريح
+        final reelMatch =
+            RegExp(r'(?:reel|reels)\/(\d+)').firstMatch(uri.path);
+        if (reelMatch != null && reelMatch.groupCount >= 1) {
+          return 'https://www.facebook.com/reel/${reelMatch.group(1)}/';
+        }
+
+        // 2. نمط watch?v=ID
+        if (uri.path.contains('watch') && uri.queryParameters.containsKey('v')) {
+          final v = uri.queryParameters['v'];
+          if (v != null && v.isNotEmpty) {
+            return 'https://www.facebook.com/watch/?v=$v';
+          }
+        }
+
+        // 3. تنظيف معاملات التتبع
+        final cleanParams = Map<String, String>.from(uri.queryParameters)
+          ..removeWhere((key, _) =>
+              key.toLowerCase().startsWith('mibextid') ||
+              key.toLowerCase().startsWith('__cft__') ||
+              key.toLowerCase().startsWith('__tn__') ||
+              key == 'fs' ||
+              key == 's' ||
+              key == 'fbclid' ||
+              key == 'ref' ||
+              key == 'rdid' ||
+              key == 'locale');
+
+        final cleanUri = uri.replace(
+          host: 'www.facebook.com',
+          queryParameters: cleanParams.isEmpty ? null : cleanParams,
+          fragment: null,
+        );
+        return cleanUri.toString();
+      }
+    } catch (_) {}
+    return url;
+  }
+
+  /// هل الرابط من روابط المشاركة المختصرة على فيسبوك التي تعتمد على التحويل 302؟
+  static bool isFacebookShareUrl(String url) {
+    final lower = url.trim().toLowerCase();
+    return lower.contains('/share/r/') ||
+        lower.contains('/share/v/') ||
+        lower.contains('fb.watch');
+  }
+
   /// تجهيز كود HTML لتضمين فيديو فيسبوك / ريلز عبر مشغل فيسبوك الرسمي
   static String generateFacebookEmbedHtml(String videoUrl) {
-    final encoded = Uri.encodeComponent(videoUrl.trim());
+    final cleanUrl = cleanVideoUrl(videoUrl);
+    final encoded = Uri.encodeComponent(cleanUrl);
     return '''
 <!DOCTYPE html>
 <html>
@@ -105,7 +165,7 @@ class VideoUrlHelper {
 </head>
 <body>
   <iframe
-    src="https://www.facebook.com/plugins/video.php?href=$encoded&show_text=0&autoplay=1&mute=0"
+    src="https://www.facebook.com/plugins/video.php?href=$encoded&show_text=false&width=500&autoplay=1"
     scrolling="no"
     frameborder="0"
     allowfullscreen="true"
@@ -218,10 +278,36 @@ class _UniversalInlineVideoPlayerState extends State<UniversalInlineVideoPlayer>
     }
   }
 
+  Future<void> _openExternal(BuildContext context) async {
+    HapticFeedback.lightImpact();
+    final clean = VideoUrlHelper.cleanVideoUrl(widget.videoUrl);
+    try {
+      final uri = Uri.parse(clean);
+      final launched =
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'تعذر فتح الرابط الخارجي: $e',
+              style: const TextStyle(fontFamily: 'Cairo'),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   void _initWebPlayer() {
     try {
       final web = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setUserAgent(
+            'Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36')
         ..setBackgroundColor(Colors.black)
         ..setNavigationDelegate(
           NavigationDelegate(
@@ -232,20 +318,34 @@ class _UniversalInlineVideoPlayerState extends State<UniversalInlineVideoPlayer>
               setState(() => _isLoading = false);
             },
             onNavigationRequest: (req) {
-              // منع الانتقال لصفحات فيسبوك الخارجية والإبقاء على الفيديو فقط
-              if (req.isMainFrame &&
-                  !req.url.contains('plugins/video.php') &&
-                  !req.url.startsWith('data:')) {
-                return NavigationDecision.prevent;
+              final uri = Uri.tryParse(req.url);
+              final host = uri?.host.toLowerCase() ?? '';
+              if (host.contains('facebook.com') ||
+                  host.contains('fbcdn.net') ||
+                  host.contains('fbsbx.com') ||
+                  host.contains('instagram.com') ||
+                  host.contains('cdninstagram.com') ||
+                  host.contains('youtube.com') ||
+                  host.contains('googlevideo.com') ||
+                  req.url.startsWith('data:') ||
+                  req.url.startsWith('about:')) {
+                return NavigationDecision.navigate;
               }
-              return NavigationDecision.navigate;
+              return NavigationDecision.prevent;
             },
           ),
         );
 
       if (_platform == VideoPlatformType.facebook) {
-        final html = VideoUrlHelper.generateFacebookEmbedHtml(widget.videoUrl);
-        web.loadHtmlString(html, baseUrl: 'https://www.facebook.com');
+        final clean = VideoUrlHelper.cleanVideoUrl(widget.videoUrl);
+        if (VideoUrlHelper.isFacebookShareUrl(clean)) {
+          // روابط المشاركة المختصرة /share/r/ أو fb.watch تُحمّل مباشرة لتتبع تحويل 302
+          web.loadRequest(Uri.parse(clean));
+        } else {
+          // روابط الفيديوهات المباشرة تُضمّن بمشغل فيسبوك الرسمي
+          final html = VideoUrlHelper.generateFacebookEmbedHtml(clean);
+          web.loadHtmlString(html, baseUrl: 'https://www.facebook.com');
+        }
       } else {
         web.loadRequest(Uri.parse(widget.videoUrl.trim()));
       }
@@ -633,6 +733,17 @@ class _UniversalInlineVideoPlayerState extends State<UniversalInlineVideoPlayer>
                   ),
                   SizedBox(width: 6.w),
 
+                  // زر فتح الرابط بالتطبيق المخصص
+                  IconButton(
+                    tooltip: 'فتح في ${_platform == VideoPlatformType.facebook ? 'تطبيق فيسبوك' : 'المتصفح'}',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: Icon(Icons.open_in_new_rounded,
+                        color: Colors.white, size: 18.sp),
+                    onPressed: () => _openExternal(context),
+                  ),
+                  SizedBox(width: 6.w),
+
                   // زر ملء الشاشة
                   IconButton(
                     tooltip: 'تكبير ملء الشاشة',
@@ -698,6 +809,58 @@ class _UniversalInlineVideoPlayerState extends State<UniversalInlineVideoPlayer>
                 ],
               ),
             ),
+
+            // شريط إرشادي ذكي لفيسبوك في حال تعذر التضمين بسبب قيود الخصوصية
+            if (_platform == VideoPlatformType.facebook)
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
+                color: const Color(0xFF0F172A),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline_rounded,
+                        color: const Color(0xFF38BDF8), size: 14.sp),
+                    SizedBox(width: 6.w),
+                    Expanded(
+                      child: Text(
+                        'الفيديو لا يفتح؟ (قد تكون الخصوصية محددة من الناشر)',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 9.5.sp,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () => _openExternal(context),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 3.5.h),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1877F2),
+                          borderRadius: BorderRadius.circular(6.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'فتح بفيسبوك',
+                              style: TextStyle(
+                                fontFamily: 'Cairo',
+                                fontSize: 9.5.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(width: 4.w),
+                            Icon(Icons.open_in_new_rounded,
+                                color: Colors.white, size: 11.sp),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -751,20 +914,67 @@ class _FullscreenVideoViewerState extends State<_FullscreenVideoViewer> {
     }
   }
 
+  Future<void> _openExternal(BuildContext context) async {
+    HapticFeedback.lightImpact();
+    final clean = VideoUrlHelper.cleanVideoUrl(widget.videoUrl);
+    try {
+      final uri = Uri.parse(clean);
+      final launched =
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'تعذر فتح الرابط الخارجي: $e',
+              style: const TextStyle(fontFamily: 'Cairo'),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   void _initWebPlayer() {
     _webCtrl = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setUserAgent(
+          'Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36')
       ..setBackgroundColor(Colors.black)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (_) => setState(() => _isLoading = false),
           onWebResourceError: (_) => setState(() => _isLoading = false),
+          onNavigationRequest: (req) {
+            final uri = Uri.tryParse(req.url);
+            final host = uri?.host.toLowerCase() ?? '';
+            if (host.contains('facebook.com') ||
+                host.contains('fbcdn.net') ||
+                host.contains('fbsbx.com') ||
+                host.contains('instagram.com') ||
+                host.contains('cdninstagram.com') ||
+                host.contains('youtube.com') ||
+                host.contains('googlevideo.com') ||
+                req.url.startsWith('data:') ||
+                req.url.startsWith('about:')) {
+              return NavigationDecision.navigate;
+            }
+            return NavigationDecision.prevent;
+          },
         ),
       );
 
     if (widget.platform == VideoPlatformType.facebook) {
-      final html = VideoUrlHelper.generateFacebookEmbedHtml(widget.videoUrl);
-      _webCtrl!.loadHtmlString(html, baseUrl: 'https://www.facebook.com');
+      final clean = VideoUrlHelper.cleanVideoUrl(widget.videoUrl);
+      if (VideoUrlHelper.isFacebookShareUrl(clean)) {
+        _webCtrl!.loadRequest(Uri.parse(clean));
+      } else {
+        final html = VideoUrlHelper.generateFacebookEmbedHtml(clean);
+        _webCtrl!.loadHtmlString(html, baseUrl: 'https://www.facebook.com');
+      }
     } else {
       _webCtrl!.loadRequest(Uri.parse(widget.videoUrl.trim()));
     }
@@ -796,6 +1006,14 @@ class _FullscreenVideoViewerState extends State<_FullscreenVideoViewer> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          IconButton(
+            tooltip: 'فتح في التطبيق الخارجي / فيسبوك',
+            icon: const Icon(Icons.open_in_new_rounded, color: Colors.white),
+            onPressed: () => _openExternal(context),
+          ),
+          SizedBox(width: 4.w),
+        ],
       ),
       body: SafeArea(
         child: Center(
