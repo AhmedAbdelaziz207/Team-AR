@@ -2,9 +2,13 @@ import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
+import 'package:team_ar/features/diet/logic/meal_confirmation_cubit.dart';
+import 'package:team_ar/features/diet/logic/meal_confirmation_state.dart';
 import 'package:team_ar/features/diet/model/user_diet.dart';
+import 'package:team_ar/features/diet/widgets/done_button.dart';
 import 'package:team_ar/features/diet/widgets/health_alert.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/utils/app_local_keys.dart';
@@ -31,22 +35,48 @@ log("Number of Grams ${userDiet.first.numOfGrams}");
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// title
-          Text(
-            getMealName(foodType),
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              fontFamily: "Cairo",
-            ),
-          ),
-          Text(
-            "${userDiet.length} items | ${totalCalories.toStringAsFixed(1)} calories",
-            style: TextStyle(
-              color: AppColors.grey.withOpacity(.6),
-              fontSize: 12.sp,
-              fontFamily: "Cairo",
-            ),
+          /// title with Done Button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      getMealName(foodType),
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Cairo",
+                      ),
+                    ),
+                    Text(
+                      "${userDiet.length} items | ${totalCalories.toStringAsFixed(1)} calories",
+                      style: TextStyle(
+                        color: AppColors.grey.withValues(alpha: .6),
+                        fontSize: 12.sp,
+                        fontFamily: "Cairo",
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              BlocBuilder<MealConfirmationCubit, MealConfirmationState>(
+                builder: (context, state) {
+                  final isDone = state.isMealDone(foodType);
+                  return DoneButton(
+                    isDone: isDone,
+                    onTap: () {
+                      context
+                          .read<MealConfirmationCubit>()
+                          .toggleMeal(foodType);
+                    },
+                  );
+                },
+              ),
+            ],
           ),
 
           /// meals

@@ -119,6 +119,33 @@ class _FloatingMenuState extends State<FloatingMenu>
             },
             index: 2,
           ),
+          _buildOption(
+            icon: Icons.insights_rounded,
+            label: "متابعة التمارين",
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                Routes.coachMonitoring,
+                arguments: {
+                  'traineeId': widget.trainee?.id ?? '',
+                  'traineeName': widget.trainee?.userName ?? 'المتدرب',
+                },
+              );
+            },
+            index: 3,
+          ),
+          _buildOption(
+            icon: Icons.post_add_rounded,
+            label: "مصمم التمارين",
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                Routes.workoutBuilder,
+                arguments: widget.trainee?.id,
+              );
+            },
+            index: 4,
+          ),
         ],
 
         // Main FAB

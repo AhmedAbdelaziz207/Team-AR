@@ -54,3 +54,4 @@ flutter_*.log
 
 # Backups and caches
 .yoyo/
+scratch/

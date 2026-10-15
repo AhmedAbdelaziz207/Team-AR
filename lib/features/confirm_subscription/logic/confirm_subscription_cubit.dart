@@ -159,8 +159,8 @@ class ConfirmSubscriptionCubit extends Cubit<ConfirmSubscriptionState> {
               final adminId = getIt<SharedPreferences>().getString(AppConstants.userId);
               if (adminId != null && adminId.isNotEmpty) {
                 // Send via Supabase
-                final _client = SupabaseChatService();
-                await _client.sendMessage(adminId, data.id!, 'مرحباً بك في تطبيق Team AR! لقد تم تفعيل حسابك بنجاح.');
+                final client = SupabaseChatService();
+                await client.sendMessage(adminId, data.id!, 'مرحباً بك في تطبيق Team AR! لقد تم تفعيل حسابك بنجاح.');
                 
                 // Trigger backend FCM
                 await getIt<ApiService>().sendMessage({

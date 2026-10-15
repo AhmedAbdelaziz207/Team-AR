@@ -18,9 +18,11 @@ import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
 import 'package:team_ar/features/work_out/logic/workout_cubit.dart';
 import 'package:team_ar/features/work_out/logic/workout_state.dart';
+import 'package:team_ar/features/workout_v2/repos/workout_repository_v2.dart';
 
 class ExerciseScreen extends StatefulWidget {
-  const ExerciseScreen({super.key});
+  final String? pdfUrl;
+  const ExerciseScreen({super.key, this.pdfUrl});
 
   @override
   State<ExerciseScreen> createState() => _ExerciseScreenState();
@@ -28,6 +30,7 @@ class ExerciseScreen extends StatefulWidget {
 
 class _ExerciseScreenState extends State<ExerciseScreen> {
   bool _isPdfError = false;
+  bool _noPdfAssigned = false;
   String? _localPdfPath;
   bool _isDownloading = false;
   double? _downloadProgress;
@@ -36,10 +39,14 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   HttpClient? _activeClient;
   String? _currentLoadedUrl;
 
+  static const String _prefCachedPdfPath = 'cached_workout_pdf_path';
+  static const String _prefCachedPdfUrl = 'cached_workout_pdf_url';
+
   @override
   void initState() {
     super.initState();
     PdfProtectionService.enable();
+    _tryLoadInitialCachedPdf();
     loadData();
   }
 
@@ -50,24 +57,45 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     super.dispose();
   }
 
+  /// محاولة عرض الملف المخزن محلياً فوراً بدون انتظار السيرفر وبشكل معزول لكل مستخدم
+  Future<void> _tryLoadInitialCachedPdf() async {
+    try {
+      final userId =
+          await SharedPreferencesHelper.getString(AppConstants.userId);
+      if (userId == null || userId.isEmpty) return;
+
+      final savedPath = await SharedPreferencesHelper.getString(
+          '${_prefCachedPdfPath}_$userId');
+      final savedUrl = await SharedPreferencesHelper.getString(
+          '${_prefCachedPdfUrl}_$userId');
+
+      if (savedPath != null && savedPath.isNotEmpty) {
+        final file = File(savedPath);
+        if (await _isValidPdf(file)) {
+          if (mounted) {
+            setState(() {
+              _localPdfPath = savedPath;
+              _currentLoadedUrl = savedUrl;
+              _isDownloading = false;
+              _isPdfError = false;
+              _noPdfAssigned = false;
+            });
+          }
+          return;
+        }
+      }
+    } catch (e) {
+      log("Error loading initial cached PDF: $e");
+    }
+  }
+
   void loadData() async {
     _activeClient?.close(force: true);
     _activeClient = null;
 
-    if (_localPdfPath != null) {
-      try {
-        final f = File(_localPdfPath!);
-        if (await f.exists()) {
-          await f.delete();
-        }
-      } catch (_) {}
-    }
-
-    _currentLoadedUrl = null;
-    if (mounted) {
+    if (_localPdfPath == null && mounted) {
       setState(() {
         _isPdfError = false;
-        _localPdfPath = null;
         _isDownloading = false;
         _downloadProgress = null;
         _receivedBytes = 0;
@@ -75,39 +103,60 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
       });
     }
 
-    int? cachedExerciseId =
-        await SharedPreferencesHelper.getInt(AppConstants.exerciseId);
-    log("Get Workout with Id $cachedExerciseId from SharedPreferences");
-
-    // Load from cache first
-    if (cachedExerciseId != null && cachedExerciseId != 0 && mounted) {
-      context.read<WorkoutCubit>().getWorkout(cachedExerciseId);
-    } else if (mounted) {
-      setState(() => _isPdfError = true);
+    // 1. إذا تم تمرير رابط PDF صريح في المعاملات
+    if (widget.pdfUrl != null && widget.pdfUrl!.isNotEmpty) {
+      _checkAndDownloadPdf(widget.pdfUrl!);
+      return;
     }
 
-    // Fetch fresh user data in background to update exerciseId if changed
-    final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
-    if (userId != null && userId.isNotEmpty) {
-      try {
-        final api = getIt<ApiService>();
-        final user = await api.getLoggedUserData(userId);
-        if (user.exerciseId != null) {
-          await SharedPreferencesHelper.setData(
-              AppConstants.exerciseId, user.exerciseId!);
-          if (cachedExerciseId != user.exerciseId && mounted) {
-            setState(() {
-              _isPdfError = false;
-              _localPdfPath = null;
-            });
-            context.read<WorkoutCubit>().getWorkout(user.exerciseId!);
-          }
-        } else if ((cachedExerciseId == null || cachedExerciseId == 0) &&
-            mounted) {
-          setState(() => _isPdfError = true);
+    final userId =
+        await SharedPreferencesHelper.getString(AppConstants.userId);
+    if (userId == null || userId.isEmpty) {
+      if (mounted) setState(() => _noPdfAssigned = true);
+      return;
+    }
+
+    try {
+      final api = getIt<ApiService>();
+      final user = await api.getLoggedUserData(userId);
+
+      // فحص إذا كان المتدرب يمتلك ملف في السيرفر القديم
+      if (user.exerciseId != null && user.exerciseId != 0) {
+        await SharedPreferencesHelper.setData(
+            AppConstants.exerciseId, user.exerciseId!);
+        if (mounted) {
+          context.read<WorkoutCubit>().getWorkout(user.exerciseId!);
         }
-      } catch (e) {
-        log("Failed to fetch fresh user data: $e");
+        return;
+      }
+
+      // فحص إذا كان المتدرب يمتلك ملف PDF مرفق في قاعدة بيانات Supabase V2
+      final supaWorkout =
+          await getIt<WorkoutRepositoryV2>().getWorkoutForTrainee(userId);
+      if (supaWorkout?.pdfAttachmentUrl != null &&
+          supaWorkout!.pdfAttachmentUrl!.isNotEmpty) {
+        _checkAndDownloadPdf(supaWorkout.pdfAttachmentUrl!);
+        return;
+      }
+
+      // إذا لم يكن هناك ملف PDF معين بأي من النظامين:
+      log('ℹ️ [ExerciseScreen] لا يوجد ملف PDF مخصص للمتدرب: $userId');
+      if (mounted) {
+        setState(() {
+          _noPdfAssigned = true;
+          _localPdfPath = null;
+          _isDownloading = false;
+          _isPdfError = false;
+        });
+      }
+      // تنظيف أي كاش قديم متبقي
+      await SharedPreferencesHelper.remove('${_prefCachedPdfPath}_$userId');
+      await SharedPreferencesHelper.remove('${_prefCachedPdfUrl}_$userId');
+      await SharedPreferencesHelper.remove(AppConstants.exerciseId);
+    } catch (e) {
+      log("Failed to fetch user data for workout: $e");
+      if (_localPdfPath == null && mounted) {
+        setState(() => _isPdfError = true);
       }
     }
   }
@@ -132,10 +181,12 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   }
 
   Future<void> _checkAndDownloadPdf(String relativeUrl) async {
-    if (_currentLoadedUrl == relativeUrl && _localPdfPath != null) {
+    // إذا كان الملف المعروض حالياً يطابق نفس الرابط وموجود على القرص، لا داعي لإعادة التحميل
+    if (_currentLoadedUrl == relativeUrl &&
+        _localPdfPath != null &&
+        File(_localPdfPath!).existsSync()) {
       return;
     }
-    _currentLoadedUrl = relativeUrl;
 
     try {
       final cleanBaseUrl = ApiEndPoints.baseUrl.endsWith('/')
@@ -143,18 +194,28 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
           : ApiEndPoints.baseUrl;
       final fullUrl = Uri.encodeFull('$cleanBaseUrl/Exercises/$relativeUrl');
 
-      final tempDir = await getTemporaryDirectory();
-      final safeName = relativeUrl.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
-      final targetFile = File('${tempDir.path}/workout_$safeName');
+      // تخزين دائم في مجلد التطبيق وليس المجلد المؤقت
+      final docsDir = await getApplicationDocumentsDirectory();
+      final workoutsDir = Directory('${docsDir.path}/workouts');
+      if (!await workoutsDir.exists()) {
+        await workoutsDir.create(recursive: true);
+      }
 
-      // 1. Check if cached and valid
+      final safeName = relativeUrl.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+      final targetFile = File('${workoutsDir.path}/workout_$safeName.pdf');
+
+      // 1. فحص وجود الملف الدائم وصلاحيته
       if (await targetFile.exists()) {
         final isValid = await _isValidPdf(targetFile);
         if (isValid) {
-          log("Valid cached workout PDF found: ${targetFile.path}");
+          log("Valid permanent cached workout PDF found: ${targetFile.path}");
+          await SharedPreferencesHelper.setData(
+              _prefCachedPdfPath, targetFile.path);
+          await SharedPreferencesHelper.setData(_prefCachedPdfUrl, relativeUrl);
           if (mounted) {
             setState(() {
               _localPdfPath = targetFile.path;
+              _currentLoadedUrl = relativeUrl;
               _isDownloading = false;
               _isPdfError = false;
             });
@@ -167,7 +228,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
         }
       }
 
-      // 2. Stream download chunk-by-chunk to disk without blocking UI isolate
+      // إذا لم يكن مخزناً أو تم تحديثه، نبدأ التنزيل
+      _currentLoadedUrl = relativeUrl;
       if (mounted) {
         setState(() {
           _isDownloading = true;
@@ -242,20 +304,39 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
       }
       await tempFile.rename(targetFile.path);
 
+      final userId =
+          await SharedPreferencesHelper.getString(AppConstants.userId);
+      if (userId != null && userId.isNotEmpty) {
+        await SharedPreferencesHelper.setData(
+            '${_prefCachedPdfPath}_$userId', targetFile.path);
+        await SharedPreferencesHelper.setData(
+            '${_prefCachedPdfUrl}_$userId', relativeUrl);
+      }
+      await SharedPreferencesHelper.setData(
+          _prefCachedPdfPath, targetFile.path);
+      await SharedPreferencesHelper.setData(_prefCachedPdfUrl, relativeUrl);
+
       if (mounted) {
         setState(() {
           _localPdfPath = targetFile.path;
           _isDownloading = false;
           _isPdfError = false;
+          _noPdfAssigned = false;
         });
       }
     } catch (e) {
       log("Error downloading workout PDF: $e");
       if (mounted) {
-        setState(() {
-          _isPdfError = true;
-          _isDownloading = false;
-        });
+        if (_localPdfPath == null) {
+          setState(() {
+            _isPdfError = true;
+            _isDownloading = false;
+          });
+        } else {
+          setState(() {
+            _isDownloading = false;
+          });
+        }
       }
     } finally {
       _activeClient?.close();
@@ -275,15 +356,16 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF102E50),
-        elevation: 2,
+        backgroundColor: AppColors.white,
+        elevation: 0,
         leading: const AppBarBackButton(
-          color: AppColors.white,
+          color: AppColors.black,
         ),
         title: Text(
           AppLocalKeys.workouts.tr(),
           style: TextStyle(
-            color: Colors.white,
+            color: AppColors.black,
+            fontFamily: 'Cairo',
             fontWeight: FontWeight.bold,
             fontSize: 18.sp,
           ),
@@ -296,7 +378,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
           if (state is WorkoutSuccess) {
             if (state.url != null && state.url!.isNotEmpty) {
               _checkAndDownloadPdf(state.url!);
-            } else {
+            } else if (_localPdfPath == null) {
               setState(() {
                 _isPdfError = true;
               });
@@ -304,26 +386,31 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
           }
         },
         builder: (context, state) {
+          if (_noPdfAssigned && _localPdfPath == null) {
+            return _buildNoPdfAssignedView();
+          }
+
           if (state is WorkoutSuccess) {
-            if (state.url == null || state.url!.isEmpty) {
+            if ((state.url == null || state.url!.isEmpty) && _localPdfPath == null) {
               return _buildErrorStateView();
             }
             if (_currentLoadedUrl != state.url &&
                 !_isDownloading &&
-                _localPdfPath == null) {
+                state.url != null &&
+                state.url!.isNotEmpty) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted && state.url != null && state.url!.isNotEmpty) {
+                if (mounted) {
                   _checkAndDownloadPdf(state.url!);
                 }
               });
             }
           }
 
-          if (_isPdfError) {
+          if (_isPdfError && _localPdfPath == null) {
             return _buildErrorStateView();
           }
 
-          if (state is WorkoutFailure) {
+          if (state is WorkoutFailure && _localPdfPath == null) {
             return _buildErrorStateView();
           }
 
@@ -372,7 +459,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                     CircularProgressIndicator(
                       value: _downloadProgress,
                       strokeWidth: 5,
-                      color: const Color(0xFF102E50),
+                      color: AppColors.newPrimaryColor,
                       backgroundColor: Colors.grey[200],
                     ),
                     Text(
@@ -381,7 +468,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                         fontSize: 13.sp,
                         fontWeight: FontWeight.bold,
                         fontFamily: "Cairo",
-                        color: const Color(0xFF102E50),
+                        color: AppColors.newPrimaryColor,
                       ),
                     ),
                   ],
@@ -394,7 +481,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                   fontFamily: "Cairo",
-                  color: const Color(0xFF102E50),
+                  color: AppColors.black,
                 ),
               ),
               SizedBox(height: 8.h),
@@ -408,7 +495,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
               ),
             ] else ...[
               const CircularProgressIndicator(
-                color: Color(0xFF102E50),
+                color: AppColors.newPrimaryColor,
               ),
               SizedBox(height: 16.h),
               Text(
@@ -481,8 +568,76 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF102E50),
+                backgroundColor: AppColors.newPrimaryColor,
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoPdfAssignedView() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(28.0.sp),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(20.sp),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE11D48).withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.picture_as_pdf_outlined,
+                size: 60.sp,
+                color: const Color(0xFFE11D48),
+              ),
+            ),
+            SizedBox(height: 18.h),
+            Text(
+              "لا يوجد ملف تدريبي مخصص لك حالياً",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.black,
+                fontSize: 18.sp,
+                fontFamily: "Cairo",
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              "لم يقم الكابتن بإرفاق ملف PDF لخطتك بعد.\nسيظهر ملفك التدريبي هنا فور اعتماده من المدرب.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 13.5.sp,
+                fontFamily: "Cairo",
+                height: 1.5,
+              ),
+            ),
+            SizedBox(height: 24.h),
+            ElevatedButton.icon(
+              onPressed: loadData,
+              icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+              label: Text(
+                "تحديث الحالة",
+                style: TextStyle(
+                  fontFamily: "Cairo",
+                  fontSize: 14.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.newPrimaryColor,
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.r),
                 ),

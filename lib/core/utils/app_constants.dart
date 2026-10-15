@@ -28,4 +28,5 @@ class AppConstants {
 
   static String exerciseId = "ExerciseId";
   // static String userName = '';
+  static const weightUnit = 'weight_unit';
 }

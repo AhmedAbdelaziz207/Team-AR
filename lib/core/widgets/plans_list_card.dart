@@ -32,7 +32,7 @@ class PlansListCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -49,11 +49,11 @@ class PlansListCard extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
                   decoration: BoxDecoration(
-                    color: backgroundColor?.withOpacity(.25) ?? AppColors.newSecondaryColor.withOpacity(.15),
+                    color: backgroundColor?.withValues(alpha: 0.25) ?? AppColors.newSecondaryColor.withValues(alpha: 0.15),
                     border: BorderDirectional(
-                      top: BorderSide(color: cardColor.withOpacity(0.3)),
-                      bottom: BorderSide(color: cardColor.withOpacity(0.3)),
-                      start: BorderSide(color: cardColor.withOpacity(0.3)),
+                      top: BorderSide(color: cardColor.withValues(alpha: 0.3)),
+                      bottom: BorderSide(color: cardColor.withValues(alpha: 0.3)),
+                      start: BorderSide(color: cardColor.withValues(alpha: 0.3)),
                     ),
                   ),
                   child: Column(
@@ -79,38 +79,41 @@ class PlansListCard extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 16.h),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border.all(color: cardColor.withOpacity(0.2)),
+                    border: Border.all(color: cardColor.withValues(alpha: 0.2)),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (!AppConstants.isReleasedValue)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "${plan.newPrice} ${AppLocalKeys.le.tr()}",
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.black,
-                                  ),
-                            ),
-                            if (plan.oldPrice != null && plan.oldPrice.toString() != "0" && plan.oldPrice != plan.newPrice) ...[
-                              SizedBox(width: 10.w),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
                               Text(
-                                "${plan.oldPrice} ${AppLocalKeys.le.tr()}",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      fontSize: 13.sp,
-                                      color: AppColors.grey,
-                                      decoration: TextDecoration.lineThrough,
+                                "${plan.newPrice} ${AppLocalKeys.le.tr()}",
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.black,
                                     ),
                               ),
+                              if (plan.oldPrice != null && plan.oldPrice.toString() != "0" && plan.oldPrice != plan.newPrice) ...[
+                                SizedBox(width: 8.w),
+                                Text(
+                                  "${plan.oldPrice} ${AppLocalKeys.le.tr()}",
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        fontSize: 13.sp,
+                                        color: AppColors.grey,
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       if (!AppConstants.isReleasedValue) SizedBox(height: 16.h),
                       if (!isAdmin)
@@ -140,15 +143,20 @@ class PlansListCard extends StatelessWidget {
                                 Icon(Icons.check_circle, color: Colors.green, size: 20.sp),
                                 SizedBox(width: 8.w),
                               ],
-                              Text(
-                                AppConstants.isReleasedValue
-                                    ? 'اختيار الباقة'
-                                    : isSelected
-                                        ? AppLocalKeys.subscribed.tr()
-                                        : AppLocalKeys.subscribe.tr(),
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w700,
+                              Flexible(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    AppConstants.isReleasedValue
+                                        ? 'اختيار الباقة'
+                                        : isSelected
+                                            ? AppLocalKeys.subscribed.tr()
+                                            : AppLocalKeys.subscribe.tr(),
+                                    style: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],

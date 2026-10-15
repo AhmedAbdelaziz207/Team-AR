@@ -20,12 +20,22 @@ import '../../features/notification/services/notification_repo_impl.dart';
 import '../../features/notification/services/notification_repository.dart';
 import '../../features/notification/services/notification_storage.dart';
 import '../../features/work_out/logic/workout_cubit.dart';
+import '../../features/workout_log/logic/workout_log_cubit.dart';
+import '../../features/workout_log/repos/workout_log_repository.dart';
+import '../../features/diet/repos/meal_log_repository.dart';
+import '../../features/diet/services/meal_reminder_service.dart';
+import '../../features/diet/logic/meal_confirmation_cubit.dart';
 import '../../features/follow_up/services/follow_up_service.dart';
 import '../../features/follow_up/logic/follow_up_cubit.dart';
 import '../network/api_service.dart';
 import '../network/dio_factory.dart';
 import '../network/signalr_service.dart';
 import '../services/notification_service.dart';
+import '../../features/workout_v2/repos/workout_repository_v2.dart';
+import '../../features/diet_v2/repos/diet_repository_v2.dart';
+import '../../features/workout_v2/logic/workout_overview_cubit.dart';
+import '../../features/diet_v2/logic/diet_dashboard_cubit.dart';
+import '../../features/workout_systems/repo/workout_system_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -158,7 +168,25 @@ Future<void> setupServiceLocator() async {
     getIt.registerLazySingleton<NavigationCubit>(() => NavigationCubit());
 
     // Workout
+    getIt.registerLazySingleton<WorkoutSystemRepository>(
+        () => WorkoutSystemRepository(getIt<ApiService>()));
     getIt.registerFactory<WorkoutCubit>(() => WorkoutCubit());
+
+    // Workout Log (Weights recording)
+    getIt.registerLazySingleton<WorkoutLogRepository>(
+        () => WorkoutLogRepository());
+    getIt.registerFactory<WorkoutLogCubit>(
+        () => WorkoutLogCubit(getIt<WorkoutLogRepository>()));
+
+    // Meal Confirmation & Reminders
+    getIt.registerLazySingleton<MealLogRepository>(
+        () => MealLogRepository());
+    getIt.registerLazySingleton<MealReminderService>(
+        () => MealReminderService(getIt<LocalNotificationService>()));
+    getIt.registerFactory<MealConfirmationCubit>(() => MealConfirmationCubit(
+          getIt<MealLogRepository>(),
+          getIt<MealReminderService>(),
+        ));
 
     // Notification Storage
     getIt.registerLazySingleton<NotificationStorage>(
@@ -171,6 +199,18 @@ Future<void> setupServiceLocator() async {
           localNotificationService: getIt<LocalNotificationService>(),
           storage: getIt<NotificationStorage>(),
         ));
+
+    // V2 Training & Diet Repositories
+    getIt.registerLazySingleton<WorkoutRepositoryV2>(
+        () => WorkoutRepositoryV2());
+    getIt.registerLazySingleton<DietRepositoryV2>(
+        () => DietRepositoryV2());
+
+    // V2 Cubits
+    getIt.registerFactory<WorkoutOverviewCubit>(
+        () => WorkoutOverviewCubit(getIt<WorkoutRepositoryV2>()));
+    getIt.registerFactory<DietDashboardCubit>(
+        () => DietDashboardCubit(getIt<DietRepositoryV2>()));
 
     // Initialize Notification Service
     await getIt<NotificationService>().initialize();

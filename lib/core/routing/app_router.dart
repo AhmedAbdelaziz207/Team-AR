@@ -39,7 +39,6 @@ import 'package:team_ar/features/update_user_diet/admin_users_meal_screen.dart';
 import 'package:team_ar/features/users_management/ui/users_about_to_expire_screen.dart';
 import 'package:team_ar/features/work_out/logic/workout_cubit.dart';
 import 'package:team_ar/features/workout_systems/logic/workout_system_cubit.dart';
-import '../../features/add_workout/add_workout_screen.dart';
 import '../../features/auth/login/logic/login_cubit.dart';
 import '../../features/diet/logic/user_diet_cubit.dart';
 import '../../features/diet/ui/user_meal_details.dart';
@@ -56,6 +55,16 @@ import 'package:team_ar/features/complete_data/logic/complete_data_cubit.dart';
 import 'package:team_ar/features/complete_data/ui/complete_data_screen.dart';
 import 'package:team_ar/features/follow_up/logic/follow_up_cubit.dart';
 import 'package:team_ar/features/follow_up/ui/follow_up_trainees_screen.dart';
+import 'package:team_ar/features/trainees_screen/widget/trainee_progress_screen.dart';
+import 'package:team_ar/features/workout_v2/models/workout_model.dart';
+import 'package:team_ar/features/workout_v2/models/exercise_model.dart';
+import 'package:team_ar/features/workout_v2/ui/workout_overview_screen.dart';
+import 'package:team_ar/features/workout_v2/ui/single_exercise_detail_screen.dart';
+import 'package:team_ar/features/workout_v2/ui/workout_focus_mode_screen.dart';
+import 'package:team_ar/features/diet_v2/ui/diet_dashboard_screen.dart';
+import 'package:team_ar/features/coach_v2/ui/workout_builder_screen.dart';
+import 'package:team_ar/features/coach_v2/ui/coach_monitoring_screen.dart';
+import 'package:team_ar/features/coach_v2/ui/trainee_master_profile_screen.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings? settings) {
@@ -234,14 +243,16 @@ class AppRouter {
           ),
         );
       case Routes.addWorkout:
-        final params = settings?.arguments as AddWorkoutParams;
+        final dynamic rawArgs = settings?.arguments;
+        String? traineeId;
+        if (rawArgs is AddWorkoutParams) {
+          traineeId = rawArgs.traineeId;
+        } else if (rawArgs is String) {
+          traineeId = rawArgs;
+        }
         return MaterialPageRoute(
-          builder: (context) => BlocProvider(
-            create: (context) => WorkoutSystemCubit(),
-            child: AddWorkoutScreen(
-              params: params,
-            ),
-          ),
+          builder: (context) =>
+              WorkoutBuilderScreen(targetTraineeId: traineeId),
         );
       case Routes.changePassword:
         return MaterialPageRoute(
@@ -308,6 +319,61 @@ class AppRouter {
               targetTraineeId: targetTraineeId,
             ),
           ),
+        );
+
+      case Routes.traineeProgress:
+        final trainee = settings?.arguments as TraineeModel;
+        return MaterialPageRoute(
+          builder: (context) => TraineeProgressScreen(trainee: trainee),
+        );
+
+      case Routes.workoutOverview:
+        final workoutId = settings?.arguments as String?;
+        return MaterialPageRoute(
+          builder: (context) =>
+              WorkoutOverviewScreen(initialWorkoutId: workoutId),
+        );
+
+      case Routes.singleExerciseDetail:
+        final exercise = settings?.arguments as ExerciseModel;
+        return MaterialPageRoute(
+          builder: (context) => SingleExerciseDetailScreen(exercise: exercise),
+        );
+
+      case Routes.workoutFocusMode:
+        final workout = settings?.arguments as WorkoutModel;
+        return MaterialPageRoute(
+          builder: (context) => WorkoutFocusModeScreen(workout: workout),
+        );
+
+      case Routes.dietDashboard:
+        final userId = settings?.arguments as String?;
+        return MaterialPageRoute(
+          builder: (context) => DietDashboardScreen(userId: userId),
+        );
+
+      case Routes.workoutBuilder:
+        final traineeId = settings?.arguments as String?;
+        return MaterialPageRoute(
+          builder: (context) =>
+              WorkoutBuilderScreen(targetTraineeId: traineeId),
+        );
+
+      case Routes.coachMonitoring:
+        final args = settings?.arguments as Map<String, dynamic>?;
+        final traineeId = args?['traineeId'] as String? ?? 'trainee_default';
+        final traineeName = args?['traineeName'] as String? ?? 'المتدرب';
+        return MaterialPageRoute(
+          builder: (context) => CoachMonitoringScreen(
+            traineeId: traineeId,
+            traineeName: traineeName,
+          ),
+        );
+
+      case Routes.traineeMasterProfile:
+        final trainee = settings?.arguments as TraineeModel;
+        return MaterialPageRoute(
+          builder: (context) => TraineeMasterProfileScreen(trainee: trainee),
         );
 
       default:

@@ -87,28 +87,34 @@ class WorkoutCard extends StatelessWidget {
                   ),
 
                   const Spacer(),
-                  SizedBox(
-                    width: 150.w,
-                    height: 35.h,
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: 140.w,
+                      minHeight: 38.h,
+                    ),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white.withOpacity(0.3),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(30.r),
                         ),
                         padding: EdgeInsets.symmetric(
-                          horizontal: 20.w,
-                          vertical: 8.h,
+                          horizontal: 18.w,
+                          vertical: 6.h,
                         ),
+                        elevation: 0,
                       ),
                       onPressed: () {
                         Navigator.pushNamed(context, Routes.exercise);
                       },
                       child: Text(
                         AppLocalKeys.seeDetails.tr(),
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 14.sp,
+                          fontSize: 13.sp,
+                          fontFamily: 'Cairo',
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),

@@ -46,4 +46,16 @@ class Routes {
 
   // Trainees follow-up (+14 days)
   static const String followUpTrainees = '/followUpTrainees';
+
+  // Coach View: Trainee Progress (Workouts & Meals)
+  static const String traineeProgress = '/traineeProgress';
+
+  // V2 Core Routes
+  static const String workoutOverview = '/workoutOverview';
+  static const String workoutFocusMode = '/workoutFocusMode';
+  static const String singleExerciseDetail = '/singleExerciseDetail';
+  static const String dietDashboard = '/dietDashboard';
+  static const String workoutBuilder = '/workoutBuilder';
+  static const String coachMonitoring = '/coachMonitoring';
+  static const String traineeMasterProfile = '/traineeMasterProfile';
 }

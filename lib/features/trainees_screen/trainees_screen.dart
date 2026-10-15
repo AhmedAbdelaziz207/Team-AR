@@ -17,6 +17,7 @@ import 'package:team_ar/features/home/admin/logic/trainees_cubit.dart';
 import '../../core/utils/app_local_keys.dart';
 import 'package:team_ar/core/di/dependency_injection.dart';
 import 'package:team_ar/features/home/admin/repos/trainees_repository.dart';
+import 'package:team_ar/features/workout_log/repos/workout_log_repository.dart';
 
 class TraineesScreen extends StatefulWidget {
   const TraineesScreen({super.key, required this.trainees});
@@ -31,12 +32,26 @@ class _TraineesScreenState extends State<TraineesScreen> {
   late List<TraineeModel> _allTrainees;
   List<TraineeModel> filteredTrainees = [];
   TextEditingController searchController = TextEditingController();
+  Set<String> _activeUserIds = {};
 
   @override
   void initState() {
     super.initState();
     _allTrainees = List<TraineeModel>.from(widget.trainees);
     filteredTrainees = _allTrainees;
+    _loadActiveTrainees();
+  }
+
+  Future<void> _loadActiveTrainees() async {
+    try {
+      final active = await getIt<WorkoutLogRepository>()
+          .getActiveUserIdsInLastDays(days: 5);
+      if (mounted) {
+        setState(() {
+          _activeUserIds = active;
+        });
+      }
+    } catch (_) {}
   }
 
   void _filterTrainees(String query) {
@@ -63,6 +78,7 @@ class _TraineesScreenState extends State<TraineesScreen> {
               _allTrainees = normalUsers;
               _filterTrainees(searchController.text);
             });
+            _loadActiveTrainees();
           }
         },
       );
@@ -200,6 +216,8 @@ class _TraineesScreenState extends State<TraineesScreen> {
                             secondaryBackground: _buildDismissBackground(AlignmentDirectional.centerEnd),
                             child: SubscribedUserCard(
                               trainer: trainee,
+                              isInactive: trainee.id != null &&
+                                  !_activeUserIds.contains(trainee.id),
                               onDeletedFromDetails: (id) {
                                 if (id != null) {
                                   setState(() {

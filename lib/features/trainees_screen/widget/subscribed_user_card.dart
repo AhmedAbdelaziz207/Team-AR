@@ -14,11 +14,13 @@ class SubscribedUserCard extends StatelessWidget {
     required this.trainer,
     this.onDelete,
     this.onDeletedFromDetails,
+    this.isInactive = false,
   });
 
   final TraineeModel trainer;
   final VoidCallback? onDelete;
   final Function(String? id)? onDeletedFromDetails;
+  final bool isInactive;
 
   @override
   Widget build(BuildContext context) {
@@ -166,11 +168,193 @@ class SubscribedUserCard extends StatelessWidget {
                           ),
                         ),
                       ],
+                      SizedBox(height: 6.h),
+                      Wrap(
+                        spacing: 6.w,
+                        runSpacing: 4.h,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.traineeMasterProfile,
+                                arguments: trainer,
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 7.w, vertical: 3.h),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE11D48)
+                                    .withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(8.r),
+                                border: Border.all(
+                                  color: const Color(0xFFE11D48)
+                                      .withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.dashboard_customize_rounded,
+                                    size: 11.sp,
+                                    color: const Color(0xFFE11D48),
+                                  ),
+                                  SizedBox(width: 3.w),
+                                  Text(
+                                    "الملف الشامل",
+                                    style: TextStyle(
+                                      fontFamily: "Cairo",
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFFE11D48),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.traineeProgress,
+                                arguments: trainer,
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 7.w, vertical: 3.h),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF102E50)
+                                    .withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(8.r),
+                                border: Border.all(
+                                  color: const Color(0xFF102E50)
+                                      .withValues(alpha: 0.15),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.analytics_rounded,
+                                    size: 11.sp,
+                                    color: const Color(0xFF102E50),
+                                  ),
+                                  SizedBox(width: 3.w),
+                                  Text(
+                                    "سجل الأداء",
+                                    style: TextStyle(
+                                      fontFamily: "Cairo",
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF102E50),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.coachMonitoring,
+                                arguments: {
+                                  'traineeId': trainer.id ?? '',
+                                  'traineeName': trainer.userName ?? 'المتدرب',
+                                },
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 7.w, vertical: 3.h),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF3B82F6)
+                                    .withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8.r),
+                                border: Border.all(
+                                  color: const Color(0xFF3B82F6)
+                                      .withValues(alpha: 0.2),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.insights_rounded,
+                                    size: 11.sp,
+                                    color: const Color(0xFF3B82F6),
+                                  ),
+                                  SizedBox(width: 3.w),
+                                  Text(
+                                    "متابعة الأداء",
+                                    style: TextStyle(
+                                      fontFamily: "Cairo",
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF3B82F6),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.workoutBuilder,
+                                arguments: trainer.id ?? '',
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 7.w, vertical: 3.h),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF10B981)
+                                    .withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8.r),
+                                border: Border.all(
+                                  color: const Color(0xFF10B981)
+                                      .withValues(alpha: 0.2),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.fitness_center_rounded,
+                                    size: 11.sp,
+                                    color: const Color(0xFF10B981),
+                                  ),
+                                  SizedBox(width: 3.w),
+                                  Text(
+                                    "بناء تمرين",
+                                    style: TextStyle(
+                                      fontFamily: "Cairo",
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF10B981),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
                 SizedBox(width: 8.w),
-                // Status Badge & Arrow
+                // Status Badge & Inactive Alert & Arrow
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -217,6 +401,36 @@ class SubscribedUserCard extends StatelessWidget {
                         ],
                       ),
                     ),
+                    if (isInactive && isActive) ...[
+                      SizedBox(height: 4.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 6.w, vertical: 2.h),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10.r),
+                          border: Border.all(
+                            color: Colors.red.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('⚠️', style: TextStyle(fontSize: 8)),
+                            SizedBox(width: 2.w),
+                            Text(
+                              'منقطع 5+ أيام',
+                              style: TextStyle(
+                                fontFamily: 'Cairo',
+                                fontSize: 9.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red[800],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     SizedBox(height: 6.h),
                     Icon(
                       Icons.arrow_forward_ios_rounded,

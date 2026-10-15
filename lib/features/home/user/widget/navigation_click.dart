@@ -15,7 +15,7 @@ import 'package:team_ar/features/diet/ui/user_diet_screen.dart';
 import 'package:team_ar/features/home/user/logic/user_cubit.dart';
 import 'package:team_ar/features/home/user/ui/user_home_screen.dart';
 import 'package:team_ar/features/profile_screen/profile_screen.dart';
-import 'package:team_ar/features/work_out/ui/work_out_screen.dart';
+import 'package:team_ar/features/workout_v2/ui/workout_overview_screen.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../logic/navigation/nav_bar_items.dart';
@@ -108,7 +108,7 @@ class NavigationClick extends StatelessWidget {
             return const UserHomeScreen();
           }
           if (state.navbarItem == NavBarItems.workouts) {
-            return const WorkOutScreen();
+            return const WorkoutOverviewScreen();
           }
           if (state.navbarItem == NavBarItems.food) {
             return BlocProvider(

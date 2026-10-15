@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:team_ar/core/network/api_endpoints.dart';
 import 'package:team_ar/core/network/dio_factory.dart';
+import 'package:team_ar/core/routing/routes.dart';
 import 'package:team_ar/core/theme/app_colors.dart';
 import 'package:team_ar/core/utils/app_local_keys.dart';
 import 'package:team_ar/core/widgets/app_bar_back_button.dart';
@@ -165,6 +166,22 @@ class _TraineeInfoScreenState extends State<TraineeInfoScreen> {
         elevation: 0,
         leading: const AppBarBackButton(),
         actions: [
+          if (widget.traineeModel != null)
+            IconButton(
+              icon: Icon(
+                Icons.dashboard_customize_rounded,
+                color: const Color(0xFF102E50),
+                size: 24.sp,
+              ),
+              tooltip: "الملف الشامل وإدارة الخطط",
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  Routes.traineeMasterProfile,
+                  arguments: widget.traineeModel,
+                );
+              },
+            ),
           IconButton(
             icon: Icon(
               Icons.delete_forever_rounded,
