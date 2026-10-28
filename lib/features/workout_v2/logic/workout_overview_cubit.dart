@@ -144,4 +144,38 @@ class WorkoutOverviewCubit extends Cubit<WorkoutOverviewState> {
       estimatedReps: '$totalRepsMin - $totalRepsMax',
     ));
   }
+
+  /// اختيار وتصفح يوم تدريبي معين من الجدول المسند
+  void selectWorkoutDay(WorkoutModel workout, int index) {
+    final totalExercises = workout.exercises.length;
+    final totalSets = workout.exercises.fold<int>(
+      0,
+      (sum, e) => sum + e.targetSets,
+    );
+
+    final totalRepsMin = workout.exercises.fold<int>(0, (sum, e) {
+      final parts = e.targetRepsRange.split('-');
+      final minReps = int.tryParse(parts.first.trim()) ?? 8;
+      return sum + (minReps * e.targetSets);
+    });
+    final totalRepsMax = workout.exercises.fold<int>(0, (sum, e) {
+      final parts = e.targetRepsRange.split('-');
+      final maxReps = int.tryParse(parts.last.trim()) ?? 10;
+      return sum + (maxReps * e.targetSets);
+    });
+
+    final currentAssigned = (state is WorkoutOverviewSuccess)
+        ? (state as WorkoutOverviewSuccess).allAssignedWorkouts
+        : [workout];
+
+    emit(WorkoutOverviewSuccess(
+      workout: workout,
+      totalExercises: totalExercises,
+      totalSets: totalSets,
+      estimatedReps: '$totalRepsMin - $totalRepsMax',
+      currentDayIndex: index,
+      totalDaysCount: currentAssigned.length,
+      allAssignedWorkouts: currentAssigned,
+    ));
+  }
 }

@@ -27,7 +27,8 @@ class WorkoutModel {
     this.exercises = const [],
   });
 
-  factory WorkoutModel.fromJson(Map<String, dynamic> json, {List<ExerciseModel> exercises = const []}) {
+  factory WorkoutModel.fromJson(Map<String, dynamic> json,
+      {List<ExerciseModel> exercises = const []}) {
     List<String> muscles = [];
     if (json['target_muscles'] != null) {
       muscles = List<String>.from(json['target_muscles']);
@@ -99,12 +100,15 @@ class WorkoutModel {
 
 class SmartWorkoutResult {
   final bool isRecoveryMode;
-  final WorkoutModel? activeWorkout; // التمرين الفعال أو تمرين الغد في حال الاستشفاء
+  final WorkoutModel?
+      activeWorkout; // التمرين الفعال أو تمرين الغد في حال الاستشفاء
   final Duration? remainingCooldown; // المدة المتبقية لانتهاء الاستشفاء
   final DateTime? lastWorkoutFinishedAt; // متى أنهى المتدرب آخر تمرين
-  final int currentDayIndex; // ترتيب اليوم التدريبي (0: اليوم الأول، 1: الثاني...)
+  final int
+      currentDayIndex; // ترتيب اليوم التدريبي (0: اليوم الأول، 1: الثاني...)
   final int totalDaysCount; // إجمالي أيام الجدول المسندة
-  final List<WorkoutModel> allAssignedWorkouts; // كامل أيام الأسبوع للمدرب أو للاستعراض
+  final List<WorkoutModel>
+      allAssignedWorkouts; // كامل أيام الأسبوع للمدرب أو للاستعراض
 
   const SmartWorkoutResult({
     required this.isRecoveryMode,

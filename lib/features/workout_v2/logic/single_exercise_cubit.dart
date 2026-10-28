@@ -61,7 +61,8 @@ class SingleExerciseCubit extends Cubit<SingleExerciseState> {
   Future<void> initExercise(String traineeId) async {
     emit(state.copyWith(isLoading: true));
     try {
-      final prevLog = await _repo.getPreviousExerciseLog(state.exercise.id, traineeId);
+      final prevLog =
+          await _repo.getPreviousExerciseLog(state.exercise.id, traineeId);
 
       // إنشاء المجموعات الأولية بناءً على target_sets
       final initialSets = List.generate(
@@ -88,7 +89,8 @@ class SingleExerciseCubit extends Cubit<SingleExerciseState> {
         sets: initialSets,
       ));
     } catch (e) {
-      emit(state.copyWith(isLoading: false, errorMessage: 'تعذر جلب الأداء السابق: $e'));
+      emit(state.copyWith(
+          isLoading: false, errorMessage: 'تعذر جلب الأداء السابق: $e'));
     }
   }
 
@@ -172,11 +174,13 @@ class SingleExerciseCubit extends Cubit<SingleExerciseState> {
         emit(state.copyWith(isSaving: false, isSaved: true));
         return true;
       } else {
-        emit(state.copyWith(isSaving: false, errorMessage: 'فشل حفظ تمرين اليوم'));
+        emit(state.copyWith(
+            isSaving: false, errorMessage: 'فشل حفظ تمرين اليوم'));
         return false;
       }
     } catch (e) {
-      emit(state.copyWith(isSaving: false, errorMessage: 'خطأ أثناء الحفظ: $e'));
+      emit(
+          state.copyWith(isSaving: false, errorMessage: 'خطأ أثناء الحفظ: $e'));
       return false;
     }
   }

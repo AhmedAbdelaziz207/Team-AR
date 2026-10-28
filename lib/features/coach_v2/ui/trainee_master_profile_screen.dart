@@ -36,7 +36,8 @@ class TraineeMasterProfileScreen extends StatefulWidget {
       _TraineeMasterProfileScreenState();
 }
 
-class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen> {
+class _TraineeMasterProfileScreenState
+    extends State<TraineeMasterProfileScreen> {
   // 0: التمارين الذكية 🏋️‍♂️ | 1: ملف الـ PDF المعتمد 📄 | 2: الخطة الغذائية والوجبات 🥗
   int _selectedTab = 0;
 
@@ -160,8 +161,7 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
     );
 
     if (confirmed == true) {
-      final ok =
-          await getIt<WorkoutRepositoryV2>().deleteWorkout(workout.id);
+      final ok = await getIt<WorkoutRepositoryV2>().deleteWorkout(workout.id);
       if (ok) {
         setState(() {
           _assignedWorkouts.removeWhere((w) => w.id == workout.id);
@@ -193,8 +193,7 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
       // 2. مسح الكاش المحلي الخاص بهذا المتدرب
       await SharedPreferencesHelper.remove(
           'cached_workout_pdf_path_$traineeId');
-      await SharedPreferencesHelper.remove(
-          'cached_workout_pdf_url_$traineeId');
+      await SharedPreferencesHelper.remove('cached_workout_pdf_url_$traineeId');
 
       setState(() {
         _assignedPdfUrl = null;
@@ -254,7 +253,8 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
                 child: Center(
                   child: Text(
                     'لا توجد ملفات PDF في المكتبة حالياً',
-                    style: TextStyle(fontFamily: 'Cairo', color: Colors.grey[600]),
+                    style:
+                        TextStyle(fontFamily: 'Cairo', color: Colors.grey[600]),
                   ),
                 ),
               )
@@ -274,8 +274,7 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
                       leading: Container(
                         padding: EdgeInsets.all(8.r),
                         decoration: BoxDecoration(
-                          color:
-                              const Color(0xFFE11D48).withValues(alpha: 0.1),
+                          color: const Color(0xFFE11D48).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.picture_as_pdf_rounded,
@@ -385,8 +384,7 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
   Future<void> _deleteMeal(MealModel meal) async {
     final confirmed = await _showConfirmDialog(
       title: 'إلغاء وجبة (${_getMealTitle(meal.mealType)})',
-      message:
-          'هل أنت متأكد من حذف هذه الوجبة ومكوناتها من جدول هذا المتدرب؟',
+      message: 'هل أنت متأكد من حذف هذه الوجبة ومكوناتها من جدول هذا المتدرب؟',
       confirmButtonText: 'حذف الوجبة',
       isDestructive: true,
     );
@@ -445,8 +443,7 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
                 physics: const AlwaysScrollableScrollPhysics(
                   parent: BouncingScrollPhysics(),
                 ),
-                padding:
-                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                 children: [
                   // 1. بطاقة المتدرب الملوكية في رأس الصفحة
                   _buildTraineeHeroCard(),
@@ -514,7 +511,8 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
                       ? Image.network(
                           '${ApiEndPoints.usersImagesBaseUrl}${t.image!}',
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _buildAvatarFallback(initialChar),
+                          errorBuilder: (_, __, ___) =>
+                              _buildAvatarFallback(initialChar),
                         )
                       : _buildAvatarFallback(initialChar),
                 ),
@@ -561,8 +559,7 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
               ),
               // شارة الباقة
               Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12.r),
@@ -794,16 +791,17 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
             ),
             ElevatedButton.icon(
               onPressed: () async {
-                final created = await Navigator.push(
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => WorkoutBuilderScreen(
                         targetTraineeId: widget.trainee.id),
                   ),
                 );
-                if (created == true) _loadAllTraineeData();
+                _loadAllTraineeData();
               },
-              icon: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
+              icon:
+                  const Icon(Icons.add_rounded, size: 16, color: Colors.white),
               label: Text(
                 'إضافة تمرين',
                 style: TextStyle(
@@ -824,9 +822,7 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
             ),
           ],
         ),
-
         SizedBox(height: 10.h),
-
         if (_assignedWorkouts.isEmpty)
           Container(
             padding: EdgeInsets.all(28.w),
@@ -853,7 +849,8 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
                 Text(
                   'اضغط على زر "إضافة تمرين" بالأعلى لتصميم خطة تفاعلية للمتدرب.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: 'Cairo', color: Colors.grey[600]),
+                  style:
+                      TextStyle(fontFamily: 'Cairo', color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -927,6 +924,23 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // زر تعديل اليوم التدريبي
+              IconButton(
+                tooltip: 'تعديل هذا اليوم التدريبي',
+                icon: const Icon(Icons.edit_note_rounded,
+                    color: AppColors.newPrimaryColor, size: 22),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => WorkoutBuilderScreen(
+                        targetTraineeId: widget.trainee.id,
+                      ),
+                    ),
+                  );
+                  _loadAllTraineeData();
+                },
+              ),
               // زر حذف اليوم
               IconButton(
                 tooltip: 'إلغاء هذا اليوم التدريبي',
@@ -1079,8 +1093,7 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
                     Container(
                       padding: EdgeInsets.all(12.r),
                       decoration: BoxDecoration(
-                        color:
-                            const Color(0xFFE11D48).withValues(alpha: 0.1),
+                        color: const Color(0xFFE11D48).withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.picture_as_pdf_rounded,
@@ -1231,7 +1244,8 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
                 Text(
                   'يمكنك إسناد ملف خطة معتمدة للمتدرب بنقرة واحدة من المكتبة.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: 'Cairo', color: Colors.grey[600]),
+                  style:
+                      TextStyle(fontFamily: 'Cairo', color: Colors.grey[600]),
                 ),
                 SizedBox(height: 16.h),
                 ElevatedButton.icon(
@@ -1300,9 +1314,7 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
               ),
           ],
         ),
-
         SizedBox(height: 10.h),
-
         if (!hasDiet && _legacyFoods.isEmpty)
           Container(
             padding: EdgeInsets.all(26.w),
@@ -1329,7 +1341,8 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
                 Text(
                   'يمكنك تعيين وجبات وماكروز للمتدرب من شاشة إدارة الدايت.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: 'Cairo', color: Colors.grey[600]),
+                  style:
+                      TextStyle(fontFamily: 'Cairo', color: Colors.grey[600]),
                 ),
                 SizedBox(height: 16.h),
                 ElevatedButton.icon(
@@ -1376,10 +1389,22 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildMacroCapsule('سعرات', '${_dietPlan!.targetCalories.toInt()} kcal', const Color(0xFFF59E0B)),
-                  _buildMacroCapsule('بروتين', '${_dietPlan!.targetProtein.toStringAsFixed(0)}g', const Color(0xFFEF4444)),
-                  _buildMacroCapsule('كارب', '${_dietPlan!.targetCarbs.toStringAsFixed(0)}g', const Color(0xFF3B82F6)),
-                  _buildMacroCapsule('دهون', '${_dietPlan!.targetFats.toStringAsFixed(0)}g', const Color(0xFF10B981)),
+                  _buildMacroCapsule(
+                      'سعرات',
+                      '${_dietPlan!.targetCalories.toInt()} kcal',
+                      const Color(0xFFF59E0B)),
+                  _buildMacroCapsule(
+                      'بروتين',
+                      '${_dietPlan!.targetProtein.toStringAsFixed(0)}g',
+                      const Color(0xFFEF4444)),
+                  _buildMacroCapsule(
+                      'كارب',
+                      '${_dietPlan!.targetCarbs.toStringAsFixed(0)}g',
+                      const Color(0xFF3B82F6)),
+                  _buildMacroCapsule(
+                      'دهون',
+                      '${_dietPlan!.targetFats.toStringAsFixed(0)}g',
+                      const Color(0xFF10B981)),
                 ],
               ),
             ),
@@ -1480,7 +1505,8 @@ class _TraineeMasterProfileScreenState extends State<TraineeMasterProfileScreen>
                 .map((i) => Chip(
                       label: Text(
                         '${i.name} (${i.quantityUnit})',
-                        style: TextStyle(fontFamily: 'Cairo', fontSize: 10.5.sp),
+                        style:
+                            TextStyle(fontFamily: 'Cairo', fontSize: 10.5.sp),
                       ),
                       backgroundColor: const Color(0xFFF1F3F5),
                       padding: EdgeInsets.zero,

@@ -119,7 +119,8 @@ class _SingleExerciseContentState extends State<_SingleExerciseContent> {
           ),
           body: state.isLoading
               ? const Center(
-                  child: CircularProgressIndicator(color: AppColors.newPrimaryColor),
+                  child: CircularProgressIndicator(
+                      color: AppColors.newPrimaryColor),
                 )
               : SingleChildScrollView(
                   padding:
@@ -473,8 +474,8 @@ class _SingleExerciseContentState extends State<_SingleExerciseContent> {
       decoration: BoxDecoration(
         color: AppColors.newPrimaryColor.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(16.r),
-        border:
-            Border.all(color: AppColors.newPrimaryColor.withValues(alpha: 0.15)),
+        border: Border.all(
+            color: AppColors.newPrimaryColor.withValues(alpha: 0.15)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -516,7 +517,8 @@ class _SingleExerciseContentState extends State<_SingleExerciseContent> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8.r),
-                  border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+                  border:
+                      Border.all(color: Colors.grey.withValues(alpha: 0.15)),
                 ),
                 child: Text(
                   'م ${s.setNumber}: ${s.weight} ${s.weightUnit} × ${s.reps}',
@@ -542,7 +544,8 @@ class _SingleExerciseContentState extends State<_SingleExerciseContent> {
                   ctx.read<SingleExerciseCubit>().copyPreviousPerformance();
                   ScaffoldMessenger.of(ctx).showSnackBar(
                     const SnackBar(
-                      content: Text('تم نسخ أداء الجلسة السابقة إلى مجموعات اليوم! 📋'),
+                      content: Text(
+                          'تم نسخ أداء الجلسة السابقة إلى مجموعات اليوم! 📋'),
                       backgroundColor: AppColors.newPrimaryColor,
                       duration: Duration(seconds: 2),
                     ),
@@ -558,7 +561,8 @@ class _SingleExerciseContentState extends State<_SingleExerciseContent> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.copy_rounded, color: Colors.white, size: 15.sp),
+                      Icon(Icons.copy_rounded,
+                          color: Colors.white, size: 15.sp),
                       SizedBox(width: 8.w),
                       Text(
                         'نسخ الأداء السابق بلمسة واحدة 📋',
@@ -653,9 +657,8 @@ class _SingleExerciseContentState extends State<_SingleExerciseContent> {
                 setLog: s,
                 unit: state.unit,
                 canDelete: state.sets.length > 1,
-                onWeightChanged: (w) => context
-                    .read<SingleExerciseCubit>()
-                    .updateSet(i, weight: w),
+                onWeightChanged: (w) =>
+                    context.read<SingleExerciseCubit>().updateSet(i, weight: w),
                 onRepsChanged: (r) =>
                     context.read<SingleExerciseCubit>().updateSet(i, reps: r),
                 onDelete: () =>
@@ -668,8 +671,7 @@ class _SingleExerciseContentState extends State<_SingleExerciseContent> {
     );
   }
 
-  Widget _buildEffortSelector(
-      BuildContext context, SingleExerciseState state) {
+  Widget _buildEffortSelector(BuildContext context, SingleExerciseState state) {
     final options = [
       {'key': 'easy', 'label': 'سهل', 'emoji': '😊'},
       {'key': 'moderate', 'label': 'متوسط', 'emoji': '💪'},
@@ -715,8 +717,7 @@ class _SingleExerciseContentState extends State<_SingleExerciseContent> {
                   ),
                   child: Column(
                     children: [
-                      Text(opt['emoji']!,
-                          style: TextStyle(fontSize: 16.sp)),
+                      Text(opt['emoji']!, style: TextStyle(fontSize: 16.sp)),
                       SizedBox(height: 2.h),
                       Text(
                         opt['label']!,
@@ -799,8 +800,7 @@ class _SetInputRow extends StatelessWidget {
               value: '${setLog.weight}',
               onMinus: () {
                 HapticFeedback.selectionClick();
-                onWeightChanged(
-                    (setLog.weight - 2.5).clamp(0.0, 500.0));
+                onWeightChanged((setLog.weight - 2.5).clamp(0.0, 500.0));
               },
               onPlus: () {
                 HapticFeedback.selectionClick();
@@ -963,7 +963,8 @@ class _ExerciseVideoPlayerWidget extends StatefulWidget {
       _ExerciseVideoPlayerWidgetState();
 }
 
-class _ExerciseVideoPlayerWidgetState extends State<_ExerciseVideoPlayerWidget> {
+class _ExerciseVideoPlayerWidgetState
+    extends State<_ExerciseVideoPlayerWidget> {
   YoutubePlayerController? _youtubeController;
 
   @override
@@ -1053,8 +1054,7 @@ class _ExerciseVideoPlayerWidgetState extends State<_ExerciseVideoPlayerWidget> 
             children: [
               _buildAmberCue(widget.tipText),
               Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6.r),
@@ -1104,9 +1104,7 @@ class _ExerciseVideoPlayerWidgetState extends State<_ExerciseVideoPlayerWidget> 
             'اتبع التوجيهات الفنية والـ Tempo والـ RIR المحددة من الكابتن بالأسفل',
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 11.sp,
-                color: Colors.white60),
+                fontFamily: 'Cairo', fontSize: 11.sp, color: Colors.white60),
           ),
           SizedBox(height: 14.h),
           // زر البحث الذكي الفوري في يوتيوب
@@ -1117,19 +1115,16 @@ class _ExerciseVideoPlayerWidgetState extends State<_ExerciseVideoPlayerWidget> 
               final uri = Uri.parse(
                   'https://www.youtube.com/results?search_query=${Uri.encodeComponent(query)}');
               if (await canLaunchUrl(uri)) {
-                await launchUrl(uri,
-                    mode: LaunchMode.externalApplication);
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
               }
             },
             borderRadius: BorderRadius.circular(10.r),
             child: Container(
-              padding:
-                  EdgeInsets.symmetric(horizontal: 12.w, vertical: 9.h),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 9.h),
               decoration: BoxDecoration(
                 color: Colors.red.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10.r),
-                border:
-                    Border.all(color: Colors.red.withValues(alpha: 0.35)),
+                border: Border.all(color: Colors.red.withValues(alpha: 0.35)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1189,4 +1184,3 @@ class _ExerciseVideoPlayerWidgetState extends State<_ExerciseVideoPlayerWidget> 
     );
   }
 }
-

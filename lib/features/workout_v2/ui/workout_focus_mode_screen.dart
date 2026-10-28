@@ -134,7 +134,8 @@ class _WorkoutFocusModeContentState extends State<_WorkoutFocusModeContent> {
                   borderRadius: BorderRadius.circular(12.r)),
               content: Text(
                 state.errorMessage!,
-                style: const TextStyle(fontFamily: 'Cairo', color: Colors.white),
+                style:
+                    const TextStyle(fontFamily: 'Cairo', color: Colors.white),
               ),
             ),
           );
@@ -206,7 +207,8 @@ class _WorkoutFocusModeContentState extends State<_WorkoutFocusModeContent> {
                     child: _FloatingRestTimerBar(
                       remainingSeconds: state.restSecondsRemaining,
                       totalSeconds: state.restTotalSeconds,
-                      exerciseName: state.activeExerciseName ?? 'التمرين الحالي',
+                      exerciseName:
+                          state.activeExerciseName ?? 'التمرين الحالي',
                       progress: state.restProgress,
                       isLongRest: state.isLongRest,
                       nextTargetName: state.nextExerciseOrSetName,
@@ -438,8 +440,7 @@ class _StickyHeaderHUD extends StatelessWidget {
 
                 // Digital Stopwatch HUD
                 Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 9.w, vertical: 5.h),
+                  padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 5.h),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(12.r),
@@ -477,8 +478,7 @@ class _StickyHeaderHUD extends StatelessWidget {
 
                 // Sets counter pill
                 Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(10.r),
@@ -657,7 +657,8 @@ class WorkoutFocusCockpitScreen extends StatelessWidget {
                     child: _FloatingRestTimerBar(
                       remainingSeconds: state.restSecondsRemaining,
                       totalSeconds: state.restTotalSeconds,
-                      exerciseName: state.activeExerciseName ?? 'التمرين الحالي',
+                      exerciseName:
+                          state.activeExerciseName ?? 'التمرين الحالي',
                       progress: state.restProgress,
                       isLongRest: state.isLongRest,
                       nextTargetName: state.nextExerciseOrSetName,
@@ -752,7 +753,8 @@ class _CockpitHeaderHUD extends StatelessWidget {
                   onTap: onBackToGuided,
                   borderRadius: BorderRadius.circular(10.r),
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10.r),
@@ -883,7 +885,6 @@ class _CockpitHeaderHUD extends StatelessWidget {
   }
 }
 
-
 /// ═══════════════════════════════════════════════════════════════════════════════
 /// GUIDED ALL-IN-ONE EXERCISE CARD (بطاقة التمرين في الوضع الشامل التفاعلي)
 /// شاشة واحدة بسكرول كامل: تفاصيل التمرين، فيديو التكنيك، وتسجيل المجموعات مباشرة
@@ -1008,7 +1009,8 @@ class _GuidedExerciseCard extends StatelessWidget {
                         border: Border.all(
                           color: isAllCompleted
                               ? const Color(0xFF10B981).withValues(alpha: 0.4)
-                              : AppColors.newPrimaryColor.withValues(alpha: 0.3),
+                              : AppColors.newPrimaryColor
+                                  .withValues(alpha: 0.3),
                         ),
                       ),
                       alignment: Alignment.center,
@@ -1277,9 +1279,7 @@ class _GuidedExerciseCard extends StatelessWidget {
             child: InkWell(
               onTap: () {
                 HapticFeedback.lightImpact();
-                context
-                    .read<FocusModeCubit>()
-                    .addSetToExercise(exerciseIndex);
+                context.read<FocusModeCubit>().addSetToExercise(exerciseIndex);
               },
               borderRadius: BorderRadius.circular(10.r),
               child: Container(
@@ -1452,9 +1452,8 @@ class _ExerciseEffortSelector extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    context
-                        .read<FocusModeCubit>()
-                        .updateExerciseEffort(exerciseIndex, opt['key'] as String);
+                    context.read<FocusModeCubit>().updateExerciseEffort(
+                        exerciseIndex, opt['key'] as String);
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
@@ -1569,8 +1568,7 @@ class _FocusExerciseCard extends StatelessWidget {
                         color: const Color(0xFF38BDF8).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
-                          color:
-                              const Color(0xFF38BDF8).withValues(alpha: 0.3),
+                          color: const Color(0xFF38BDF8).withValues(alpha: 0.3),
                         ),
                       ),
                       alignment: Alignment.center,
@@ -1674,7 +1672,8 @@ class _FocusExerciseCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (ex.videoGuideUrl != null || ex.technicalTip != null) ...[
+                    if (ex.videoGuideUrl != null ||
+                        ex.technicalTip != null) ...[
                       SizedBox(width: 6.w),
                       InkWell(
                         onTap: () {
@@ -1698,8 +1697,7 @@ class _FocusExerciseCard extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.ondemand_video_rounded,
-                                  size: 13.sp,
-                                  color: const Color(0xFFF59E0B)),
+                                  size: 13.sp, color: const Color(0xFFF59E0B)),
                               SizedBox(width: 4.w),
                               Text(
                                 'التكنيك',
@@ -1862,9 +1860,7 @@ class _FocusExerciseCard extends StatelessWidget {
             child: InkWell(
               onTap: () {
                 HapticFeedback.lightImpact();
-                context
-                    .read<FocusModeCubit>()
-                    .addSetToExercise(exerciseIndex);
+                context.read<FocusModeCubit>().addSetToExercise(exerciseIndex);
               },
               borderRadius: BorderRadius.circular(10.r),
               child: Container(
@@ -2335,8 +2331,7 @@ class _FocusSetRow extends StatelessWidget {
                   child: Icon(
                     Icons.remove_rounded,
                     size: 20.sp,
-                    color:
-                        isLightMode ? const Color(0xFF0F172A) : Colors.white,
+                    color: isLightMode ? const Color(0xFF0F172A) : Colors.white,
                   ),
                 ),
               ),
@@ -2545,7 +2540,8 @@ class _QuickValueEditSheet extends StatelessWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16.r),
-                  borderSide: const BorderSide(color: Color(0xFF38BDF8), width: 2),
+                  borderSide:
+                      const BorderSide(color: Color(0xFF38BDF8), width: 2),
                 ),
               ),
             ),
@@ -2955,8 +2951,9 @@ class _RestCompletedBanner extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: (isLongRest ? const Color(0xFFF59E0B) : const Color(0xFF10B981))
-                .withValues(alpha: 0.4),
+            color:
+                (isLongRest ? const Color(0xFFF59E0B) : const Color(0xFF10B981))
+                    .withValues(alpha: 0.4),
             blurRadius: 20,
             spreadRadius: 2,
           ),
@@ -2974,7 +2971,9 @@ class _RestCompletedBanner extends StatelessWidget {
             padding: EdgeInsets.all(9.w),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: (isLongRest ? const Color(0xFFF59E0B) : const Color(0xFF10B981))
+              color: (isLongRest
+                      ? const Color(0xFFF59E0B)
+                      : const Color(0xFF10B981))
                   .withValues(alpha: 0.2),
               border: Border.all(
                 color: isLongRest
@@ -3226,10 +3225,12 @@ class _ExerciseGuideSheetState extends State<_ExerciseGuideSheet> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 14.w, vertical: 10.h),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+                          color:
+                              const Color(0xFFEF4444).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(
-                              color: const Color(0xFFEF4444).withValues(alpha: 0.3)),
+                              color: const Color(0xFFEF4444)
+                                  .withValues(alpha: 0.3)),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -3254,7 +3255,8 @@ class _ExerciseGuideSheetState extends State<_ExerciseGuideSheet> {
                   ],
 
                   // Coach Technical Tip Box
-                  if (ex.technicalTip != null && ex.technicalTip!.isNotEmpty) ...[
+                  if (ex.technicalTip != null &&
+                      ex.technicalTip!.isNotEmpty) ...[
                     Container(
                       padding: EdgeInsets.all(14.w),
                       decoration: BoxDecoration(
@@ -3324,7 +3326,8 @@ class _ExerciseGuideSheetState extends State<_ExerciseGuideSheet> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             _specPill('التكرار المستهدف', ex.targetRepsRange),
-                            _specPill('الراحة الموصى بها', '${ex.restSeconds}ث'),
+                            _specPill(
+                                'الراحة الموصى بها', '${ex.restSeconds}ث'),
                             _specPill('جهد RIR', '${ex.rir}'),
                             _specPill('سرعة Tempo', ex.tempo),
                           ],

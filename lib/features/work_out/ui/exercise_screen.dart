@@ -89,9 +89,14 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     }
   }
 
-  void loadData() async {
+  void loadData({bool forceRefresh = false}) async {
     _activeClient?.close(force: true);
     _activeClient = null;
+
+    if (forceRefresh) {
+      _currentLoadedUrl = null;
+      _localPdfPath = null;
+    }
 
     if (_localPdfPath == null && mounted) {
       setState(() {
@@ -105,15 +110,19 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
 
     // 1. إذا تم تمرير رابط PDF صريح في المعاملات
     if (widget.pdfUrl != null && widget.pdfUrl!.isNotEmpty) {
-      _checkAndDownloadPdf(widget.pdfUrl!);
+      _checkAndDownloadPdf(widget.pdfUrl!, forceRefresh: forceRefresh);
       return;
     }
 
-    final userId =
-        await SharedPreferencesHelper.getString(AppConstants.userId);
+    final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
     if (userId == null || userId.isEmpty) {
       if (mounted) setState(() => _noPdfAssigned = true);
       return;
+    }
+
+    if (forceRefresh) {
+      await SharedPreferencesHelper.remove('${_prefCachedPdfPath}_$userId');
+      await SharedPreferencesHelper.remove('${_prefCachedPdfUrl}_$userId');
     }
 
     try {
@@ -130,12 +139,19 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
         return;
       }
 
-      // فحص إذا كان المتدرب يمتلك ملف PDF مرفق في قاعدة بيانات Supabase V2
-      final supaWorkout =
-          await getIt<WorkoutRepositoryV2>().getWorkoutForTrainee(userId);
-      if (supaWorkout?.pdfAttachmentUrl != null &&
-          supaWorkout!.pdfAttachmentUrl!.isNotEmpty) {
-        _checkAndDownloadPdf(supaWorkout.pdfAttachmentUrl!);
+      // فحص إذا كان المتدرب يمتلك ملف PDF مرفق في قاعدة بيانات Supabase V2 عبر كافة الجداول الفعالة
+      final supaWorkouts =
+          await getIt<WorkoutRepositoryV2>().getAllWorkoutsForTrainee(userId);
+      String? matchedPdfUrl;
+      for (final w in supaWorkouts) {
+        if (w.pdfAttachmentUrl != null && w.pdfAttachmentUrl!.isNotEmpty) {
+          matchedPdfUrl = w.pdfAttachmentUrl;
+          break;
+        }
+      }
+
+      if (matchedPdfUrl != null) {
+        _checkAndDownloadPdf(matchedPdfUrl, forceRefresh: forceRefresh);
         return;
       }
 
@@ -180,9 +196,11 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
     }
   }
 
-  Future<void> _checkAndDownloadPdf(String relativeUrl) async {
-    // إذا كان الملف المعروض حالياً يطابق نفس الرابط وموجود على القرص، لا داعي لإعادة التحميل
-    if (_currentLoadedUrl == relativeUrl &&
+  Future<void> _checkAndDownloadPdf(String relativeUrl,
+      {bool forceRefresh = false}) async {
+    // إذا كان الملف المعروض حالياً يطابق نفس الرابط وموجود على القرص بدون طلب تحديث قسري
+    if (!forceRefresh &&
+        _currentLoadedUrl == relativeUrl &&
         _localPdfPath != null &&
         File(_localPdfPath!).existsSync()) {
       return;
@@ -204,8 +222,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
       final safeName = relativeUrl.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
       final targetFile = File('${workoutsDir.path}/workout_$safeName.pdf');
 
-      // 1. فحص وجود الملف الدائم وصلاحيته
-      if (await targetFile.exists()) {
+      // 1. فحص وجود الملف الدائم وصلاحيته إذا لم يتم طلب تحديث قسري
+      if (!forceRefresh && await targetFile.exists()) {
         final isValid = await _isValidPdf(targetFile);
         if (isValid) {
           log("Valid permanent cached workout PDF found: ${targetFile.path}");
@@ -226,6 +244,13 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             await targetFile.delete();
           } catch (_) {}
         }
+      }
+
+      // إذا تم طلب تحديث قسري وكان الملف القديم موجوداً، نحذفه لضمان تحميل النسخة الطازجة
+      if (forceRefresh && await targetFile.exists()) {
+        try {
+          await targetFile.delete();
+        } catch (_) {}
       }
 
       // إذا لم يكن مخزناً أو تم تحديثه، نبدأ التنزيل
@@ -371,7 +396,13 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
           ),
         ),
         centerTitle: true,
-        actions: const [],
+        actions: [
+          IconButton(
+            tooltip: 'تحديث الخطة وتحميل أحدث نسخة',
+            icon: const Icon(Icons.refresh_rounded, color: AppColors.black),
+            onPressed: () => loadData(forceRefresh: true),
+          ),
+        ],
       ),
       body: BlocConsumer<WorkoutCubit, WorkoutState>(
         listener: (context, state) {
@@ -391,7 +422,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
           }
 
           if (state is WorkoutSuccess) {
-            if ((state.url == null || state.url!.isEmpty) && _localPdfPath == null) {
+            if ((state.url == null || state.url!.isEmpty) &&
+                _localPdfPath == null) {
               return _buildErrorStateView();
             }
             if (_currentLoadedUrl != state.url &&
@@ -556,7 +588,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             ),
             SizedBox(height: 24.h),
             ElevatedButton.icon(
-              onPressed: loadData,
+              onPressed: () => loadData(forceRefresh: true),
               icon: const Icon(Icons.refresh_rounded, color: Colors.white),
               label: Text(
                 "إعادة المحاولة",
@@ -624,7 +656,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             ),
             SizedBox(height: 24.h),
             ElevatedButton.icon(
-              onPressed: loadData,
+              onPressed: () => loadData(forceRefresh: true),
               icon: const Icon(Icons.refresh_rounded, color: Colors.white),
               label: Text(
                 "تحديث الحالة",

@@ -353,10 +353,22 @@ class AppRouter {
         );
 
       case Routes.workoutBuilder:
-        final traineeId = settings?.arguments as String?;
+        String? traineeId;
+        int? initialMode;
+        if (settings?.arguments is String) {
+          traineeId = settings?.arguments as String;
+        } else if (settings?.arguments is int) {
+          initialMode = settings?.arguments as int;
+        } else if (settings?.arguments is Map<String, dynamic>) {
+          final map = settings!.arguments as Map<String, dynamic>;
+          traineeId = map['traineeId'] as String?;
+          initialMode = map['initialMode'] as int?;
+        }
         return MaterialPageRoute(
-          builder: (context) =>
-              WorkoutBuilderScreen(targetTraineeId: traineeId),
+          builder: (context) => WorkoutBuilderScreen(
+            targetTraineeId: traineeId,
+            initialMode: initialMode,
+          ),
         );
 
       case Routes.coachMonitoring:

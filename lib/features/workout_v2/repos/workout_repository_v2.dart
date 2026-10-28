@@ -46,17 +46,46 @@ class WorkoutRepositoryV2 {
     }
   }
 
-  /// جلب كافة خطط وأيام التمارين المسندة للمتدرب (البرنامج الأسبوعي)
+  /// جلب كافة خطط وأيام التمارين المسندة للمتدرب (البرنامج الأسبوعي الفعال بدون تكرار)
   Future<List<WorkoutModel>> getAllWorkoutsForTrainee(String traineeId) async {
     try {
       final workoutsRes = await _client
           .from('workouts')
           .select()
           .eq('trainee_id', traineeId)
-          .order('created_at', ascending: true);
+          .order('created_at', ascending: false);
+
+      final rawList = workoutsRes as List;
+      if (rawList.isEmpty) return [];
+
+      // نجمع الأيام الفعالة بحيث نأخذ أحدث خطة لكل يوم (اليوم الأول، اليوم الثاني، إلخ)
+      final Map<String, dynamic> latestByDay = {};
+      final List<dynamic> unlabelled = [];
+
+      for (final wJson in rawList) {
+        final day = (wJson['day_of_week'] as String?)?.trim();
+        final rawKey = (day != null && day.isNotEmpty)
+            ? day
+            : ((wJson['title'] as String?)?.trim().isNotEmpty == true
+                ? (wJson['title'] as String).trim()
+                : null);
+
+        if (rawKey != null) {
+          if (!latestByDay.containsKey(rawKey)) {
+            latestByDay[rawKey] = wJson;
+          }
+        } else {
+          unlabelled.add(wJson);
+        }
+      }
+
+      final activeWorkoutsRaw = <dynamic>[
+        ...latestByDay.values,
+        if (latestByDay.isEmpty) ...unlabelled,
+      ];
 
       final List<WorkoutModel> list = [];
-      for (final wJson in (workoutsRes as List)) {
+      for (final wJson in activeWorkoutsRaw) {
         final workoutId = wJson['id'] as String;
         final exercisesRes = await _client
             .from('exercises')
@@ -70,7 +99,54 @@ class WorkoutRepositoryV2 {
 
         list.add(WorkoutModel.fromJson(wJson, exercises: exercises));
       }
-      return list;
+
+      // إذا كان للمتدرب خطة تفاعلية وخطة PDF صفرية، ندمج رابط الـ PDF إن وجد
+      final interactiveWorkouts =
+          list.where((w) => w.exercises.isNotEmpty).toList();
+      final pdfOnlyWorkouts = list
+          .where((w) =>
+              w.exercises.isEmpty &&
+              w.pdfAttachmentUrl != null &&
+              w.pdfAttachmentUrl!.isNotEmpty)
+          .toList();
+
+      List<WorkoutModel> finalList;
+      if (interactiveWorkouts.isNotEmpty) {
+        final fallbackPdf = pdfOnlyWorkouts.isNotEmpty
+            ? pdfOnlyWorkouts.first.pdfAttachmentUrl
+            : null;
+        finalList = interactiveWorkouts.map((w) {
+          if ((w.pdfAttachmentUrl == null || w.pdfAttachmentUrl!.isEmpty) &&
+              fallbackPdf != null) {
+            return w.copyWith(pdfAttachmentUrl: fallbackPdf);
+          }
+          return w;
+        }).toList();
+      } else {
+        finalList = list;
+      }
+
+      // ترتيب الأيام ترتيباً منطقياً: اليوم الأول -> اليوم الثاني -> إلخ
+      final dayOrder = {
+        'اليوم الأول': 1,
+        'اليوم الثاني': 2,
+        'اليوم الثالث': 3,
+        'اليوم الرابع': 4,
+        'اليوم الخامس': 5,
+        'اليوم السادس': 6,
+        'اليوم السابع': 7,
+      };
+
+      finalList.sort((a, b) {
+        final orderA = dayOrder[a.dayOfWeek?.trim()] ?? 99;
+        final orderB = dayOrder[b.dayOfWeek?.trim()] ?? 99;
+        if (orderA != orderB) {
+          return orderA.compareTo(orderB);
+        }
+        return b.createdAt.compareTo(a.createdAt);
+      });
+
+      return finalList;
     } catch (e) {
       log('Error getting all workouts for trainee: $e');
       return [];
@@ -95,8 +171,7 @@ class WorkoutRepositoryV2 {
     try {
       await _client
           .from('workouts')
-          .update({'pdf_attachment_url': null})
-          .eq('trainee_id', traineeId);
+          .update({'pdf_attachment_url': null}).eq('trainee_id', traineeId);
       log('✅ [WorkoutRepositoryV2] Cleared PDF attachment for trainee: $traineeId');
       return true;
     } catch (e) {
@@ -111,8 +186,7 @@ class WorkoutRepositoryV2 {
     try {
       await _client
           .from('workouts')
-          .update({'pdf_attachment_url': pdfUrl})
-          .eq('trainee_id', traineeId);
+          .update({'pdf_attachment_url': pdfUrl}).eq('trainee_id', traineeId);
       log('✅ [WorkoutRepositoryV2] Updated PDF attachment for trainee: $traineeId');
       return true;
     } catch (e) {
@@ -172,13 +246,46 @@ class WorkoutRepositoryV2 {
         lastWorkoutIndex = 0;
       }
 
+      final currentWorkout = allWorkouts[lastWorkoutIndex];
       final now = DateTime.now();
+
+      // جلب جميع التمارين التي تم إنجازها خلال آخر 18 ساعة
+      final recentLogsRes = await _client
+          .from('exercise_logs')
+          .select('exercise_id')
+          .eq('trainee_id', traineeId)
+          .eq('completed', true)
+          .gte('date',
+              now.subtract(const Duration(hours: 18)).toIso8601String());
+
+      final completedExerciseIds = (recentLogsRes as List)
+          .map((l) => l['exercise_id'] as String?)
+          .whereType<String>()
+          .toSet();
+
+      // هل كل تمارين اليوم الحالي تم إنجازها بالفعل؟
+      final bool allExercisesCompleted = currentWorkout.exercises.isNotEmpty &&
+          currentWorkout.exercises
+              .every((ex) => completedExerciseIds.contains(ex.id));
+
+      // إذا لم تكتمل كافة تمارين هذا اليوم بعد (مثلاً أنجز تمرينين ومتبقي تمرين ثالث):
+      // يظل المتدرب داخل نفس تمرين اليوم النشط ولا ننتقل لليوم التالي ولا نفعّل الاستشفاء!
+      if (!allExercisesCompleted) {
+        return SmartWorkoutResult(
+          isRecoveryMode: false,
+          activeWorkout: currentWorkout,
+          currentDayIndex: lastWorkoutIndex,
+          totalDaysCount: allWorkouts.length,
+          allAssignedWorkouts: allWorkouts,
+        );
+      }
+
+      // اكتملت كافة تمارين اليوم! الآن نتحقق من فترة الاستشفاء (Recovery Window)
       final difference = now.difference(lastLog.date);
       final totalCooldownMinutes = recoveryHours * 60;
       final nextWorkoutIndex = (lastWorkoutIndex + 1) % allWorkouts.length;
       final nextWorkout = allWorkouts[nextWorkoutIndex];
 
-      // إذا مر وقت أقل من الـ 20 ساعة منذ آخر تمرين، ندخل في وضع الاستشفاء
       if (difference.inMinutes < totalCooldownMinutes) {
         final remainingMinutes = totalCooldownMinutes - difference.inMinutes;
         return SmartWorkoutResult(
@@ -192,7 +299,7 @@ class WorkoutRepositoryV2 {
         );
       }
 
-      // مرت الـ 20 ساعة بنجاح! يتم فتح تمرين اليوم التالي في السلسلة
+      // مرت فترة الـ 20 ساعة بنجاح! يتم فتح تمرين اليوم التالي في السلسلة
       return SmartWorkoutResult(
         isRecoveryMode: false,
         activeWorkout: nextWorkout,
@@ -312,11 +419,8 @@ class WorkoutRepositoryV2 {
     log('--------------------------------------------------');
 
     try {
-      final res = await _client
-          .from('workouts')
-          .insert(payload)
-          .select('id')
-          .single();
+      final res =
+          await _client.from('workouts').insert(payload).select('id').single();
 
       final createdId = res['id'] as String?;
       log('✅ [WorkoutRepositoryV2] Workout Created Successfully! id: $createdId');
@@ -387,7 +491,8 @@ class WorkoutRepositoryV2 {
             .map((s) => ExerciseSetLogModel.fromJson(s as Map<String, dynamic>))
             .toList();
 
-        list.add(ExerciseLogModel.fromJson(item as Map<String, dynamic>, sets: sets));
+        list.add(ExerciseLogModel.fromJson(item as Map<String, dynamic>,
+            sets: sets));
       }
       return list;
     } catch (e) {

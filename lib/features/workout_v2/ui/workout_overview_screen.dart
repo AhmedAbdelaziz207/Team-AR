@@ -44,6 +44,15 @@ class _WorkoutOverviewContent extends StatelessWidget {
   final bool isModal;
   const _WorkoutOverviewContent({this.isModal = false});
 
+  void _reload(BuildContext context) async {
+    final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
+    if (context.mounted) {
+      context
+          .read<WorkoutOverviewCubit>()
+          .loadOverview(userId ?? 'test_trainee');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +63,8 @@ class _WorkoutOverviewContent extends StatelessWidget {
         scrolledUnderElevation: 0,
         toolbarHeight: 52.h,
         automaticallyImplyLeading: isModal,
-        leading: isModal ? const AppBarBackButton(color: AppColors.black) : null,
+        leading:
+            isModal ? const AppBarBackButton(color: AppColors.black) : null,
         title: Text(
           'خطة تدريب اليوم',
           style: TextStyle(
@@ -82,7 +92,9 @@ class _WorkoutOverviewContent extends StatelessWidget {
             ),
             onPressed: () {
               HapticFeedback.lightImpact();
-              Navigator.pushNamed(context, Routes.exercise);
+              Navigator.pushNamed(context, Routes.exercise).then((_) {
+                if (context.mounted) _reload(context);
+              });
             },
           ),
           SizedBox(width: 8.w),
@@ -90,13 +102,7 @@ class _WorkoutOverviewContent extends StatelessWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          final userId =
-              await SharedPreferencesHelper.getString(AppConstants.userId);
-          if (context.mounted) {
-            context
-                .read<WorkoutOverviewCubit>()
-                .loadOverview(userId ?? 'test_trainee');
-          }
+          _reload(context);
         },
         child: BlocBuilder<WorkoutOverviewCubit, WorkoutOverviewState>(
           builder: (context, state) {
@@ -248,7 +254,9 @@ class _WorkoutOverviewContent extends StatelessWidget {
                     initialGuidedMode: true,
                   ),
                 ),
-              );
+              ).then((_) {
+                if (context.mounted) _reload(context);
+              });
             },
             borderRadius: BorderRadius.circular(18.r),
             child: Container(
@@ -375,7 +383,9 @@ class _WorkoutOverviewContent extends StatelessWidget {
                         initialScrollToIndex: index,
                       ),
                     ),
-                  );
+                  ).then((_) {
+                    if (context.mounted) _reload(context);
+                  });
                 },
               );
             },
@@ -419,8 +429,8 @@ class _WorkoutOverviewContent extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 10.w, vertical: 4.h),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                       decoration: BoxDecoration(
                         color: AppColors.newPrimaryColor.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20.r),
@@ -497,7 +507,9 @@ class _WorkoutOverviewContent extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: () {
                       HapticFeedback.lightImpact();
-                      Navigator.pushNamed(context, Routes.exercise);
+                      Navigator.pushNamed(context, Routes.exercise).then((_) {
+                        if (context.mounted) _reload(context);
+                      });
                     },
                     icon: const Icon(Icons.menu_book_rounded,
                         color: Colors.white),
@@ -581,7 +593,9 @@ class _WorkoutOverviewContent extends StatelessWidget {
     return InkWell(
       onTap: () {
         HapticFeedback.lightImpact();
-        Navigator.pushNamed(context, Routes.exercise);
+        Navigator.pushNamed(context, Routes.exercise).then((_) {
+          if (context.mounted) _reload(context);
+        });
       },
       borderRadius: BorderRadius.circular(14.r),
       child: Container(
@@ -636,11 +650,13 @@ class _WorkoutOverviewContent extends StatelessWidget {
   }
 
   Future<bool> _checkIfTraineeHasAssignedPdf() async {
-    final userId =
-        await SharedPreferencesHelper.getString(AppConstants.userId);
+    final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
     if (userId == null || userId.isEmpty) return false;
-    final cached = await SharedPreferencesHelper.getString('cached_workout_pdf_path_$userId');
-    if (cached != null && cached.isNotEmpty && File(cached).existsSync()) return true;
+    final cached = await SharedPreferencesHelper.getString(
+        'cached_workout_pdf_path_$userId');
+    if (cached != null && cached.isNotEmpty && File(cached).existsSync()) {
+      return true;
+    }
     final exerciseId =
         await SharedPreferencesHelper.getInt(AppConstants.exerciseId);
     if (exerciseId != null && exerciseId != 0) return true;
@@ -674,7 +690,8 @@ class _WorkoutOverviewContent extends StatelessWidget {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16.r),
                           border: Border.all(
-                            color: AppColors.newPrimaryColor.withValues(alpha: 0.2),
+                            color: AppColors.newPrimaryColor
+                                .withValues(alpha: 0.2),
                           ),
                           boxShadow: [
                             BoxShadow(
@@ -690,7 +707,8 @@ class _WorkoutOverviewContent extends StatelessWidget {
                             Container(
                               padding: EdgeInsets.all(10.r),
                               decoration: BoxDecoration(
-                                color: AppColors.newPrimaryColor.withValues(alpha: 0.1),
+                                color: AppColors.newPrimaryColor
+                                    .withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -705,7 +723,7 @@ class _WorkoutOverviewContent extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'جدول التمارين التفاعلي',
+                                    'خطة التمارين المعتمدة',
                                     style: TextStyle(
                                       fontFamily: 'Cairo',
                                       fontSize: 14.sp,
@@ -715,7 +733,7 @@ class _WorkoutOverviewContent extends StatelessWidget {
                                   ),
                                   SizedBox(height: 4.h),
                                   Text(
-                                    'يمكنك التدرب ومتابعة خطتك بالكامل عبر كارت التمارين المرفق بالأعلى (PDF).\nوبمجرد تفعيل الكابتن للجدول التفاعلي الذكي ستظهر تمارينه اليومية هنا تلقائياً.',
+                                    'تم إعداد وتخصيص خطتك التدريبية المعتمدة من قِبل الكابتن.\nيمكنك فتح وتصفح ملف الخطة التدريبية بالكامل عبر الزر أدناه.',
                                     style: TextStyle(
                                       fontFamily: 'Cairo',
                                       fontSize: 12.sp,
@@ -735,7 +753,10 @@ class _WorkoutOverviewContent extends StatelessWidget {
                         child: InkWell(
                           onTap: () {
                             HapticFeedback.lightImpact();
-                            Navigator.pushNamed(context, Routes.exercise);
+                            Navigator.pushNamed(context, Routes.exercise)
+                                .then((_) {
+                              if (context.mounted) _reload(context);
+                            });
                           },
                           borderRadius: BorderRadius.circular(14.r),
                           child: Ink(
@@ -755,7 +776,8 @@ class _WorkoutOverviewContent extends StatelessWidget {
                               borderRadius: BorderRadius.circular(14.r),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.newPrimaryColor.withValues(alpha: 0.3),
+                                  color: AppColors.newPrimaryColor
+                                      .withValues(alpha: 0.3),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -845,7 +867,8 @@ class _WorkoutOverviewContent extends StatelessWidget {
                 SizedBox(height: 24.h),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    final userId = await SharedPreferencesHelper.getString(AppConstants.userId);
+                    final userId = await SharedPreferencesHelper.getString(
+                        AppConstants.userId);
                     if (context.mounted && userId != null) {
                       context.read<WorkoutOverviewCubit>().loadOverview(userId);
                     }
@@ -862,7 +885,8 @@ class _WorkoutOverviewContent extends StatelessWidget {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.newPrimaryColor,
-                    padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.r),
                     ),
@@ -1382,8 +1406,8 @@ class _ExerciseOverviewTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasVideo = exercise.videoGuideUrl != null &&
         exercise.videoGuideUrl!.trim().isNotEmpty;
-    final hasTip =
-        exercise.technicalTip != null && exercise.technicalTip!.trim().isNotEmpty;
+    final hasTip = exercise.technicalTip != null &&
+        exercise.technicalTip!.trim().isNotEmpty;
 
     return Material(
       color: Colors.transparent,
@@ -1654,8 +1678,7 @@ class _DayIntroVideoCard extends StatelessWidget {
   }
 }
 
-void _playYoutubeVideoModal(
-    BuildContext context, String url, String title) {
+void _playYoutubeVideoModal(BuildContext context, String url, String title) {
   HapticFeedback.mediumImpact();
   showDialog(
     context: context,
@@ -1704,8 +1727,8 @@ class _InAppUniversalVideoDialog extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close_rounded,
-                        color: Colors.white70),
+                    icon:
+                        const Icon(Icons.close_rounded, color: Colors.white70),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],

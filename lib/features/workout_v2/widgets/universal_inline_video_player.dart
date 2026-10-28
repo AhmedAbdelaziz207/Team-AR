@@ -89,14 +89,14 @@ class VideoUrlHelper {
           host.contains('fb.watch') ||
           host.contains('fb.com')) {
         // 1. استخراج معرّف الريل الصريح
-        final reelMatch =
-            RegExp(r'(?:reel|reels)\/(\d+)').firstMatch(uri.path);
+        final reelMatch = RegExp(r'(?:reel|reels)\/(\d+)').firstMatch(uri.path);
         if (reelMatch != null && reelMatch.groupCount >= 1) {
           return 'https://www.facebook.com/reel/${reelMatch.group(1)}/';
         }
 
         // 2. نمط watch?v=ID
-        if (uri.path.contains('watch') && uri.queryParameters.containsKey('v')) {
+        if (uri.path.contains('watch') &&
+            uri.queryParameters.containsKey('v')) {
           final v = uri.queryParameters['v'];
           if (v != null && v.isNotEmpty) {
             return 'https://www.facebook.com/watch/?v=$v';
@@ -203,7 +203,8 @@ class UniversalInlineVideoPlayer extends StatefulWidget {
       _UniversalInlineVideoPlayerState();
 }
 
-class _UniversalInlineVideoPlayerState extends State<UniversalInlineVideoPlayer> {
+class _UniversalInlineVideoPlayerState
+    extends State<UniversalInlineVideoPlayer> {
   bool _isPlaying = false;
   late bool _isVertical;
   bool _isLoading = false;
@@ -456,7 +457,8 @@ class _UniversalInlineVideoPlayerState extends State<UniversalInlineVideoPlayer>
                       ? Image.network(
                           'https://img.youtube.com/vi/$_youtubeId/hqdefault.jpg',
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _buildFallbackGradient(),
+                          errorBuilder: (_, __, ___) =>
+                              _buildFallbackGradient(),
                         )
                       : _buildFallbackGradient(),
                 ),
@@ -695,7 +697,8 @@ class _UniversalInlineVideoPlayerState extends State<UniversalInlineVideoPlayer>
 
                   // زر التبديل بين الطولي والعرضي (16:9 / 9:16)
                   Tooltip(
-                    message: _isVertical ? 'تحويل لعرضي 16:9' : 'تحويل لطولي 9:16',
+                    message:
+                        _isVertical ? 'تحويل لعرضي 16:9' : 'تحويل لطولي 9:16',
                     child: InkWell(
                       onTap: _toggleAspectRatio,
                       borderRadius: BorderRadius.circular(6.r),
@@ -735,7 +738,8 @@ class _UniversalInlineVideoPlayerState extends State<UniversalInlineVideoPlayer>
 
                   // زر فتح الرابط بالتطبيق المخصص
                   IconButton(
-                    tooltip: 'فتح في ${_platform == VideoPlatformType.facebook ? 'تطبيق فيسبوك' : 'المتصفح'}',
+                    tooltip:
+                        'فتح في ${_platform == VideoPlatformType.facebook ? 'تطبيق فيسبوك' : 'المتصفح'}',
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                     icon: Icon(Icons.open_in_new_rounded,
@@ -796,7 +800,6 @@ class _UniversalInlineVideoPlayerState extends State<UniversalInlineVideoPlayer>
                         color: AppColors.newPrimaryColor,
                       ),
                     ),
-
                   if (_isLoading)
                     Container(
                       color: Colors.black54,
@@ -1003,7 +1006,8 @@ class _FullscreenVideoViewerState extends State<_FullscreenVideoViewer> {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          icon:
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -1036,7 +1040,6 @@ class _FullscreenVideoViewerState extends State<_FullscreenVideoViewer> {
                     color: AppColors.newPrimaryColor,
                   ),
                 ),
-
               if (_isLoading)
                 const Center(
                   child: CircularProgressIndicator(

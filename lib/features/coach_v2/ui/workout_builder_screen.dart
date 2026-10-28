@@ -20,8 +20,13 @@ import '../services/workout_template_service.dart';
 
 class WorkoutBuilderScreen extends StatefulWidget {
   final String? targetTraineeId;
+  final int? initialMode;
 
-  const WorkoutBuilderScreen({super.key, this.targetTraineeId});
+  const WorkoutBuilderScreen({
+    super.key,
+    this.targetTraineeId,
+    this.initialMode,
+  });
 
   @override
   State<WorkoutBuilderScreen> createState() => _WorkoutBuilderScreenState();
@@ -77,13 +82,13 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
     if (currentTitle.isEmpty) return false;
     if (_appliedTemplateId != null &&
         _appliedTemplateTitle != null &&
-        _appliedTemplateTitle!.trim().toLowerCase() == currentTitle.toLowerCase()) {
+        _appliedTemplateTitle!.trim().toLowerCase() ==
+            currentTitle.toLowerCase()) {
       return true;
     }
-    return _allTemplates.any(
-        (t) =>
-            (_appliedTemplateId != null && t.id == _appliedTemplateId) ||
-            t.title.trim().toLowerCase() == currentTitle.toLowerCase());
+    return _allTemplates.any((t) =>
+        (_appliedTemplateId != null && t.id == _appliedTemplateId) ||
+        t.title.trim().toLowerCase() == currentTitle.toLowerCase());
   }
 
   // مزود آمن لصور المتدربين لتجنب أخطاء الـ URI المنسوبة لـ file:/// أو المسارات النسبية
@@ -113,20 +118,11 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
     super.initState();
     _titleCtrl.addListener(_onTitleChanged);
     _loadTrainees();
+    if (widget.initialMode != null) {
+      _activeMode = widget.initialMode!;
+    }
     _loadTemplates();
     _loadPdfSystems();
-
-    // إضافة تمرين افتراضي كنموذج إرشادي للمدرب
-    _exercises.add(_ExerciseDraft(
-      name: 'Flat Dumbbell Fly',
-      technicalTip: 'HORIZONTAL GRIP!! Keep elbows slightly bent',
-      targetSets: 3,
-      targetRepsRange: '8-10',
-      restSeconds: 120,
-      rir: 2,
-      tempo: '3-2-2',
-      videoUrl: 'https://www.youtube.com/watch?v=eozdVDA78K0',
-    ));
   }
 
   void _onTitleChanged() {
@@ -149,9 +145,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
       res.when(
         success: (list) {
           if (mounted) {
-            final valid = list
-                .where((u) => u.role?.toLowerCase() != 'admin')
-                .toList();
+            final valid =
+                list.where((u) => u.role?.toLowerCase() != 'admin').toList();
             setState(() {
               _allTrainees = valid;
               _isLoadingTrainees = false;
@@ -162,14 +157,12 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                 final match = _allTrainees
                     .where((t) => t.id == widget.targetTraineeId)
                     .firstOrNull;
-                if (match != null) {
-                  _selectedTrainee = match;
-                } else {
-                  _selectedTrainee = TraineeModel.fromJson({
-                    'id': widget.targetTraineeId,
-                    'userName': 'المتدرب المحدد',
-                  });
-                }
+                final chosen = match ??
+                    TraineeModel.fromJson({
+                      'id': widget.targetTraineeId,
+                      'userName': 'المتدرب المحدد',
+                    });
+                _selectTrainee(chosen);
                 _activeMode = 0;
               }
             });
@@ -184,10 +177,78 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
     }
   }
 
-  Future<void> _loadTemplates() async {
+  void _selectTrainee(TraineeModel trainee) {
+    setState(() {
+      _selectedTrainee = trainee;
+      _exercises.clear();
+      _titleCtrl.text = 'Push Day';
+      _selectedMuscles.clear();
+      _selectedMuscles.addAll(['الصدر', 'الترايسبس']);
+      _introVideoCtrl.clear();
+      _pdfUrlCtrl.clear();
+      _selectedPdfSystem = null;
+      _planType = 0;
+    });
+    if (trainee.id != null && trainee.id!.isNotEmpty) {
+      _loadTraineeExistingWorkout(trainee.id!);
+    }
+  }
+
+  Future<void> _loadTraineeExistingWorkout(String traineeId) async {
+    try {
+      final repo = getIt<WorkoutRepositoryV2>();
+      final existing = await repo.getWorkoutForTrainee(traineeId);
+      if (mounted && existing != null) {
+        setState(() {
+          _titleCtrl.text = existing.title;
+          _selectedMuscles.clear();
+          _selectedMuscles.addAll(existing.targetMuscles);
+          if (existing.introVideoUrl != null &&
+              existing.introVideoUrl!.isNotEmpty) {
+            _introVideoCtrl.text = existing.introVideoUrl!;
+          }
+          if (existing.pdfAttachmentUrl != null &&
+              existing.pdfAttachmentUrl!.isNotEmpty) {
+            _pdfUrlCtrl.text = existing.pdfAttachmentUrl!;
+            final match = _availablePdfSystems.firstWhere(
+              (s) => s.url == existing.pdfAttachmentUrl,
+              orElse: () => WorkoutSystemModel(
+                name: 'مرفق المتدرب (PDF)',
+                url: existing.pdfAttachmentUrl,
+              ),
+            );
+            _selectedPdfSystem = match;
+            _planType = existing.exercises.isEmpty ? 1 : 2;
+          } else {
+            _planType = 0;
+            _selectedPdfSystem = null;
+          }
+
+          _exercises.clear();
+          for (final ex in existing.exercises) {
+            _exercises.add(_ExerciseDraft(
+              name: ex.name,
+              technicalTip: ex.technicalTip ?? '',
+              videoUrl: ex.videoGuideUrl,
+              targetSets: ex.targetSets,
+              targetRepsRange: ex.targetRepsRange,
+              restSeconds: ex.restSeconds,
+              rir: ex.rir,
+              tempo: ex.tempo,
+            ));
+          }
+        });
+      }
+    } catch (e) {
+      log('Error loading existing trainee workout: $e');
+    }
+  }
+
+  Future<void> _loadTemplates({bool forceRefresh = false}) async {
     setState(() => _isLoadingTemplates = true);
     try {
-      final templates = await WorkoutTemplateService.getAllTemplates();
+      final templates = await WorkoutTemplateService.getAllTemplates(
+          forceRefresh: forceRefresh);
       if (mounted) {
         setState(() {
           _allTemplates = templates;
@@ -230,9 +291,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
         elevation: 0,
         leading: const AppBarBackButton(color: AppColors.black),
         title: Text(
-          _activeMode == 0
-              ? 'إسناد جدول تمرين لمتدرب'
-              : 'مكتبة التمارين 📚',
+          _activeMode == 0 ? 'إسناد جدول تمرين لمتدرب' : 'مكتبة التمارين 📚',
           style: TextStyle(
             fontFamily: 'Cairo',
             fontSize: 16.5.sp,
@@ -247,13 +306,28 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
           // 1. شريط التبديل العلوي الصريح والواضح (Tabs Switcher)
           _buildModeSelector(),
 
-          // 2. المحتوى التفاعلي حسب الوضع المختار
+          // 2. المحتوى التفاعلي حسب الوضع المختار مع دعم السحب للتحديث الذكي
           Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: _activeMode == 0
-                  ? _buildTraineeAssignmentContent()
-                  : _buildTemplatesLibraryContent(),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                if (_activeMode == 1) {
+                  await _loadTemplates(forceRefresh: true);
+                } else {
+                  await _loadTrainees();
+                  if (_selectedTrainee?.id != null) {
+                    await _loadTraineeExistingWorkout(_selectedTrainee!.id!);
+                  }
+                }
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                child: _activeMode == 0
+                    ? _buildTraineeAssignmentContent()
+                    : _buildTemplatesLibraryContent(),
+              ),
             ),
           ),
         ],
@@ -543,7 +617,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 6.w, vertical: 2.h),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                          color:
+                              const Color(0xFF10B981).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6.r),
                         ),
                         child: Text(
@@ -576,7 +651,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
               onPressed: () => _openTraineePickerSheet(
                 title: 'تغيير المتدرب',
                 onSelected: (trainee) {
-                  setState(() => _selectedTrainee = trainee);
+                  _selectTrainee(trainee);
                 },
               ),
               style: TextButton.styleFrom(
@@ -599,7 +674,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
         onTap: () => _openTraineePickerSheet(
           title: 'اختر المتدرب لتخصيص الخطة له',
           onSelected: (trainee) {
-            setState(() => _selectedTrainee = trainee);
+            _selectTrainee(trainee);
           },
         ),
         borderRadius: BorderRadius.circular(14.r),
@@ -719,7 +794,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.r),
                       side: BorderSide(
-                        color: AppColors.newPrimaryColor.withValues(alpha: 0.25),
+                        color:
+                            AppColors.newPrimaryColor.withValues(alpha: 0.25),
                       ),
                     ),
                   ),
@@ -740,7 +816,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0284C7).withValues(alpha: 0.1),
+                    backgroundColor:
+                        const Color(0xFF0284C7).withValues(alpha: 0.1),
                     foregroundColor: const Color(0xFF0284C7),
                     elevation: 0,
                     padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -963,7 +1040,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
               ),
               IconButton(
                 icon: const Icon(Icons.refresh_rounded, size: 20),
-                onPressed: _loadTemplates,
+                onPressed: () => _loadTemplates(forceRefresh: true),
                 tooltip: 'تحديث المكتبة',
               ),
             ],
@@ -1142,7 +1219,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
             icon: const Icon(Icons.arrow_back_rounded, size: 18),
             label: const Text(
               'إلغاء والعودة لمكتبة التمارين',
-              style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -1238,7 +1316,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                   _applyTemplate(tmpl);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('تم تحميل جدول "${tmpl.title}" في المحرر 🚀'),
+                      content:
+                          Text('تم تحميل جدول "${tmpl.title}" في المحرر 🚀'),
                       backgroundColor: const Color(0xFF10B981),
                       duration: const Duration(seconds: 2),
                     ),
@@ -1305,7 +1384,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         title: Row(
           children: [
-            const Icon(Icons.delete_forever_rounded, color: Colors.red, size: 26),
+            const Icon(Icons.delete_forever_rounded,
+                color: Colors.red, size: 26),
             SizedBox(width: 8.w),
             Text(
               'تأكيد حذف القالب',
@@ -1363,7 +1443,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
 
     if (confirmed == true) {
       await WorkoutTemplateService.deleteCustomTemplate(tmpl.id);
-      await _loadTemplates();
+      await _loadTemplates(forceRefresh: true);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1471,7 +1551,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
               Icon(
                 icon,
                 size: 22.sp,
-                color: isSelected ? AppColors.newPrimaryColor : Colors.grey[600],
+                color:
+                    isSelected ? AppColors.newPrimaryColor : Colors.grey[600],
               ),
               SizedBox(height: 6.h),
               Text(
@@ -1483,7 +1564,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                   fontFamily: 'Cairo',
                   fontSize: 12.sp,
                   fontWeight: FontWeight.bold,
-                  color: isSelected ? AppColors.newPrimaryColor : AppColors.black,
+                  color:
+                      isSelected ? AppColors.newPrimaryColor : AppColors.black,
                 ),
               ),
               SizedBox(height: 2.h),
@@ -1581,7 +1663,6 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
             ],
           ),
           SizedBox(height: 14.h),
-
           if (_selectedPdfSystem != null)
             _buildActivePdfCard(_selectedPdfSystem!)
           else
@@ -1656,12 +1737,18 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                   onPressed: () => _openPdfSystemsPickerSheet(),
                   icon: const Icon(Icons.swap_horiz_rounded, size: 16),
                   label: const Text('تغيير الملف',
-                      style: TextStyle(fontFamily: 'Cairo', fontSize: 11.5, fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.newPrimaryColor,
-                    side: BorderSide(color: AppColors.newPrimaryColor.withValues(alpha: 0.3)),
+                    side: BorderSide(
+                        color:
+                            AppColors.newPrimaryColor.withValues(alpha: 0.3)),
                     padding: EdgeInsets.symmetric(vertical: 8.h),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r)),
                   ),
                 ),
               ),
@@ -1674,7 +1761,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                   });
                 },
                 tooltip: 'إلغاء الإرفاق',
-                icon: const Icon(Icons.delete_outline_rounded, color: Colors.red, size: 20),
+                icon: const Icon(Icons.delete_outline_rounded,
+                    color: Colors.red, size: 20),
               ),
             ],
           ),
@@ -1721,7 +1809,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                     ? SizedBox(
                         width: 16.r,
                         height: 16.r,
-                        child: const CircularProgressIndicator(strokeWidth: 2, color: AppColors.newPrimaryColor),
+                        child: const CircularProgressIndicator(
+                            strokeWidth: 2, color: AppColors.newPrimaryColor),
                       )
                     : const Icon(Icons.upload_file_rounded, size: 18),
                 label: Text(
@@ -1736,7 +1825,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                 ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.newPrimaryColor,
-                  side: BorderSide(color: AppColors.newPrimaryColor.withValues(alpha: 0.4)),
+                  side: BorderSide(
+                      color: AppColors.newPrimaryColor.withValues(alpha: 0.4)),
                   padding: EdgeInsets.symmetric(vertical: 12.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.r),
@@ -1769,7 +1859,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
               color: Color(0xFF10B981),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.check_rounded, color: Colors.white, size: 18),
+            child:
+                const Icon(Icons.check_rounded, color: Colors.white, size: 18),
           ),
           SizedBox(width: 12.w),
           Expanded(
@@ -2083,8 +2174,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                       BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                 ),
                 focusedBorder: const OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: AppColors.newPrimaryColor),
+                  borderSide: BorderSide(color: AppColors.newPrimaryColor),
                 ),
               ),
             ),
@@ -2331,8 +2421,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
         labelText: label,
         labelStyle: TextStyle(
             fontFamily: 'Cairo', fontSize: 12.sp, color: Colors.grey[600]),
-        prefixIcon:
-            Icon(icon, size: 18.sp, color: AppColors.newPrimaryColor),
+        prefixIcon: Icon(icon, size: 18.sp, color: AppColors.newPrimaryColor),
         filled: true,
         fillColor: const Color(0xFFF8F9FA),
         contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
@@ -2463,16 +2552,18 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                                           Builder(
                                             builder: (context) {
                                               final imageProvider =
-                                                  _getTraineeImageProvider(t.image);
+                                                  _getTraineeImageProvider(
+                                                      t.image);
                                               return CircleAvatar(
                                                 radius: 20.r,
-                                                backgroundColor:
-                                                    AppColors.newPrimaryColor
-                                                        .withValues(alpha: 0.1),
+                                                backgroundColor: AppColors
+                                                    .newPrimaryColor
+                                                    .withValues(alpha: 0.1),
                                                 backgroundImage: imageProvider,
                                                 onBackgroundImageError:
                                                     imageProvider != null
-                                                        ? (exception, stackTrace) {}
+                                                        ? (exception,
+                                                            stackTrace) {}
                                                         : null,
                                                 child: imageProvider == null
                                                     ? Icon(Icons.person,
@@ -2496,8 +2587,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                                                   style: TextStyle(
                                                     fontFamily: 'Cairo',
                                                     fontSize: 13.5.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                    fontWeight: FontWeight.bold,
                                                     color: AppColors.black,
                                                   ),
                                                 ),
@@ -2543,8 +2633,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
 
         setState(() => _isSaving = true);
         final repo = getIt<WorkoutRepositoryV2>();
-        final existing =
-            await repo.getWorkoutForTrainee(sourceTrainee.id!);
+        final existing = await repo.getWorkoutForTrainee(sourceTrainee.id!);
 
         if (mounted) {
           setState(() => _isSaving = false);
@@ -2630,15 +2719,31 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                 ),
               ),
               SizedBox(height: 12.h),
-              Text(
-                'اختر جدولاً من مكتبة التمارين 📚',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Cairo',
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 40),
+                  Expanded(
+                    child: Text(
+                      'اختر جدولاً من مكتبة التمارين 📚',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.black,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.refresh_rounded, size: 20),
+                    tooltip: 'تحديث المكتبة',
+                    onPressed: () async {
+                      await _loadTemplates(forceRefresh: true);
+                      (ctx as Element).markNeedsBuild();
+                    },
+                  ),
+                ],
               ),
               SizedBox(height: 12.h),
               Expanded(
@@ -2730,8 +2835,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                                     decoration: BoxDecoration(
                                       color: AppColors.newPrimaryColor
                                           .withValues(alpha: 0.1),
-                                      borderRadius:
-                                          BorderRadius.circular(8.r),
+                                      borderRadius: BorderRadius.circular(8.r),
                                     ),
                                     child: Text(
                                       'اختيار',
@@ -2871,7 +2975,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                   TextField(
                     onChanged: (val) => setSheetState(() => searchQuery = val),
                     decoration: InputDecoration(
-                      hintText: 'ابحث عن اسم الخطة (مثال: تضخيم، فتنس، تنشيف)...',
+                      hintText:
+                          'ابحث عن اسم الخطة (مثال: تضخيم، فتنس، تنشيف)...',
                       hintStyle: TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 12.sp,
@@ -3004,7 +3109,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                                           if (isSelected)
                                             const Icon(
                                                 Icons.check_circle_rounded,
-                                                color: AppColors.newPrimaryColor)
+                                                color:
+                                                    AppColors.newPrimaryColor)
                                           else
                                             const Icon(
                                                 Icons
@@ -3033,8 +3139,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.newPrimaryColor,
                       side: BorderSide(
-                          color: AppColors.newPrimaryColor
-                              .withValues(alpha: 0.3)),
+                          color:
+                              AppColors.newPrimaryColor.withValues(alpha: 0.3)),
                       padding: EdgeInsets.symmetric(vertical: 11.h),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.r)),
@@ -3294,9 +3400,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
       title: workoutTitle,
       dayOfWeek: _selectedDayLabel,
       targetMuscles: _selectedMuscles,
-      introVideoUrl: _introVideoCtrl.text.isNotEmpty
-          ? _introVideoCtrl.text.trim()
-          : null,
+      introVideoUrl:
+          _introVideoCtrl.text.isNotEmpty ? _introVideoCtrl.text.trim() : null,
       pdfAttachmentUrl: pdfUrl,
       createdAt: DateTime.now(),
     );
@@ -3308,27 +3413,29 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
       log('🎉 [WorkoutBuilder] تم إنشاء الخطة بنجاح في Supabase! المعرّف: $workoutId');
       int successfulExercises = 0;
 
-      // إذا كان هناك تمارين تفاعلية (في الوضع التفاعلي أو الهجين):
-      for (int i = 0; i < _exercises.length; i++) {
-        final d = _exercises[i];
-        final ex = ExerciseModel(
-          id: '',
-          workoutId: workoutId,
-          name: d.name,
-          videoGuideUrl: d.videoUrl,
-          technicalTip: d.technicalTip.isNotEmpty ? d.technicalTip : null,
-          targetSets: d.targetSets,
-          targetRepsRange: d.targetRepsRange,
-          restSeconds: d.restSeconds,
-          rir: d.rir,
-          tempo: d.tempo,
-          orderIndex: i,
-        );
-        final ok = await repo.addExercise(ex);
-        if (ok) {
-          successfulExercises++;
-        } else {
-          log('⚠️ [WorkoutBuilder] فشل إدخال التمرين #${i + 1}: ${d.name}');
+      // إذا كان هناك تمارين تفاعلية (في الوضع التفاعلي أو الهجين فقط):
+      if (_planType != 1) {
+        for (int i = 0; i < _exercises.length; i++) {
+          final d = _exercises[i];
+          final ex = ExerciseModel(
+            id: '',
+            workoutId: workoutId,
+            name: d.name,
+            videoGuideUrl: d.videoUrl,
+            technicalTip: d.technicalTip.isNotEmpty ? d.technicalTip : null,
+            targetSets: d.targetSets,
+            targetRepsRange: d.targetRepsRange,
+            restSeconds: d.restSeconds,
+            rir: d.rir,
+            tempo: d.tempo,
+            orderIndex: i,
+          );
+          final ok = await repo.addExercise(ex);
+          if (ok) {
+            successfulExercises++;
+          } else {
+            log('⚠️ [WorkoutBuilder] فشل إدخال التمرين #${i + 1}: ${d.name}');
+          }
         }
       }
 
@@ -3354,7 +3461,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('حدث خطأ أثناء حفظ الخطة في السيرفر، يرجى مراجعة تفاصيل السجل'),
+            content: Text(
+                'حدث خطأ أثناء حفظ الخطة في السيرفر، يرجى مراجعة تفاصيل السجل'),
             backgroundColor: Colors.red,
           ),
         );
@@ -3385,8 +3493,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
       return;
     }
 
-    final templateId = _editingTemplateId ??
-        'custom_${DateTime.now().millisecondsSinceEpoch}';
+    final templateId =
+        _editingTemplateId ?? 'custom_${DateTime.now().millisecondsSinceEpoch}';
 
     final newTemplate = WorkoutTemplateModel(
       id: templateId,
@@ -3396,9 +3504,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
           ? _introVideoCtrl.text.trim()
           : null,
       pdfAttachmentUrl: _selectedPdfSystem?.url ??
-          (_pdfUrlCtrl.text.trim().isNotEmpty
-              ? _pdfUrlCtrl.text.trim()
-              : null),
+          (_pdfUrlCtrl.text.trim().isNotEmpty ? _pdfUrlCtrl.text.trim() : null),
       exercises: _exercises
           .map((e) => ExerciseTemplateItem(
                 name: e.name,
@@ -3415,7 +3521,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
     );
 
     await WorkoutTemplateService.saveCustomTemplate(newTemplate);
-    await _loadTemplates();
+    await _loadTemplates(forceRefresh: true);
     final wasEditing = _editingTemplateId != null;
     setState(() {
       _appliedTemplateId = newTemplate.id;
@@ -3512,7 +3618,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('تم حفظ جدول "$name" في مكتبة التمارين بنجاح! 💾'),
+                    content:
+                        Text('تم حفظ جدول "$name" في مكتبة التمارين بنجاح! 💾'),
                     backgroundColor: const Color(0xFF10B981),
                   ),
                 );
@@ -3623,8 +3730,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                 // محتوى الإدخال
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 16.w, vertical: 14.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -3866,8 +3973,7 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                                 children: List.generate(5, (val) {
                                   final isSel = rir == val;
                                   return InkWell(
-                                    onTap: () =>
-                                        setModalState(() => rir = val),
+                                    onTap: () => setModalState(() => rir = val),
                                     borderRadius: BorderRadius.circular(8.r),
                                     child: Container(
                                       width: 48.w,

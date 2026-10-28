@@ -21,7 +21,8 @@ class ExerciseLogModel {
     this.sets = const [],
   });
 
-  factory ExerciseLogModel.fromJson(Map<String, dynamic> json, {List<ExerciseSetLogModel> sets = const []}) {
+  factory ExerciseLogModel.fromJson(Map<String, dynamic> json,
+      {List<ExerciseSetLogModel> sets = const []}) {
     return ExerciseLogModel(
       id: json['id'] as String?,
       exerciseId: json['exercise_id'] as String? ?? '',
@@ -43,7 +44,8 @@ class ExerciseLogModel {
       'trainee_id': traineeId,
       'date': date.toIso8601String(),
       'effort_rating': effortRating,
-      if (coachFeedbackNotes != null) 'coach_feedback_notes': coachFeedbackNotes,
+      if (coachFeedbackNotes != null)
+        'coach_feedback_notes': coachFeedbackNotes,
       'completed': completed,
     };
   }

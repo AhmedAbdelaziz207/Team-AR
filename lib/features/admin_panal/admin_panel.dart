@@ -76,7 +76,7 @@ class AdminPanel extends StatelessWidget {
                         title: 'مكتبة التمارين ومنشئ الخطط 🏋️‍♂️',
                         cardColor: const Color(0xFF102E50),
                         onTap: () {
-                          Navigator.pushNamed(context, Routes.workoutBuilder);
+                          Navigator.pushNamed(context, Routes.workoutBuilder, arguments: 1);
                         },
                       ),
                       SizedBox(height: 20.h),

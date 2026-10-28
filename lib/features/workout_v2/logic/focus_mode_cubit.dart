@@ -119,8 +119,10 @@ class FocusModeState {
   }
 
   int get completedExercisesCount {
-    return items.where((item) =>
-        item.sets.isNotEmpty && item.sets.every((s) => s.isCompleted)).length;
+    return items
+        .where((item) =>
+            item.sets.isNotEmpty && item.sets.every((s) => s.isCompleted))
+        .length;
   }
 
   FocusModeState copyWith({
@@ -151,11 +153,13 @@ class FocusModeState {
       activeExerciseName: activeExerciseName ?? this.activeExerciseName,
       isLongRest: isLongRest ?? this.isLongRest,
       isRestCompletedAlert: isRestCompletedAlert ?? this.isRestCompletedAlert,
-      nextExerciseOrSetName: nextExerciseOrSetName ?? this.nextExerciseOrSetName,
+      nextExerciseOrSetName:
+          nextExerciseOrSetName ?? this.nextExerciseOrSetName,
       isGuidedMode: isGuidedMode ?? this.isGuidedMode,
       currentlyPlayingExerciseIndex: clearPlayingVideo
           ? null
-          : (currentlyPlayingExerciseIndex ?? this.currentlyPlayingExerciseIndex),
+          : (currentlyPlayingExerciseIndex ??
+              this.currentlyPlayingExerciseIndex),
       isSaving: isSaving ?? this.isSaving,
       isFinished: isFinished ?? this.isFinished,
       errorMessage: errorMessage,
@@ -172,7 +176,8 @@ class FocusModeCubit extends Cubit<FocusModeState> {
     this._repo,
     WorkoutModel workout, {
     bool initialGuidedMode = true,
-  }) : super(FocusModeState(workout: workout, isGuidedMode: initialGuidedMode)) {
+  }) : super(
+            FocusModeState(workout: workout, isGuidedMode: initialGuidedMode)) {
     _startStopwatch();
   }
 
@@ -241,7 +246,8 @@ class FocusModeCubit extends Cubit<FocusModeState> {
     if (setIndex < 0 || setIndex >= item.sets.length) return;
 
     final updatedSets = List<ExerciseSetLogModel>.from(item.sets);
-    updatedSets[setIndex] = updatedSets[setIndex].copyWith(isCompleted: isCompleted);
+    updatedSets[setIndex] =
+        updatedSets[setIndex].copyWith(isCompleted: isCompleted);
 
     final updatedItems = List<FocusExerciseItem>.from(state.items);
     updatedItems[exerciseIndex] = item.copyWith(sets: updatedSets);
@@ -270,9 +276,8 @@ class FocusModeCubit extends Cubit<FocusModeState> {
       } else {
         // راحة قصيرة بين مجموعات نفس التمرين
         nextTarget = 'المجموعة ${setIndex + 2} من ${item.exercise.name}';
-        restSeconds = item.exercise.restSeconds > 0
-            ? item.exercise.restSeconds
-            : 90;
+        restSeconds =
+            item.exercise.restSeconds > 0 ? item.exercise.restSeconds : 90;
 
         // نسخ تلقائي ذكي للوزن والتكرار للمجموعة التالية إذا لم تكن مسجلة بعد
         if (setIndex + 1 < updatedSets.length) {
@@ -353,8 +358,10 @@ class FocusModeCubit extends Cubit<FocusModeState> {
   /// زيادة أو إنقاص وقت الراحة (مثلاً +15s أو -15s)
   void adjustRestTime(int deltaSeconds) {
     if (!state.isRestTimerActive) return;
-    final newRemaining = (state.restSecondsRemaining + deltaSeconds).clamp(5, 600);
-    final newTotal = (state.restTotalSeconds + deltaSeconds).clamp(newRemaining, 600);
+    final newRemaining =
+        (state.restSecondsRemaining + deltaSeconds).clamp(5, 600);
+    final newTotal =
+        (state.restTotalSeconds + deltaSeconds).clamp(newRemaining, 600);
     HapticFeedback.selectionClick();
     emit(state.copyWith(
       restSecondsRemaining: newRemaining,
@@ -373,13 +380,15 @@ class FocusModeCubit extends Cubit<FocusModeState> {
   }
 
   /// تعديل وزن أو تكرار مجموعة معينة
-  void updateSetValues(int exerciseIndex, int setIndex, {double? weight, int? reps}) {
+  void updateSetValues(int exerciseIndex, int setIndex,
+      {double? weight, int? reps}) {
     if (exerciseIndex < 0 || exerciseIndex >= state.items.length) return;
     final item = state.items[exerciseIndex];
     if (setIndex < 0 || setIndex >= item.sets.length) return;
 
     final updatedSets = List<ExerciseSetLogModel>.from(item.sets);
-    updatedSets[setIndex] = updatedSets[setIndex].copyWith(weight: weight, reps: reps);
+    updatedSets[setIndex] =
+        updatedSets[setIndex].copyWith(weight: weight, reps: reps);
 
     final updatedItems = List<FocusExerciseItem>.from(state.items);
     updatedItems[exerciseIndex] = item.copyWith(sets: updatedSets);
@@ -414,7 +423,8 @@ class FocusModeCubit extends Cubit<FocusModeState> {
     if (setIndex < 0 || setIndex >= item.sets.length) return;
     if (item.sets.length <= 1) return; // الحفاظ على مجموعة واحدة على الأقل
 
-    final updatedSets = List<ExerciseSetLogModel>.from(item.sets)..removeAt(setIndex);
+    final updatedSets = List<ExerciseSetLogModel>.from(item.sets)
+      ..removeAt(setIndex);
     final renumbered = <ExerciseSetLogModel>[];
     for (int i = 0; i < updatedSets.length; i++) {
       renumbered.add(updatedSets[i].copyWith(setNumber: i + 1));
@@ -451,14 +461,16 @@ class FocusModeCubit extends Cubit<FocusModeState> {
             effortRating: item.effortRating,
             completed: true,
           );
-          await _repo.saveExerciseLog(exerciseLog: logModel, sets: completedSets);
+          await _repo.saveExerciseLog(
+              exerciseLog: logModel, sets: completedSets);
         }
       }
 
       emit(state.copyWith(isSaving: false, isFinished: true));
       return true;
     } catch (e) {
-      emit(state.copyWith(isSaving: false, errorMessage: 'تعذر إنهاء وحفظ الجلسة: $e'));
+      emit(state.copyWith(
+          isSaving: false, errorMessage: 'تعذر إنهاء وحفظ الجلسة: $e'));
       return false;
     }
   }

@@ -17,18 +17,18 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
   final nameController = TextEditingController();
   File? workoutPdf;
   double uploadProgress = 0.0; // 0.0 - 1.0
-  
-  // إضافة متغيرات لتخزين البيانات
+
+  // كاش الذاكرة المؤقتة لقوائم ملفات الـ PDF
   List<WorkoutSystemModel>? _cachedWorkoutSystems;
   bool _isDataLoaded = false;
 
-  void getWorkoutSystems() async {
-    // التحقق مما إذا كانت البيانات محملة مسبقًا
-    if (_isDataLoaded && _cachedWorkoutSystems != null) {
+  void getWorkoutSystems({bool force = false}) async {
+    // التحقق مما إذا كانت البيانات محملة مسبقًا بدون طلب تحديث قسري
+    if (!force && _isDataLoaded && _cachedWorkoutSystems != null) {
       emit(WorkoutSystemState.success(_cachedWorkoutSystems!));
       return;
     }
-    
+
     emit(const WorkoutSystemState.loading());
     final result = await repo.getWorkoutSystems();
 
@@ -43,11 +43,12 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
       failure: (error) => emit(WorkoutSystemState.failure(error)),
     );
   }
-  
-  // إضافة دالة لإعادة تحميل البيانات عند الحاجة
+
+  // إعادة تحميل وتحديث البيانات قسرياً مع إبطال الكاش
   void refreshWorkoutSystems() async {
     _isDataLoaded = false;
-    getWorkoutSystems();
+    _cachedWorkoutSystems = null;
+    getWorkoutSystems(force: true);
   }
 
   void uploadWorkoutSystem() async {
@@ -77,6 +78,8 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
     result.when(
       success: (data) {
         uploadProgress = 0.0;
+        _isDataLoaded = false;
+        _cachedWorkoutSystems = null;
         if (!isClosed) emit(const WorkoutSystemState.uploadSuccess());
       },
       failure: (error) {
@@ -89,7 +92,15 @@ class WorkoutSystemCubit extends Cubit<WorkoutSystemState> {
   Future<void> deleteWorkoutSystem(int id) async {
     final result = await repo.deleteWorkoutSystem(id);
     result.when(
-      success: (data) {},
+      success: (data) {
+        if (_cachedWorkoutSystems != null) {
+          _cachedWorkoutSystems!.removeWhere((w) => w.id == id);
+          if (!isClosed) {
+            emit(WorkoutSystemState.success(List.from(_cachedWorkoutSystems!)));
+          }
+        }
+        _isDataLoaded = false;
+      },
       failure: (error) {
         emit(WorkoutSystemState.failure(error));
       },
