@@ -1233,110 +1233,235 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(14.r),
         border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(10.r),
-            decoration: BoxDecoration(
-              color: tmpl.isCustom
-                  ? AppColors.newPrimaryColor.withValues(alpha: 0.1)
-                  : const Color(0xFF3B82F6).withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              tmpl.isCustom ? Icons.star_rounded : Icons.fitness_center_rounded,
-              color: tmpl.isCustom
-                  ? AppColors.newPrimaryColor
-                  : const Color(0xFF3B82F6),
-              size: 20.sp,
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ─── الجزء العلوي: الأيقونة + العنوان والوسم وتفاصيل العضلات ───
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.all(10.r),
+                decoration: BoxDecoration(
+                  color: tmpl.isCustom
+                      ? AppColors.newPrimaryColor.withValues(alpha: 0.1)
+                      : const Color(0xFF3B82F6).withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  tmpl.isCustom
+                      ? Icons.fitness_center_rounded
+                      : Icons.verified_rounded,
+                  color: tmpl.isCustom
+                      ? AppColors.newPrimaryColor
+                      : const Color(0xFF3B82F6),
+                  size: 20.sp,
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(
-                      child: Text(
-                        tmpl.title,
-                        style: TextStyle(
-                          fontFamily: 'Cairo',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.black,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            tmpl.title,
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                              fontSize: 14.5.sp,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.black,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
+                        SizedBox(width: 8.w),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 3.h),
+                          decoration: BoxDecoration(
+                            color: tmpl.isCustom
+                                ? AppColors.newPrimaryColor
+                                    .withValues(alpha: 0.1)
+                                : const Color(0xFF3B82F6)
+                                    .withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6.r),
+                          ),
+                          child: Text(
+                            tmpl.isCustom ? 'مخصص للمدرب' : 'معتمد Team AR',
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.w600,
+                              color: tmpl.isCustom
+                                  ? AppColors.newPrimaryColor
+                                  : const Color(0xFF3B82F6),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 6.w),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(4.r),
-                      ),
-                      child: Text(
-                        tmpl.isCustom ? 'مخصص للمدرب' : 'معتمد Team AR',
-                        style: TextStyle(
-                          fontFamily: 'Cairo',
-                          fontSize: 8.5.sp,
-                          color: Colors.grey[700],
+                    SizedBox(height: 4.h),
+                    Row(
+                      children: [
+                        Icon(Icons.format_list_bulleted_rounded,
+                            size: 13.sp, color: Colors.grey[600]),
+                        SizedBox(width: 4.w),
+                        Text(
+                          '${tmpl.exercises.length} تمارين',
+                          style: TextStyle(
+                            fontFamily: 'Cairo',
+                            fontSize: 11.5.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[700],
+                          ),
                         ),
-                      ),
+                        if (tmpl.targetMuscles.isNotEmpty) ...[
+                          Text(
+                            ' • ',
+                            style: TextStyle(
+                              fontSize: 11.5.sp,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              tmpl.targetMuscles.join("، "),
+                              style: TextStyle(
+                                fontFamily: 'Cairo',
+                                fontSize: 11.sp,
+                                color: Colors.grey[600],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ],
                 ),
-                SizedBox(height: 2.h),
-                Text(
-                  '${tmpl.exercises.length} تمارين • ${tmpl.targetMuscles.join("، ")}',
-                  style: TextStyle(
-                    fontFamily: 'Cairo',
-                    fontSize: 11.sp,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 10.h),
+            child: Divider(
+              height: 1,
+              thickness: 0.8,
+              color: Colors.grey.withValues(alpha: 0.15),
             ),
           ),
-          // أزرار الإجراءات للقالب
+
+          // ─── الجزء السفلي: شريط الإجراءات (تطبيق للمتدرب + تعديل + حذف) ───
           Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              // زر تطبيق
-              IconButton(
-                tooltip: 'تطبيق للمتدرب 🚀',
-                icon: const Icon(Icons.play_circle_fill_rounded,
-                    color: Color(0xFF10B981), size: 24),
-                onPressed: () {
-                  _applyTemplate(tmpl);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content:
-                          Text('تم تحميل جدول "${tmpl.title}" في المحرر 🚀'),
-                      backgroundColor: const Color(0xFF10B981),
-                      duration: const Duration(seconds: 2),
+              // زر تطبيق القالب للمتدرب
+              Expanded(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(10.r),
+                  onTap: () {
+                    _applyTemplate(tmpl);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content:
+                            Text('تم تحميل جدول "${tmpl.title}" في المحرر 🚀'),
+                        backgroundColor: const Color(0xFF10B981),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10.r),
+                      border: Border.all(
+                          color:
+                              const Color(0xFF10B981).withValues(alpha: 0.3)),
                     ),
-                  );
-                },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.play_circle_fill_rounded,
+                            color: Color(0xFF10B981), size: 18),
+                        SizedBox(width: 6.w),
+                        Text(
+                          'تطبيق للمتدرب 🚀',
+                          style: TextStyle(
+                            fontFamily: 'Cairo',
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF047857),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
+              SizedBox(width: 8.w),
               // زر تعديل القالب بالمكتبة
-              IconButton(
-                tooltip: 'تعديل القالب ✏️',
-                icon: const Icon(Icons.edit_note_rounded,
-                    color: AppColors.newPrimaryColor, size: 24),
-                onPressed: () => _startEditingTemplate(tmpl),
+              InkWell(
+                borderRadius: BorderRadius.circular(10.r),
+                onTap: () => _startEditingTemplate(tmpl),
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.newPrimaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.edit_note_rounded,
+                          color: AppColors.newPrimaryColor, size: 18),
+                      SizedBox(width: 4.w),
+                      Text(
+                        'تعديل',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 11.5.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.newPrimaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
+              SizedBox(width: 6.w),
               // زر حذف القالب مع تأكيد
-              IconButton(
-                tooltip: 'حذف القالب 🗑️',
-                icon: const Icon(Icons.delete_outline_rounded,
-                    color: Colors.red, size: 22),
-                onPressed: () => _confirmDeleteTemplate(tmpl),
+              InkWell(
+                borderRadius: BorderRadius.circular(10.r),
+                onTap: () => _confirmDeleteTemplate(tmpl),
+                child: Container(
+                  padding: EdgeInsets.all(8.r),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: const Icon(Icons.delete_outline_rounded,
+                      color: Colors.red, size: 18),
+                ),
               ),
             ],
           ),
@@ -2816,6 +2941,8 @@ class _WorkoutBuilderScreenState extends State<WorkoutBuilderScreen> {
                                             fontWeight: FontWeight.bold,
                                             color: AppColors.black,
                                           ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                         SizedBox(height: 2.h),
                                         Text(
