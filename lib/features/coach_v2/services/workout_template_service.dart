@@ -300,7 +300,7 @@ class WorkoutTemplateService {
     if (shouldFetchCloud || customTemplates.isEmpty) {
       try {
         final cloudTemplates = await _fetchCloudTemplates();
-        if (cloudTemplates.isNotEmpty || forceRefresh) {
+        if (cloudTemplates.isNotEmpty || customTemplates.isNotEmpty || forceRefresh) {
           // دمج السحابة كمرجع رئيسي: كل قالب سحابي يحدّث أو يضاف للقائمة المحلية
           final Map<String, WorkoutTemplateModel> mergedMap = {};
 
@@ -309,12 +309,33 @@ class WorkoutTemplateService {
             mergedMap[ct.id] = ct;
           }
 
-          // نضيف أي قوالب مخصصة محلية أنشأها المدرب ولم تتزامن بعد
+          // 🚀 ترحيل سحابي تلقائي: فحص أي قوالب مخصصة محلية أنشأها المدرب قديماً ورفعها فوراً لـ Supabase
           for (final local in customTemplates) {
-            if (!mergedMap.containsKey(local.id) &&
-                !mergedMap.values.any((m) =>
+            final isAlreadyInCloud = mergedMap.containsKey(local.id) ||
+                mergedMap.values.any((m) =>
                     m.title.trim().toLowerCase() ==
-                    local.title.trim().toLowerCase())) {
+                    local.title.trim().toLowerCase());
+
+            if (!isAlreadyInCloud) {
+              try {
+                final cloudId = await _syncTemplateToCloud(local);
+                if (cloudId != null && cloudId.isNotEmpty) {
+                  final synced = WorkoutTemplateModel(
+                    id: cloudId,
+                    title: local.title,
+                    targetMuscles: local.targetMuscles,
+                    introVideoUrl: local.introVideoUrl,
+                    pdfAttachmentUrl: local.pdfAttachmentUrl,
+                    exercises: local.exercises,
+                    isCustom: true,
+                  );
+                  mergedMap[cloudId] = synced;
+                  log('☁️ [WorkoutTemplateService] تم ترحيل ومزامنة القالب المحلي "${local.title}" إلى Supabase بنجاح');
+                  continue;
+                }
+              } catch (e) {
+                log('⚠️ [WorkoutTemplateService] خطأ ترحيل القالب "${local.title}": $e');
+              }
               mergedMap[local.id] = local;
             }
           }
@@ -349,6 +370,59 @@ class WorkoutTemplateService {
     }
 
     return result.where((t) => !hiddenIds.contains(t.id)).toList();
+  }
+
+  /// فحص وترحيل أي قوالب تمارين محلية قديمة إلى Supabase سحابياً لضمان عدم ضياعها
+  static Future<int> migrateLocalTemplatesToCloud() async {
+    try {
+      final localTemplates = await getCustomTemplatesOnly();
+      if (localTemplates.isEmpty) return 0;
+
+      final cloudTemplates = await _fetchCloudTemplates();
+      final cloudTitles =
+          cloudTemplates.map((c) => c.title.trim().toLowerCase()).toSet();
+      final cloudIds = cloudTemplates.map((c) => c.id).toSet();
+
+      int migratedCount = 0;
+      final List<WorkoutTemplateModel> updatedLocals = [];
+
+      for (final tmpl in localTemplates) {
+        if (!cloudIds.contains(tmpl.id) &&
+            !cloudTitles.contains(tmpl.title.trim().toLowerCase())) {
+          try {
+            final cloudId = await _syncTemplateToCloud(tmpl);
+            if (cloudId != null && cloudId.isNotEmpty) {
+              updatedLocals.add(WorkoutTemplateModel(
+                id: cloudId,
+                title: tmpl.title,
+                targetMuscles: tmpl.targetMuscles,
+                introVideoUrl: tmpl.introVideoUrl,
+                pdfAttachmentUrl: tmpl.pdfAttachmentUrl,
+                exercises: tmpl.exercises,
+                isCustom: true,
+              ));
+              migratedCount++;
+              continue;
+            }
+          } catch (e) {
+            log('⚠️ [WorkoutTemplateService] فشل ترحيل: ${tmpl.title}: $e');
+          }
+        }
+        updatedLocals.add(tmpl);
+      }
+
+      if (migratedCount > 0) {
+        final encoded =
+            jsonEncode(updatedLocals.map((t) => t.toJson()).toList());
+        await SharedPreferencesHelper.setData(_prefTemplatesKey, encoded);
+        await invalidateCache();
+        log('🎉 [WorkoutTemplateService] تم بنجاح ترحيل $migratedCount قالب محلي إلى Supabase!');
+      }
+      return migratedCount;
+    } catch (e) {
+      log('⚠️ [WorkoutTemplateService] خطأ فحص الترحيل: $e');
+      return 0;
+    }
   }
 
   /// إبطال كاش القوالب فورياً لإجبار الطلب القادم على الجلب من السيرفر

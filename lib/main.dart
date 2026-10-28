@@ -22,6 +22,7 @@ import 'core/common/notification_model.dart';
 import 'core/common/notification_type_enum.dart';
 import 'core/services/shorebird_update_service.dart';
 import 'core/services/background_task_service.dart';
+import 'features/coach_v2/services/workout_template_service.dart';
 import 'firebase_options.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -117,6 +118,8 @@ void main() async {
     );
 
     SubscriptionMonitorService().startMonitoring();
+    // ☁️ فحص وترحيل أي قوالب تمارين محلية قديمة للمدرب إلى Supabase تلقائياً لضمان عدم ضياعها
+    WorkoutTemplateService.migrateLocalTemplatesToCloud();
     await setupServiceLocator();
 
     final launchDetails =
